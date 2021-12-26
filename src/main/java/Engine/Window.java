@@ -21,8 +21,9 @@ import static org.lwjgl.system.MemoryStack.*;
 
 public class Window {
     private static Window window = null;
-    private int width, height;
-    private String title;
+    private final int width;
+    private final int height;
+    private final String title;
     private boolean isFullScreen;
 
     // The window handle
@@ -36,12 +37,30 @@ public class Window {
         isFullScreen = false;
     }
 
-    public static Window get(){
+    public static Window get() {
         if (Window.window == null) {
             Window.window = new Window();
         }
 
         return Window.window;
+    }
+
+    private static void close() {
+        glfwSetWindowShouldClose(get().window_id, true);
+    }
+
+    static public boolean isFullScreen() {
+        return get().isFullScreen;
+    }
+
+    static public void setFullScreen(boolean fullScreen) {
+        if (fullScreen) {
+            GLFWVidMode mode = glfwGetVideoMode(get().monitor_id);
+            glfwSetWindowMonitor(get().window_id, get().monitor_id, 0, 0, mode.width(), mode.height(), mode.refreshRate());
+        } else {
+            glfwSetWindowMonitor(get().window_id, NULL, 0, 0, get().width, get().height, 60);
+        }
+        get().isFullScreen = fullScreen;
     }
 
     public void run() {
@@ -65,8 +84,7 @@ public class Window {
         GLFWErrorCallback.createPrint(System.err).set();
 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
-        if ( !glfwInit() )
-            throw new IllegalStateException("Unable to initialize GLFW");
+        if (!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
 
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
@@ -77,8 +95,7 @@ public class Window {
 
         // Create the window
         window_id = glfwCreateWindow(width, height, title, NULL, NULL);
-        if ( window_id == NULL )
-            throw new RuntimeException("Failed to create the GLFW window");
+        if (window_id == NULL) throw new RuntimeException("Failed to create the GLFW window");
 
         // set input callback handlers
         glfwSetCursorPosCallback(window_id, MouseListener::cursor_position_callback);
@@ -86,9 +103,10 @@ public class Window {
         glfwSetScrollCallback(window_id, MouseListener::scroll_callback);
         glfwSetKeyCallback(window_id, KeyListener::key_callback);
         glfwSetJoystickCallback(JoystickListener::joystick_callback);
+        JoystickListener.poll_controllers();
 
         // Get the thread stack and push a new frame
-        try ( MemoryStack stack = stackPush() ) {
+        try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1); // int*
             IntBuffer pHeight = stack.mallocInt(1); // int*
 
@@ -99,11 +117,7 @@ public class Window {
             GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
             // Center the window
-            glfwSetWindowPos(
-                    window_id,
-                    (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
-            );
+            glfwSetWindowPos(window_id, (vidmode.width() - pWidth.get(0)) / 2, (vidmode.height() - pHeight.get(0)) / 2);
         } // the stack frame is popped automatically
 
         // Make the OpenGL context current
@@ -128,7 +142,7 @@ public class Window {
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
-        while ( !glfwWindowShouldClose(window_id) ) {
+        while (!glfwWindowShouldClose(window_id)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
             glfwSwapBuffers(window_id); // swap the color buffers
@@ -137,12 +151,13 @@ public class Window {
             // Poll for window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
+            JoystickListener.update();
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)){
+            if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
                 System.out.println("ddfdf");
             }
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_F1)){
+            if (KeyListener.isKeyPressed(GLFW_KEY_F1)) {
                 boolean isFullScreen = Window.isFullScreen();
                 Window.setFullScreen(!isFullScreen);
             }
@@ -151,25 +166,35 @@ public class Window {
                 Window.close();
             }
 
+            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_A)) {
+                System.out.println("A");
+            }
+
+            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_B)) {
+                System.out.println("B");
+            }
+
+            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_X)) {
+                System.out.println("X");
+            }
+
+            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_Y)) {
+                System.out.println("Y");
+            }
+
+            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_LEFT_BUMPER)) {
+                System.out.println("LEFT_BUMPER");
+            }
+
+            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_LEFT_THUMB)) {
+                System.out.println("LEFT_THUMB");
+            }
+
+            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_LEFT)) {
+                System.out.println("DPAD_LEFT");
+            }
+
             MouseListener.endFrame();
         }
-    }
-
-    private static void close() {
-        glfwSetWindowShouldClose(get().window_id, true);
-    }
-
-    static public boolean isFullScreen() {
-        return get().isFullScreen;
-    }
-
-    static public void setFullScreen(boolean fullScreen) {
-        if (fullScreen) {
-            GLFWVidMode mode =  glfwGetVideoMode(get().monitor_id);
-            glfwSetWindowMonitor(get().window_id, get().monitor_id, 0, 0, mode.width(), mode.height(), mode.refreshRate());
-        } else {
-            glfwSetWindowMonitor(get().window_id, NULL, 0, 0, get().width, get().height, 60);
-        }
-        get().isFullScreen = fullScreen;
     }
 }

@@ -6,7 +6,7 @@ public class MouseListener {
     private static MouseListener mouseListener = null;
     private double scrollX, scrollY;
     private double posX, posY, lastX, lastY;
-    private boolean[] mousePressedButtons = new boolean[3];
+    private final boolean[] mousePressedButtons = new boolean[3];
     private boolean isDragging;
 
     private MouseListener() {
@@ -21,14 +21,13 @@ public class MouseListener {
 
     public static MouseListener get() {
         if (MouseListener.mouseListener == null) {
-            MouseListener.mouseListener =  new MouseListener();
+            MouseListener.mouseListener = new MouseListener();
         }
 
         return mouseListener;
     }
 
-    public static void cursor_position_callback(long window, double pos_x, double pos_y)
-    {
+    public static void cursor_position_callback(long window, double pos_x, double pos_y) {
         MouseListener.get().lastX = MouseListener.get().posX;
         MouseListener.get().lastY = MouseListener.get().posY;
         MouseListener.get().posX = pos_x;
@@ -42,8 +41,7 @@ public class MouseListener {
         }
     }
 
-    public static void mouse_button_callback(long window, int button, int action, int mods)
-    {
+    public static void mouse_button_callback(long window, int button, int action, int mods) {
         if (action == GLFW_PRESS) {
             if (button < MouseListener.get().mousePressedButtons.length) {
                 MouseListener.get().mousePressedButtons[button] = true;
@@ -56,8 +54,7 @@ public class MouseListener {
         }
     }
 
-    public static void scroll_callback(long window, double offset_x, double offset_y)
-    {
+    public static void scroll_callback(long window, double offset_x, double offset_y) {
         MouseListener.get().scrollX = offset_x;
         MouseListener.get().scrollY = offset_y;
     }
