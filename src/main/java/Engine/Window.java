@@ -3,29 +3,29 @@ package Engine;
 import Engine.Listeners.JoystickListener;
 import Engine.Listeners.KeyListener;
 import Engine.Listeners.MouseListener;
-import org.lwjgl.*;
+import Engine.Scenes.Scene;
+import Engine.Scenes.TestScene;
 import org.lwjgl.Version;
-import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
-import org.lwjgl.system.*;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryStack;
 
-import java.nio.*;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.system.MemoryUtil.*;
-import static org.lwjgl.glfw.Callbacks.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryStack.*;
+import static org.lwjgl.opengl.GL45.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 
 public class Window {
     private static Window window = null;
-    private final int width;
-    private final int height;
+    private static Scene currentScene;
     private final String title;
+    private int width, height;
     private boolean isFullScreen;
-
     // The window handle
     private long window_id;
     private long monitor_id;
@@ -45,15 +45,15 @@ public class Window {
         return Window.window;
     }
 
-    private static void close() {
+    public static void close() {
         glfwSetWindowShouldClose(get().window_id, true);
     }
 
-    static public boolean isFullScreen() {
+    public static boolean isFullScreen() {
         return get().isFullScreen;
     }
 
-    static public void setFullScreen(boolean fullScreen) {
+    public static void setFullScreen(boolean fullScreen) {
         if (fullScreen) {
             GLFWVidMode mode = glfwGetVideoMode(get().monitor_id);
             glfwSetWindowMonitor(get().window_id, get().monitor_id, 0, 0, mode.width(), mode.height(), mode.refreshRate());
@@ -61,6 +61,23 @@ public class Window {
             glfwSetWindowMonitor(get().window_id, NULL, 0, 0, get().width, get().height, 60);
         }
         get().isFullScreen = fullScreen;
+    }
+
+    public static void changeScene(int scene) {
+        switch (scene) {
+            case TestScene.ID -> {
+                Window.currentScene = new TestScene();
+                Window.currentScene.init();
+            }
+            default -> {
+            }
+        }
+    }
+
+    private static void window_size_callback(long window, int width, int height) {
+        Window.get().width = width;
+        Window.get().height = height;
+        glViewport(0, 0, width, height);
     }
 
     public void run() {
@@ -105,6 +122,8 @@ public class Window {
         glfwSetJoystickCallback(JoystickListener::joystick_callback);
         JoystickListener.poll_controllers();
 
+        glfwSetWindowSizeCallback(window_id, Window::window_size_callback);
+
         // Get the thread stack and push a new frame
         try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1); // int*
@@ -127,9 +146,7 @@ public class Window {
 
         // Make the window visible
         glfwShowWindow(window_id);
-    }
 
-    private void loop() {
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
         // LWJGL detects the context that is current in the current thread,
@@ -137,64 +154,36 @@ public class Window {
         // bindings available for use.
         GL.createCapabilities();
 
+        Window.changeScene(TestScene.ID);
+    }
+
+    private void loop() {
+        float beginTime = (float) glfwGetTime();
+        float endTime;
+        float dt = -1.0f;
         // Set the clear color
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while (!glfwWindowShouldClose(window_id)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-            glfwSwapBuffers(window_id); // swap the color buffers
-
-
             // Poll for window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
             JoystickListener.update();
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
-                System.out.println("ddfdf");
+            if (dt > 0) {
+                currentScene.update(dt);
             }
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_F1)) {
-                boolean isFullScreen = Window.isFullScreen();
-                Window.setFullScreen(!isFullScreen);
-            }
-
-            if (KeyListener.isKeyPressed(GLFW_KEY_ESCAPE)) {
-                Window.close();
-            }
-
-            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_A)) {
-                System.out.println("A");
-            }
-
-            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_B)) {
-                System.out.println("B");
-            }
-
-            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_X)) {
-                System.out.println("X");
-            }
-
-            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_Y)) {
-                System.out.println("Y");
-            }
-
-            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_LEFT_BUMPER)) {
-                System.out.println("LEFT_BUMPER");
-            }
-
-            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_LEFT_THUMB)) {
-                System.out.println("LEFT_THUMB");
-            }
-
-            if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_LEFT)) {
-                System.out.println("DPAD_LEFT");
-            }
-
+            glfwSwapBuffers(window_id); // swap the color buffers
             MouseListener.endFrame();
+
+            endTime = (float) glfwGetTime();
+            dt = endTime - beginTime;
+            beginTime = endTime;
         }
     }
 }
