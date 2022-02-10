@@ -2,12 +2,12 @@ package Engine.Renderer;
 
 public class Renderer {
     private final RenderBatch batch;
-    private final Shader shader;
+    private final ShaderProgram shaderProgram;
 
     public Renderer() {
         this.batch = new RenderBatch();
-        this.shader = new Shader("shader.glsl");
-        this.shader.compile();
+        this.shaderProgram = new ShaderProgram("vertexShader", "fragmentShader");
+        this.shaderProgram.compileAndLink();
     }
 
     public void init() {
@@ -15,10 +15,10 @@ public class Renderer {
     }
 
     public void render() {
-        this.shader.use();
+        this.shaderProgram.use();
 
         this.batch.render();
 
-        this.shader.detach();
+        this.shaderProgram.detach();
     }
 }
