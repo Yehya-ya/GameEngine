@@ -7,52 +7,64 @@ import java.nio.file.Path;
 import static org.lwjgl.opengl.GL40.*;
 
 public class Shader {
-    private final ShaderType mType;
-    private final String mFilePath;
-    private Integer mId;
+    private final ShaderType type;
+    private final String filePath;
+    private Integer id;
 
     public Shader(String shaderFilePath, ShaderType type) {
-        mFilePath = shaderFilePath;
-        mType = type;
+        filePath = shaderFilePath;
+        this.type = type;
     }
 
     public int getId() {
-        if (mId == null) {
+        if (id == null) {
             System.err.println("trying to get the shader id of none compiled shader\n");
-            System.err.println(mType.name() + " shader: " + mFilePath + ".");
-            this.compile();
+            System.err.println(type.name() + " shader: " + filePath + ".");
+            assert false : "trying to get the shader id of none compiled shader\n";
+            return -1;
         }
-        return mId;
+        return id;
     }
 
-    public void compile() {
+    public boolean compile() {
         String source;
-        String shaderFilePath = "assets/shaders/" + mFilePath + ".glsl";
+        String shaderFilePath = "assets/shaders/" + type.name().toLowerCase() + "/" + filePath + ".glsl";
         try {
             source = Files.readString(Path.of(shaderFilePath));
         } catch (IOException e) {
             e.printStackTrace();
-            assert false : "Error: Could not open file for shader: '" + mFilePath + "'";
-            return;
+            assert false : "Error: Could not open file for shader: '" + filePath + "'";
+            return false;
         }
 
-        mId = glCreateShader(mType.glShaderTypeValue());
-        glShaderSource(mId, source);
-        glCompileShader(mId);
+        id = glCreateShader(type.value);
+        glShaderSource(id, source);
+        glCompileShader(id);
 
         // print compile errors if any
-        int success = glGetShaderi(mId, GL_COMPILE_STATUS);
+        int success = glGetShaderi(id, GL_COMPILE_STATUS);
         if (success == GL_FALSE) {
-            int len = glGetShaderi(mId, GL_INFO_LOG_LENGTH);
-            System.out.println("Error in shader file: " + mFilePath + "\n");
-            System.out.println("ERROR::SHADER::" + mType.name() + "::COMPILATION_FAILED\n");
-            System.out.println(glGetShaderInfoLog(mId, len));
-            assert false : "shader " + mFilePath + " failed to compile.";
+            int len = glGetShaderi(id, GL_INFO_LOG_LENGTH);
+            System.out.println("Error in shader file: " + filePath + "\n");
+            System.out.println("ERROR::SHADER::" + type.name() + "::COMPILATION_FAILED\n");
+            System.out.println(glGetShaderInfoLog(id, len));
+            assert false : "shader " + filePath + " failed to compile.";
+            return false;
         }
+        return true;
     }
 
     public void detachAndDelete(int programId) {
-        glDetachShader(programId, mId);
-        glDeleteShader(mId);
+        glDetachShader(programId, id);
+        glDeleteShader(id);
+    }
+
+    public enum ShaderType {
+        VERTEX(GL_VERTEX_SHADER), FRAGMENT(GL_FRAGMENT_SHADER);
+        public final int value;
+
+        ShaderType(int value) {
+            this.value = value;
+        }
     }
 }

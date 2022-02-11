@@ -1,45 +1,58 @@
 package Engine.Renderer;
 
+import Engine.Scenes.Scene;
+import org.joml.Matrix4f;
+
 import static org.lwjgl.opengl.GL45.*;
 
 public abstract class Object {
-    static final int POS_SIZE = 3;
-    static final int COLOR_SIZE = 4;
-    static final int POS_OFFSET = 0;
-    static final int COLOR_OFFSET = POS_OFFSET + POS_SIZE * Float.BYTES;
-    static final int VERTEX_SIZE = POS_SIZE + COLOR_SIZE;
-    static final int VERTEX_SIZE_BYTES = VERTEX_SIZE * Float.BYTES;
-
-    protected Mode mode;
+    protected final ShaderProgram shaderProgram;
+    private final Scene scene;
     protected int vaoID, vboID, eboID;
+    protected float[] vertices;
+    protected int[] indices;
+    protected Matrix4f transformationMatrix;
 
-    float[] vertices;
-    int[] indices;
 
-    public Object(Mode mode) {
-        this.mode = mode;
+    public Object(Scene scene, String vertexShader, String fragmentShader) {
+        this.scene = scene;
+        shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
+        transformationMatrix = new Matrix4f().identity();
     }
 
-    abstract void init();
+    public void init() {
+        shaderProgram.compileAndLink();
 
-    abstract void render();
+        // Generate and bind a Vertex Array Object
+        vaoID = glGenVertexArrays();
+        glBindVertexArray(vaoID);
 
-    abstract void destroy();
+        // Allocate space for vertices
+        vboID = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vboID);
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 
-    public int getMode() {
-        return mode.value;
+        eboID = glGenBuffers();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
     }
 
-    public void setMode(Mode mode) {
-        this.mode = mode;
+    abstract public void update(float dt);
+
+    public void render() {
+        shaderProgram.bind();
+        shaderProgram.setMatrix4f("projectionMatrix", scene.getProjectionMatrix());
+        shaderProgram.setMatrix4f("viewMatrix", scene.getViewMatrix());
+        shaderProgram.setMatrix4f("transformationMatrix", transformationMatrix);
+        glBindVertexArray(vaoID);
+        glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
+        shaderProgram.unbind();
     }
 
-    public enum Mode {
-        TRIANGLES(GL_TRIANGLES), LINES(GL_LINES), POINTS(GL_POINTS);
-        private final int value;
-
-        Mode(int value) {
-            this.value = value;
-        }
+    public void destroy() {
+        glDeleteBuffers(eboID);
+        glDeleteBuffers(vboID);
+        glDeleteVertexArrays(vaoID);
+        shaderProgram.destroy();
     }
 }

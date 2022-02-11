@@ -1,8 +1,7 @@
 package Engine.Scenes;
 
-import Engine.Listeners.JoystickListener;
 import Engine.Listeners.KeyListener;
-import Engine.Renderer.Renderer;
+import Engine.Renderer.ColorCircle;
 import Engine.Window;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -10,21 +9,21 @@ import static org.lwjgl.glfw.GLFW.*;
 public class TestScene extends Scene {
     public static final int ID = 101;
 
-    private final Renderer renderer;
+    private ColorCircle object;
 
     public TestScene() {
         super();
-        this.renderer = new Renderer();
+        this.object = new ColorCircle(this);
     }
 
     @Override
     public void init() {
-        this.renderer.init();
+        this.object.init();
     }
 
     @Override
     public void update(float dt) {
-        this.renderer.render();
+        this.object.update(dt);
 
         if (KeyListener.isKeyPressed(GLFW_KEY_F1)) {
             boolean isFullScreen = Window.isFullScreen();
@@ -35,32 +34,12 @@ public class TestScene extends Scene {
             Window.close();
         }
 
-        if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_A)) {
-            System.out.println("A");
-        }
+        this.object.render();
+    }
 
-        if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_B)) {
-            System.out.println("B");
-        }
-
-        if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_X)) {
-            System.out.println("X");
-        }
-
-        if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_Y)) {
-            System.out.println("Y");
-        }
-
-        if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_LEFT_BUMPER)) {
-            System.out.println("LEFT_BUMPER");
-        }
-
-        if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_LEFT_THUMB)) {
-            System.out.println("LEFT_THUMB");
-        }
-
-        if (JoystickListener.isButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_LEFT)) {
-            System.out.println("DPAD_LEFT");
-        }
+    @Override
+    public void updateAspectRatio() {
+        super.updateAspectRatio();
+        this.object.updateAR();
     }
 }

@@ -63,6 +63,14 @@ public class Window {
         get().isFullScreen = fullScreen;
     }
 
+    public static int getHeight() {
+        return Window.get().height;
+    }
+
+    public static int getWidth() {
+        return Window.get().width;
+    }
+
     public static void changeScene(int scene) {
         switch (scene) {
             case TestScene.ID -> {
@@ -78,6 +86,7 @@ public class Window {
         Window.get().width = width;
         Window.get().height = height;
         glViewport(0, 0, width, height);
+        currentScene.updateAspectRatio();
     }
 
     public void run() {
