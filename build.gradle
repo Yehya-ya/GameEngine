@@ -10,6 +10,7 @@ repositories {
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -44,4 +45,6 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
 
     implementation "org.joml:joml:${jomlVersion}"
+
+    implementation "com.github.mokiat:java-data-front:2.0.1"
 }
