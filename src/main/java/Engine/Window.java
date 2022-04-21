@@ -173,6 +173,11 @@ public class Window {
         // Set the clear color
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+
+        glViewport(0, 0, Window.get().width, Window.get().height);
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while (!glfwWindowShouldClose(window_id)) {

@@ -6,20 +6,16 @@ import org.joml.Vector3f;
 
 public abstract class Scene {
 
-    protected float aspectRatio;
-    protected float far;
-    protected float near;
-    protected float fov;
     protected Matrix4f projectionMatrix;
     protected Matrix4f viewMatrix;
+    protected Camera camera;
 
     public Scene() {
-        far = 1000.0f;
-        near = 0.1f;
-        fov = 45.0f;
-        aspectRatio = (float) Window.getWidth() / (float) Window.getHeight();
-        projectionMatrix = new Matrix4f().ortho(-Window.getWidth()/2, Window.getWidth()/2, -Window.getHeight()/2, Window.getHeight()/2, near, far);
-        viewMatrix = new Matrix4f().lookAt(new Vector3f(0.0f, 0.0f,10.0f), new Vector3f(0.0f,0.0f,0.0f), new Vector3f(0.0f,1.0f,0.0f));
+        this.camera = new Camera(new Vector3f(20.0f,15.0f, 0.0f));
+        this.camera.setFov(70.0f);
+        this.updateAspectRatio();
+        this.projectionMatrix = new Matrix4f().perspective(this.camera.getFov(), this.camera.getAspectRatio(), this.camera.getNear(), this.camera.getFar());
+        this.viewMatrix = new Matrix4f().lookAt(this.camera.getPos(), this.camera.getLookAt(), this.camera.getUp());
     }
 
     public Matrix4f getProjectionMatrix() {
@@ -34,10 +30,12 @@ public abstract class Scene {
 
     }
 
-    public abstract void update(float dt);
+    public void update(float dt){
+        this.projectionMatrix = new Matrix4f().perspective(this.camera.getFov(), this.camera.getAspectRatio(), this.camera.getNear(), this.camera.getFar());
+        this.viewMatrix = new Matrix4f().lookAt(this.camera.getPos(), this.camera.getLookAt(), this.camera.getUp());
+    }
 
     public void updateAspectRatio() {
-        aspectRatio = (float) Window.getWidth() / (float) Window.getHeight();
-        projectionMatrix = new Matrix4f().ortho(-Window.getWidth()/2, Window.getWidth()/2, -Window.getHeight()/2, Window.getHeight()/2, near, far);
+        this.camera.setAspectRatio((float) Window.getWidth()/ (float) Window.getHeight());
     }
 }
