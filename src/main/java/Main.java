@@ -1,8 +1,10 @@
-import Engine.Window;
+import Engine.Application;
+import Engine.YH_Log;
 
 public class Main {
+
     public static void main(String[] args) {
-        Window window = Window.get();
-        window.run();
+        Application application = Application.get();
+        application.run();
     }
 }
