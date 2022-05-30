@@ -1,22 +1,29 @@
 package Engine;
 
 import Engine.Events.Event;
-import org.lwjgl.system.Callback;
-import org.lwjgl.system.CallbackI;
-import org.lwjgl.system.libffi.FFICIF;
+import Engine.Utils.YH_Log;
+
+import static Engine.Utils.YH_Log.YH_LOG_INFO;
 
 public abstract class Window {
     protected final WindowProp prop;
 
     public Window(WindowProp prop) {
         this.prop = prop;
-        YH_Log.info("Creating window {0} ({1}, {2})", prop.title, prop.width, prop.height);
+        YH_Log.YH_LOG_INFO("Creating a window \"{}\" ({}, {})", prop.title, prop.width, prop.height);
         init();
     }
 
+    public void destroy() {
+        YH_LOG_INFO("Destroying the window \"{}\"", prop.title);
+        shutdown();
+    }
+
     public abstract void onUpdate();
-    public abstract void init();
-    public abstract void shutdown();
+
+    protected abstract void init();
+
+    protected abstract void shutdown();
 
     public int getHeight() {
         return prop.height;
@@ -44,6 +51,10 @@ public abstract class Window {
 
     public void setEventCallback(EventCallBackHandler callback) {
         this.prop.setEventCallback(callback);
+    }
+
+    public interface EventCallBackHandler {
+        void invoke(Event event);
     }
 
     public static class WindowProp {
@@ -80,9 +91,5 @@ public abstract class Window {
         public void setEventCallback(EventCallBackHandler callback) {
             this.eventCallBack = callback;
         }
-    }
-
-    public interface EventCallBackHandler {
-        void invoke(Event event);
     }
 }

@@ -25,7 +25,7 @@ public class LayerStack implements Iterable<Layer> {
 
     public void pushLayer(@NotNull Layer layer) {
         layer.onAttach();
-        layers.add(insertIndex ,layer);
+        layers.add(insertIndex, layer);
         insertIndex++;
     }
 

@@ -7,7 +7,8 @@ public class WindowEvents {
             return EventType.WindowClose;
         }
     }
-    public static class WindowResizeEvent extends Event{
+
+    public static class WindowResizeEvent extends Event {
         private final int width, height;
 
         public WindowResizeEvent(int width, int height) {
@@ -33,19 +34,22 @@ public class WindowEvents {
             return super.toString() + ", width=" + width + ", height=" + height;
         }
     }
-    public static class WindowFocusEvent extends Event{
+
+    public static class WindowFocusEvent extends Event {
         @Override
         public EventType getEventType() {
             return EventType.WindowFocus;
         }
     }
-    public static class WindowLostFocusEvent extends Event{
+
+    public static class WindowLostFocusEvent extends Event {
         @Override
         public EventType getEventType() {
             return EventType.WindowLostFocus;
         }
     }
-    public static class WindowMovedEvent extends Event{
+
+    public static class WindowMovedEvent extends Event {
         @Override
         public EventType getEventType() {
             return EventType.WindowMoved;
