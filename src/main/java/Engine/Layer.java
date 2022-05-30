@@ -14,9 +14,18 @@ public abstract class Layer {
         return name;
     }
 
-    public void onUpdate(){}
-    public void onAttach(){}
-    public void onDetach(){}
-    public void onEvent(Event event){}
-    public void onImgRender(){}
+    public void onUpdate() {
+    }
+
+    public void onAttach() {
+    }
+
+    public void onDetach() {
+    }
+
+    public void onEvent(Event event) {
+    }
+
+    public void onImgRender() {
+    }
 }

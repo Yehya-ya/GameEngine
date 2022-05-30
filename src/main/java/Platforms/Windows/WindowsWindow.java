@@ -5,34 +5,38 @@ import Engine.Events.MouseEvents;
 import Engine.Events.WindowEvents;
 import Engine.Renderer.GraphicsContext;
 import Engine.Window;
-import Engine.YH_Log;
 import Platforms.OpenGL.OpenGLContext;
-import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.GL;
+import org.lwjgl.glfw.GLFWVidMode;
 
+import static Engine.Utils.YH_Log.YH_ASSERT;
+import static Engine.Utils.YH_Log.YH_LOG_ERROR;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class WindowsWindow extends Window {
     private boolean GLFWInitialized;
-    private long window_id;
-    private long monitor_id;
+    private long windowID;
+    private long monitorID;
     private GraphicsContext graphicsContext;
 
     public WindowsWindow(Window.WindowProp prop) {
         super(prop);
+        WindowsInput.create();
         GLFWInitialized = false;
     }
 
+    public long getWindowID() {
+        return windowID;
+    }
+
     @Override
-    public void init() {
-        if (!GLFWInitialized)
-        {
+    protected void init() {
+        if (!GLFWInitialized) {
             // TODO: glfwTerminate on system shutdown
             boolean success = glfwInit();
-            YH_Log._assert(success, "Could not initialize GLFW!");
-            glfwSetErrorCallback((error, description) -> YH_Log.error("GLFW Error ({0}): {1}", error, description));
+            YH_ASSERT(success, "Could not initialize GLFW!");
+            glfwSetErrorCallback((error, description) -> YH_LOG_ERROR("GLFW Error ({0}): {1}", error, description));
             GLFWInitialized = true;
         }
         // Configure GLFW
@@ -41,76 +45,79 @@ public class WindowsWindow extends Window {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         // Create the window
-        window_id = glfwCreateWindow(prop.width, prop.height, prop.title, NULL, NULL);
-        YH_Log._assert(window_id != NULL, "Failed to create the GLFW window");
+        windowID = glfwCreateWindow(prop.width, prop.height, prop.title, NULL, NULL);
+        YH_ASSERT(windowID != NULL, "Failed to create the GLFW window");
+
+        monitorID = glfwGetPrimaryMonitor();
 
         // set input callback handlers
-        glfwSetWindowSizeCallback(window_id, (window, width, height) -> prop.eventCallBack.invoke(new WindowEvents.WindowResizeEvent(width, height)));
-        glfwSetWindowCloseCallback(window_id, window -> prop.eventCallBack.invoke(new WindowEvents.WindowCloseEvent()));
+        glfwSetWindowSizeCallback(windowID, (window, width, height) -> prop.eventCallBack.invoke(new WindowEvents.WindowResizeEvent(width, height)));
+        glfwSetWindowCloseCallback(windowID, window -> prop.eventCallBack.invoke(new WindowEvents.WindowCloseEvent()));
 
         // key events
-        glfwSetKeyCallback(window_id, (window, key, scancode, action, mods) -> {
+        glfwSetKeyCallback(windowID, (window, key, scancode, action, mods) -> {
             switch (action) {
-                case GLFW_PRESS -> prop.eventCallBack.invoke(new KeyEvent.KeyPressedEvent(key,0));
+                case GLFW_PRESS -> prop.eventCallBack.invoke(new KeyEvent.KeyPressedEvent(key, 0));
                 case GLFW_RELEASE -> prop.eventCallBack.invoke(new KeyEvent.KeyReleasedEvent(key));
                 case GLFW_REPEAT -> prop.eventCallBack.invoke(new KeyEvent.KeyPressedEvent(key, 1));
             }
         });
-        glfwSetCharCallback(window_id, (window, codepoint) -> prop.eventCallBack.invoke(new KeyEvent.KeyTypedEvent(codepoint)));
+        glfwSetCharCallback(windowID, (window, codepoint) -> prop.eventCallBack.invoke(new KeyEvent.KeyTypedEvent(codepoint)));
         // mouse events
-        glfwSetMouseButtonCallback(window_id, (window, button, action, mods) -> {
+        glfwSetMouseButtonCallback(windowID, (window, button, action, mods) -> {
             switch (action) {
                 case GLFW_PRESS -> prop.eventCallBack.invoke(new MouseEvents.MouseButtonPressedEvent(button));
                 case GLFW_RELEASE -> prop.eventCallBack.invoke(new MouseEvents.MouseButtonReleasedEvent(button));
             }
         });
-        glfwSetScrollCallback(window_id, (window, xoffset, yoffset) -> prop.eventCallBack.invoke(new MouseEvents.MouseScrolledEvent(xoffset, yoffset)));
-        glfwSetCursorPosCallback(window_id, (window, xpos, ypos) -> prop.eventCallBack.invoke(new MouseEvents.MouseMovedEvent(xpos, ypos)));
+        glfwSetScrollCallback(windowID, (window, xoffset, yoffset) -> prop.eventCallBack.invoke(new MouseEvents.MouseScrolledEvent(xoffset, yoffset)));
+        glfwSetCursorPosCallback(windowID, (window, xpos, ypos) -> prop.eventCallBack.invoke(new MouseEvents.MouseMovedEvent(xpos, ypos)));
 
         //JoystickListener.poll_controllers();
 
-        graphicsContext = new OpenGLContext(window_id);
+        graphicsContext = new OpenGLContext(windowID);
         graphicsContext.init();
         setVSync(prop.vSync);
-        glfwShowWindow(window_id);
+        glfwShowWindow(windowID);
     }
 
     @Override
     public void onUpdate() {
-        glfwPollEvents();
         graphicsContext.swapBuffers();
+        glfwPollEvents();
     }
 
     @Override
-    public void shutdown() {
-        glfwFreeCallbacks(window_id);
-        glfwDestroyWindow(window_id);
+    protected void shutdown() {
+        glfwFreeCallbacks(windowID);
+        glfwDestroyWindow(windowID);
+        glfwTerminate();
     }
 
     @Override
     public void toggleFullScreen() {
         super.toggleFullScreen();
-        prop.isFullScreen = !prop.isFullScreen;
         if (prop.isFullScreen) {
-            GLFWVidMode mode = glfwGetVideoMode(monitor_id);
+            GLFWVidMode mode = glfwGetVideoMode(monitorID);
             if (mode != null) {
                 prop.width = mode.width();
                 prop.height = mode.height();
-                glfwSetWindowMonitor(window_id, monitor_id, 0, 0, prop.width, prop.height, mode.refreshRate());
+                glfwSetWindowMonitor(windowID, monitorID, 0, 0, prop.width, prop.height, mode.refreshRate());
                 return;
             }
         }
+        prop.width = 1280;
+        prop.height = 720;
 
-        glfwSetWindowMonitor(window_id, NULL, 0, 0, prop.width, prop.height, 60);
+        glfwSetWindowMonitor(windowID, NULL, 100, 100, prop.width, prop.height, 60);
     }
 
     @Override
     public void setVSync(boolean vSync) {
         super.setVSync(vSync);
-        if (prop.vSync){
+        if (prop.vSync) {
             glfwSwapInterval(1);
-        }
-        else{
+        } else {
             glfwSwapInterval(0);
         }
     }
