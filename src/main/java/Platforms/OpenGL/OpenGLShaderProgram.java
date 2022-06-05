@@ -22,8 +22,8 @@ public class OpenGLShaderProgram extends ShaderProgram {
         try {
             source = Files.readString(Path.of(vertexShaderPath));
         } catch (IOException e) {
-            e.printStackTrace();
             YH_LOG_ERROR("Could not open the shader file: '{}'", vertexShaderFile);
+            e.printStackTrace();
         }
 
         int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -46,8 +46,8 @@ public class OpenGLShaderProgram extends ShaderProgram {
         try {
             source = Files.readString(Path.of(fragmentShaderPath));
         } catch (IOException e) {
-            e.printStackTrace();
             YH_LOG_ERROR("Could not open the shader file: '{}'", fragmentShaderFile);
+            e.printStackTrace();
         }
 
         int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -92,7 +92,7 @@ public class OpenGLShaderProgram extends ShaderProgram {
 
     }
 
-    public void destroy() {
+    public void delete() {
         glDeleteProgram(shaderProgramID);
     }
 

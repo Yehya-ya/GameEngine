@@ -1,7 +1,6 @@
 package Engine;
 
 import Engine.Events.Event;
-import Engine.Utils.YH_Log;
 
 import static Engine.Utils.YH_Log.YH_LOG_INFO;
 
@@ -10,7 +9,7 @@ public abstract class Window {
 
     public Window(WindowProp prop) {
         this.prop = prop;
-        YH_Log.YH_LOG_INFO("Creating a window \"{}\" ({}, {})", prop.title, prop.width, prop.height);
+        YH_LOG_INFO("Creating a window \"{}\" ({}, {})", prop.title, prop.width, prop.height);
         init();
     }
 
