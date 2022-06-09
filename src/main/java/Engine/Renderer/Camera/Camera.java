@@ -34,6 +34,7 @@ public abstract class Camera {
 
     public void setPosition(Vector3f position) {
         this.position = position;
+        recalculateViewMatrix();
     }
 
     public int getRotation() {
@@ -42,11 +43,12 @@ public abstract class Camera {
 
     public void setRotation(int rotation) {
         this.rotation = rotation;
+        recalculateViewMatrix();
     }
 
     private void recalculateViewMatrix() {
         Matrix4f transform = new Matrix4f().translate(position).rotateZ((float) Math.toRadians(rotation));
         viewMatrix = transform.invert();
-        viewProjectionMatrix = projectionMatrix.mul(viewMatrix);
+        viewProjectionMatrix = new Matrix4f().mul(projectionMatrix).mul(viewMatrix);
     }
 }

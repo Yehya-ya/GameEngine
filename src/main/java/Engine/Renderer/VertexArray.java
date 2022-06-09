@@ -4,13 +4,14 @@ package Engine.Renderer;
 import Engine.Renderer.Buffer.IndexBuffer;
 import Engine.Renderer.Buffer.VertexBuffer;
 import Platforms.OpenGL.OpenGLVertexArray;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 import static Engine.Utils.YH_Log.YH_ASSERT;
 
 public abstract class VertexArray {
-    public static VertexArray create() {
+    public static @NotNull VertexArray create() {
         switch (RendererCommandAPI.getApi()) {
             case OpenGL -> {
                 return new OpenGLVertexArray();
