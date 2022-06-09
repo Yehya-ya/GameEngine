@@ -3,6 +3,8 @@ package Engine.Renderer;
 import org.joml.Vector4f;
 
 public abstract class RendererCommand {
+    public abstract void init();
+
     public abstract void setClearColor(Vector4f color);
 
     public abstract void clear();
