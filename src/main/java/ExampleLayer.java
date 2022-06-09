@@ -4,6 +4,7 @@ import Engine.Renderer.Buffer.IndexBuffer;
 import Engine.Renderer.Buffer.VertexBuffer;
 import Engine.Renderer.Camera.OrthographicCamera;
 import Engine.Renderer.Renderer;
+import Engine.Renderer.ShaderLibrary;
 import Engine.Renderer.ShaderProgram;
 import Engine.Renderer.VertexArray;
 import Engine.Utils.TimeStep;
@@ -14,6 +15,7 @@ import org.joml.Vector4f;
 public class ExampleLayer extends Layer {
     private final OrthographicCamera camera;
     private final VertexArray vertexArray;
+    private final ShaderLibrary shaderLibrary;
     private final ShaderProgram shaderProgram;
 
     private final float[] col;
@@ -29,6 +31,7 @@ public class ExampleLayer extends Layer {
         BufferLayout bufferLayout = new BufferLayout().addBufferElement(BufferLayout.ShaderDataType.Float2, "aPos", false);
         vertexBuffer.setLayout(bufferLayout);
         vertexArray.addVertexBuffer(vertexBuffer);
+        shaderLibrary = new ShaderLibrary();
 
         int[] indices = {0, 1, 2};
 
@@ -36,7 +39,7 @@ public class ExampleLayer extends Layer {
         vertexArray.setIndexBuffer(indexBuffer);
 
         // shaderProgram = ShaderProgram.create("vertex/vertexShader.glsl", "fragment/fragmentShader.glsl");
-        shaderProgram = ShaderProgram.create("shader.glsl");
+        shaderProgram = shaderLibrary.load("shader.glsl");
         shaderProgram.bind();
     }
 

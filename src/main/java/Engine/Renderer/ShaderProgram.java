@@ -10,6 +10,12 @@ import static Engine.Utils.YH_Log.YH_ASSERT;
 import static Engine.Utils.YH_Log.YH_LOG_ERROR;
 
 public abstract class ShaderProgram {
+    protected String name;
+
+
+    public String getName() {
+        return name;
+    }
 
     public static @Nullable ShaderProgram create(String path) {
         switch (RendererCommandAPI.getApi()) {
@@ -23,10 +29,10 @@ public abstract class ShaderProgram {
         return null;
     }
 
-    public static @Nullable ShaderProgram create(String vertexPath, String fragmentPath) {
+    public static @Nullable ShaderProgram create(String name, String vertexPath, String fragmentPath) {
         switch (RendererCommandAPI.getApi()) {
             case OpenGL -> {
-                return new OpenGLShaderProgram(vertexPath, fragmentPath);
+                return new OpenGLShaderProgram(name, vertexPath, fragmentPath);
             }
         }
 
