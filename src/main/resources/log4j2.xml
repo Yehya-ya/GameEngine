@@ -23,11 +23,9 @@
     <Loggers>
         <Logger name="error_logger" level="error" additivity="false">
             <AppenderRef ref="console_error"/>
-            <AppenderRef ref="file"/>
         </Logger>
         <Root level="trace">
             <AppenderRef ref="console"/>
-            <AppenderRef ref="file"/>
         </Root>
     </Loggers>
 </Configuration>
