@@ -3,10 +3,11 @@
 layout (location=0) in vec2 aPos;
 
 uniform mat4 uTransformation;
+uniform mat4 uViewProjection;
 
 void main()
 {
-    gl_Position = uTransformation * vec4(aPos,0.0f, 1.0);
+    gl_Position = uViewProjection * uTransformation * vec4(aPos,0.0f, 1.0);
 }
 
 #type fragment
