@@ -23,7 +23,6 @@ import static org.lwjgl.opengl.GL20.*;
 public class OpenGLShaderProgram extends ShaderProgram {
     public static String TOKEN = "#type";
     private int programID;
-    private boolean isUsed;
 
     public OpenGLShaderProgram(@NotNull String path) {
         String source = ReadFile(path);
@@ -34,7 +33,6 @@ public class OpenGLShaderProgram extends ShaderProgram {
         int lastBackSlash = Math.max(path.lastIndexOf('\\'), 0);
         int lastDot = path.lastIndexOf('.');
         this.name = path.substring(Math.max(lastBackSlash, lastSlash), lastDot);
-        this.isUsed = false;
     }
 
     public OpenGLShaderProgram(String name, String vertexShader, String fragmentShader) {
@@ -44,7 +42,6 @@ public class OpenGLShaderProgram extends ShaderProgram {
         compile(sourceMap);
 
         this.name = name;
-        this.isUsed = false;
     }
 
     @Override
@@ -94,61 +91,50 @@ public class OpenGLShaderProgram extends ShaderProgram {
     @Override
     public void delete() {
         glDeleteProgram(programID);
-        isUsed = false;
     }
 
     @Override
     public void bind() {
-        if (!isUsed) {
-            glUseProgram(programID);
-            isUsed = true;
-        }
+        glUseProgram(programID);
     }
 
     @Override
     public void unbind() {
         glUseProgram(0);
-        isUsed = false;
     }
 
     @Override
     public void UploadUniformInt(String name, int value) {
-        bind();
         int location = glGetUniformLocation(programID, name);
         glUniform1i(location, value);
     }
 
     @Override
     public void UploadUniformFloat(String name, float value) {
-        bind();
         int location = glGetUniformLocation(programID, name);
         glUniform1f(location, value);
     }
 
     @Override
     public void UploadUniformFloat2(String name, @NotNull Vector2f value) {
-        bind();
         int location = glGetUniformLocation(programID, name);
         glUniform2f(location, value.x, value.y);
     }
 
     @Override
     public void UploadUniformFloat3(String name, @NotNull Vector3f value) {
-        bind();
         int location = glGetUniformLocation(programID, name);
         glUniform3f(location, value.x, value.y, value.z);
     }
 
     @Override
     public void UploadUniformFloat4(String name, @NotNull Vector4f value) {
-        bind();
         int location = glGetUniformLocation(programID, name);
         glUniform4f(location, value.x, value.y, value.z, value.w);
     }
 
     @Override
     public void UploadUniformMat3(String name, @NotNull Matrix3f matrix) {
-        bind();
         int location = glGetUniformLocation(programID, name);
         FloatBuffer matBuffer = BufferUtils.createFloatBuffer(9);
         matrix.get(matBuffer);
@@ -157,7 +143,6 @@ public class OpenGLShaderProgram extends ShaderProgram {
 
     @Override
     public void UploadUniformMat4(String name, @NotNull Matrix4f matrix) {
-        bind();
         int location = glGetUniformLocation(programID, name);
         FloatBuffer matBuffer = BufferUtils.createFloatBuffer(16);
         matrix.get(matBuffer);
@@ -195,10 +180,9 @@ public class OpenGLShaderProgram extends ShaderProgram {
     }
 
     private String ReadFile(String path) {
-        String vertexShaderPath = "assets/shaders/" + path;
         String source = "";
         try {
-            source = Files.readString(Path.of(vertexShaderPath));
+            source = Files.readString(Path.of(path));
         } catch (IOException e) {
             YH_LOG_ERROR("Could not open the shader file: '{}'", path);
             e.printStackTrace();
