@@ -9,20 +9,24 @@ import Engine.Renderer.VertexArray;
 import Engine.Utils.TimeStep;
 import imgui.ImGui;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 public class ExampleLayer extends Layer {
     private final OrthographicCamera camera;
     private final VertexArray vertexArray;
     private final ShaderProgram shaderProgram;
 
+    private final float[] col;
+
     public ExampleLayer() {
         super("Example");
+        col = new float[4];
+        col[3] = 1.0f;
         camera = new OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
         vertexArray = VertexArray.create();
         float[] vertices = {-0.5f, -0.5f, 0.5f, -0.5f, 0.0f, 0.5f};
         VertexBuffer vertexBuffer = VertexBuffer.create(vertices);
-        BufferLayout bufferLayout = new BufferLayout()
-                .addBufferElement(BufferLayout.ShaderDataType.Float2, "aPos", false);
+        BufferLayout bufferLayout = new BufferLayout().addBufferElement(BufferLayout.ShaderDataType.Float2, "aPos", false);
         vertexBuffer.setLayout(bufferLayout);
         vertexArray.addVertexBuffer(vertexBuffer);
 
@@ -31,13 +35,15 @@ public class ExampleLayer extends Layer {
         IndexBuffer indexBuffer = IndexBuffer.create(indices);
         vertexArray.setIndexBuffer(indexBuffer);
 
-        shaderProgram = ShaderProgram.create("vertexShader", "fragmentShader");
+        // shaderProgram = ShaderProgram.create("vertex/vertexShader.glsl", "fragment/fragmentShader.glsl");
+        shaderProgram = ShaderProgram.create("shader.glsl");
         shaderProgram.bind();
     }
 
     @Override
     public void onUpdate(TimeStep timeStep) {
         Renderer.beginScene(camera);
+        shaderProgram.UploadUniformFloat4("u_color", new Vector4f(col));
         Renderer.submit(shaderProgram, vertexArray, new Matrix4f());
         Renderer.endScene();
     }
