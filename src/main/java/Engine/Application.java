@@ -2,12 +2,14 @@ package Engine;
 
 import Engine.Events.*;
 import Engine.Renderer.RendererCommandAPI;
+import Engine.Utils.TimeStep;
 import Platforms.Windows.WindowsWindow;
 import org.joml.Vector4f;
 
 import static Engine.Utils.KeyCodes.YH_KEY_F11;
 import static Engine.Utils.YH_Log.YH_ASSERT;
 import static Engine.Utils.YH_Log.YH_LOG_INFO;
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 public class Application {
     private static Application instance;
@@ -16,11 +18,13 @@ public class Application {
     private final LayerStack layersStack;
     private final Layer imGuiLayer;
     private boolean isRunning;
+    private float lastFrameTime;
 
     protected Application() {
         YH_LOG_INFO("Creating the application.");
         YH_ASSERT(instance == null, "Application already exists!");
-
+        instance = this;
+        lastFrameTime = (float) glfwGetTime();
         window = new WindowsWindow(new Window.WindowProp());
         window.setEventCallback(this::onEvent);
         isRunning = true;
@@ -40,11 +44,14 @@ public class Application {
     public void run() {
         YH_LOG_INFO("The application starts running.");
         while (isRunning) {
+            float time = (float) glfwGetTime();
+            TimeStep timeStep = new TimeStep(time - lastFrameTime);
+            lastFrameTime = time;
             RendererCommandAPI.SetClearColor(new Vector4f(0.1f, 0.1f, 0.1f, 1));
             RendererCommandAPI.clear();
 
             for (Layer layer : layersStack) {
-                layer.onUpdate();
+                layer.onUpdate(timeStep);
             }
 
             window.onUpdate();

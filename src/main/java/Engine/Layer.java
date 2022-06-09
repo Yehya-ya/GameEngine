@@ -1,6 +1,7 @@
 package Engine;
 
 import Engine.Events.Event;
+import Engine.Utils.TimeStep;
 
 public abstract class Layer {
 
@@ -14,7 +15,7 @@ public abstract class Layer {
         return name;
     }
 
-    public void onUpdate() {
+    public void onUpdate(TimeStep timeStep) {
     }
 
     public void onAttach() {

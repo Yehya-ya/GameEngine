@@ -6,6 +6,8 @@ import Engine.Renderer.Camera.OrthographicCamera;
 import Engine.Renderer.Renderer;
 import Engine.Renderer.ShaderProgram;
 import Engine.Renderer.VertexArray;
+import Engine.Utils.TimeStep;
+import imgui.ImGui;
 import org.joml.Matrix4f;
 
 public class ExampleLayer extends Layer {
@@ -34,7 +36,7 @@ public class ExampleLayer extends Layer {
     }
 
     @Override
-    public void onUpdate() {
+    public void onUpdate(TimeStep timeStep) {
         Renderer.beginScene(camera);
         Renderer.submit(shaderProgram, vertexArray, new Matrix4f());
         Renderer.endScene();
