@@ -4,24 +4,28 @@ import Platforms.OpenGL.OpenGLRendererCommand;
 import org.joml.Vector4f;
 
 public class RendererCommandAPI {
-    private static final RendererCommand RENDERER_COMMAND = new OpenGLRendererCommand();
+    private static final RendererCommand rendererCommand = new OpenGLRendererCommand();
 
     private RendererCommandAPI() {
     }
 
+    public static void init() {
+        rendererCommand.init();
+    }
+
     public static void SetClearColor(Vector4f color) {
-        RENDERER_COMMAND.setClearColor(color);
+        rendererCommand.setClearColor(color);
     }
 
     public static void clear() {
-        RENDERER_COMMAND.clear();
+        rendererCommand.clear();
     }
 
     public static void drawIndexed(VertexArray vertexArray) {
-        RENDERER_COMMAND.drawIndexed(vertexArray);
+        rendererCommand.drawIndexed(vertexArray);
     }
 
     public static RendererCommand.API getApi() {
-        return RENDERER_COMMAND.getApi();
+        return rendererCommand.getApi();
     }
 }
