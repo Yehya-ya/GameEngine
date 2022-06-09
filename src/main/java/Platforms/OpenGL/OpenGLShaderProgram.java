@@ -6,6 +6,7 @@ import org.joml.*;
 import org.lwjgl.BufferUtils;
 
 import java.io.IOException;
+import java.lang.Math;
 import java.nio.FloatBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,19 +25,26 @@ public class OpenGLShaderProgram extends ShaderProgram {
     private int programID;
     private boolean isUsed;
 
-    public OpenGLShaderProgram(String path) {
+    public OpenGLShaderProgram(@NotNull String path) {
         String source = ReadFile(path);
         Map<Integer, String> sourceMap = preProcess(source);
         compile(sourceMap);
-        isUsed = false;
+
+        int lastSlash = Math.max(path.lastIndexOf('/'), 0);
+        int lastBackSlash = Math.max(path.lastIndexOf('\\'), 0);
+        int lastDot = path.lastIndexOf('.');
+        this.name = path.substring(Math.max(lastBackSlash, lastSlash), lastDot);
+        this.isUsed = false;
     }
 
-    public OpenGLShaderProgram(String vertexShader, String fragmentShader) {
+    public OpenGLShaderProgram(String name, String vertexShader, String fragmentShader) {
         Map<Integer, String> sourceMap = new HashMap<>();
         sourceMap.put(GL_VERTEX_SHADER, ReadFile(vertexShader));
         sourceMap.put(GL_FRAGMENT_SHADER, ReadFile(fragmentShader));
         compile(sourceMap);
-        isUsed = false;
+
+        this.name = name;
+        this.isUsed = false;
     }
 
     @Override
