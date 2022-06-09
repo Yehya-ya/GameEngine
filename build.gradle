@@ -22,29 +22,27 @@ test {
     useJUnitPlatform()
 }
 
-project.ext.lwjglVersion = "3.3.0"
-project.ext.lwjglNatives = "natives-windows"
-project.ext.jomlVersion = "1.10.4"
+ext {
+    lwjglVersion = '3.3.1'
+    imguiVersion = '1.86.4'
+    jomlVersion = '1.10.4'
+    lwjglNatives = 'natives-windows'
+}
 
 dependencies {
     implementation 'org.jetbrains:annotations:23.0.0'
     implementation 'org.jetbrains:annotations:23.0.0'
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
-    implementation "org.lwjgl:lwjgl"
-    implementation "org.lwjgl:lwjgl-assimp"
-    implementation "org.lwjgl:lwjgl-glfw"
-    implementation "org.lwjgl:lwjgl-nfd"
-    implementation "org.lwjgl:lwjgl-openal"
-    implementation "org.lwjgl:lwjgl-opengl"
-    implementation "org.lwjgl:lwjgl-stb"
-    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-nfd::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+    ['', '-assimp', '-nfd', '-openal', '-stb', '-opengl', '-glfw'].each {
+        implementation "org.lwjgl:lwjgl$it:$lwjglVersion"
+        runtimeOnly "org.lwjgl:lwjgl$it::$lwjglNatives"
+    }
+
+    implementation "io.github.spair:imgui-java-binding:$imguiVersion"
+    implementation "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
+
+    implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
 
     implementation "org.joml:joml:${jomlVersion}"
 

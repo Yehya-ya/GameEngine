@@ -1,6 +1,7 @@
 package Engine;
 
 import Engine.Events.*;
+import Engine.ImGui.ImGuiLayer;
 import Engine.Renderer.RendererCommandAPI;
 import Engine.Utils.TimeStep;
 import Platforms.Windows.WindowsWindow;
@@ -16,7 +17,7 @@ public class Application {
 
     private final WindowsWindow window;
     private final LayerStack layersStack;
-    private final Layer imGuiLayer;
+    private final ImGuiLayer imGuiLayer;
     private boolean isRunning;
     private float lastFrameTime;
 
@@ -28,7 +29,12 @@ public class Application {
         window = new WindowsWindow(new Window.WindowProp());
         window.setEventCallback(this::onEvent);
         isRunning = true;
-        imGuiLayer = new ImGuiLayer("ImGui layer");
+
+        RendererCommandAPI.init();
+        RendererCommandAPI.SetClearColor(new Vector4f(0.1f, 0.1f, 0.1f, 1));
+        RendererCommandAPI.clear();
+
+        imGuiLayer = new ImGuiLayer();
         layersStack = new LayerStack();
         pushOverlay(imGuiLayer);
     }
@@ -53,6 +59,12 @@ public class Application {
             for (Layer layer : layersStack) {
                 layer.onUpdate(timeStep);
             }
+
+            imGuiLayer.begin();
+            for (Layer layer : layersStack) {
+                layer.onImgRender();
+            }
+            imGuiLayer.end();
 
             window.onUpdate();
         }

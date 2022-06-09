@@ -47,4 +47,9 @@ public class ExampleLayer extends Layer {
         Renderer.submit(shaderProgram, vertexArray, new Matrix4f());
         Renderer.endScene();
     }
+
+    @Override
+    public void onImgRender() {
+        ImGui.colorPicker4("color: ", col);
+    }
 }
