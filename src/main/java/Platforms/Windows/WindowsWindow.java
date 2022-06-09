@@ -6,10 +6,10 @@ import Engine.Events.WindowEvents;
 import Engine.Renderer.GraphicsContext;
 import Engine.Window;
 import Platforms.OpenGL.OpenGLContext;
+import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 
 import static Engine.Utils.YH_Log.YH_ASSERT;
-import static Engine.Utils.YH_Log.YH_LOG_ERROR;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -36,13 +36,17 @@ public class WindowsWindow extends Window {
             // TODO: glfwTerminate on system shutdown
             boolean success = glfwInit();
             YH_ASSERT(success, "Could not initialize GLFW!");
-            glfwSetErrorCallback((error, description) -> YH_LOG_ERROR("GLFW Error ({0}): {1}", error, description));
+            GLFWErrorCallback.createPrint(System.err);
+            glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
             GLFWInitialized = true;
         }
         // Configure GLFW
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
 
         // Create the window
         windowID = glfwCreateWindow(prop.width, prop.height, prop.title, NULL, NULL);
