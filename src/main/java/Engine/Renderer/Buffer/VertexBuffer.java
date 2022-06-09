@@ -2,6 +2,7 @@ package Engine.Renderer.Buffer;
 
 import Engine.Renderer.RendererCommandAPI;
 import Platforms.OpenGL.OpenGLVertexBuffer;
+import org.jetbrains.annotations.NotNull;
 
 import static Engine.Utils.YH_Log.YH_ASSERT;
 import static Engine.Utils.YH_Log.YH_LOG_ERROR;
@@ -9,7 +10,7 @@ import static Engine.Utils.YH_Log.YH_LOG_ERROR;
 public abstract class VertexBuffer {
     protected BufferLayout bufferLayout;
 
-    public static VertexBuffer create(float[] vertices) {
+    public static @NotNull VertexBuffer create(float[] vertices) {
         switch (RendererCommandAPI.getApi()) {
             case OpenGL -> {
                 return new OpenGLVertexBuffer(vertices);
