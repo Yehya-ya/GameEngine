@@ -4,6 +4,8 @@ import Engine.Renderer.Buffer.BufferLayout;
 import Engine.Renderer.Buffer.IndexBuffer;
 import Engine.Renderer.Buffer.VertexBuffer;
 import Engine.Renderer.VertexArray;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Vector;
 
@@ -19,11 +21,13 @@ import static org.lwjgl.opengl.GL45.glCreateVertexArrays;
 public class OpenGLVertexArray extends VertexArray {
     private final int rendererId;
     private final Vector<VertexBuffer> vertexBuffers;
+    private int vertexBufferIndex;
     private IndexBuffer indexBuffer;
 
     public OpenGLVertexArray() {
         vertexBuffers = new Vector<>();
         this.rendererId = glCreateVertexArrays();
+        vertexBufferIndex = 0;
     }
 
     public void delete() {
@@ -41,21 +45,15 @@ public class OpenGLVertexArray extends VertexArray {
     }
 
     @Override
-    public void addVertexBuffer(VertexBuffer vertexBuffer) {
+    public void addVertexBuffer(@NotNull VertexBuffer vertexBuffer) {
         YH_ASSERT(vertexBuffer.getLayout().getBufferElements().size() != 0, "Vertex Buffer has no layout!");
         glBindVertexArray(rendererId);
         vertexBuffer.bind();
 
-        int index = 0;
         for (BufferLayout.BufferElement element : vertexBuffer.getLayout().getBufferElements()) {
-            glEnableVertexAttribArray(index);
-            glVertexAttribPointer(index,
-                    element.GetComponentCount(),
-                    getOpenGLNativeType(element.type),
-                    element.normalized,
-                    vertexBuffer.getLayout().getOffset(),
-                    element.offset);
-            index++;
+            glEnableVertexAttribArray(vertexBufferIndex);
+            glVertexAttribPointer(vertexBufferIndex, element.GetComponentCount(), getOpenGLNativeType(element.type), element.normalized, vertexBuffer.getLayout().getOffset(), element.offset);
+            vertexBufferIndex++;
         }
 
         vertexBuffers.add(vertexBuffer);
@@ -72,14 +70,15 @@ public class OpenGLVertexArray extends VertexArray {
     }
 
     @Override
-    public void setIndexBuffer(IndexBuffer indexBuffer) {
+    public void setIndexBuffer(@NotNull IndexBuffer indexBuffer) {
         glBindVertexArray(rendererId);
         indexBuffer.bind();
 
         this.indexBuffer = indexBuffer;
     }
 
-    private int getOpenGLNativeType(BufferLayout.ShaderDataType type) {
+    @Contract(pure = true)
+    private int getOpenGLNativeType(BufferLayout.@NotNull ShaderDataType type) {
         switch (type) {
             case Float:
             case Mat4:

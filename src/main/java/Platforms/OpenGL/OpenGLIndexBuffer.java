@@ -11,8 +11,8 @@ public class OpenGLIndexBuffer extends IndexBuffer {
 
     public OpenGLIndexBuffer(int[] indices) {
         this.rendererId = glCreateBuffers();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.rendererId);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, this.rendererId);
+        glBufferData(GL_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
         this.count = indices.length;
     }
 
