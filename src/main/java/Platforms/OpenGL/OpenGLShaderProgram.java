@@ -83,8 +83,8 @@ public class OpenGLShaderProgram extends ShaderProgram {
         }
 
         for (Integer id : ids) {
-            glDeleteShader(id);
             glDetachShader(programID, id);
+            glDeleteShader(id);
         }
     }
 

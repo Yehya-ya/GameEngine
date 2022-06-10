@@ -22,6 +22,8 @@ public abstract class VertexArray {
         return null;
     }
 
+    public abstract void delete();
+
     public abstract void bind();
 
     public abstract void unbind();

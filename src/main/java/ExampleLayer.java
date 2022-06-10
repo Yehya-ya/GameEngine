@@ -22,14 +22,12 @@ public class ExampleLayer extends Layer {
     private final Texture texture;
     private final float[] col;
     private final Matrix4f transformation;
-    private final Vector3f cameraPos;
 
     public ExampleLayer() {
         super("Example");
         col = new float[4];
         col[3] = 1.0f;
         transformation = new Matrix4f().translate(new Vector3f(0.2f, 0.2f, 0.0f)).scale(0.1f);
-        cameraPos = new Vector3f();
         cameraController = new OrthographicCameraController(1280f / 720f, true);
         shaderLibrary = new ShaderLibrary();
 
@@ -62,6 +60,15 @@ public class ExampleLayer extends Layer {
 
         texture = Texture.create("assets/textures/bricks.png");
         texture.bind();
+    }
+
+    @Override
+    public void delete() {
+        texture.delete();
+        shaderLibrary.remove(soldColorShader);
+        shaderLibrary.remove(textureShader);
+        this.triangle.delete();
+        this.rectangle.delete();
     }
 
     @Override

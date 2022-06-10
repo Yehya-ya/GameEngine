@@ -45,6 +45,17 @@ public class Application {
         return instance;
     }
 
+    private void delete() {
+        this.shutdown();
+        layersStack.delete();
+        imGuiLayer.delete();
+        window.delete();
+        instance = null;
+    }
+
+    public void shutdown() {
+    }
+
     public WindowsWindow getWindow() {
         return window;
     }
@@ -72,8 +83,8 @@ public class Application {
 
             window.onUpdate();
         }
-        window.destroy();
         YH_LOG_INFO("The application stops running.");
+        this.delete();
     }
 
     public void onEvent(Event event) {
@@ -123,6 +134,14 @@ public class Application {
 
     public void pushOverlay(Layer layer) {
         layersStack.pushOverlay(layer);
+    }
+
+    public void popLayer(Layer layer) {
+        layersStack.popLayer(layer);
+    }
+
+    public void popOverlay(Layer layer) {
+        layersStack.popOverlay(layer);
     }
 
     private void onWindowClose() {
