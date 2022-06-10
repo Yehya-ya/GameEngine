@@ -3,18 +3,16 @@ import Engine.Events.Event;
 import Engine.Renderer.Buffer.BufferLayout;
 import Engine.Renderer.Buffer.IndexBuffer;
 import Engine.Renderer.Buffer.VertexBuffer;
-import Engine.Renderer.Camera.OrthographicCamera;
 import Engine.Renderer.*;
+import Engine.Utils.OrthographicCameraController;
 import Engine.Utils.TimeStep;
 import imgui.ImGui;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import static Engine.Utils.KeyCodes.*;
-
 public class ExampleLayer extends Layer {
-    private final OrthographicCamera camera;
+    private final OrthographicCameraController cameraController;
     private final VertexArray triangle;
     private final VertexArray rectangle;
     private final ShaderLibrary shaderLibrary;
@@ -32,7 +30,7 @@ public class ExampleLayer extends Layer {
         col[3] = 1.0f;
         transformation = new Matrix4f().translate(new Vector3f(0.2f, 0.2f, 0.0f)).scale(0.1f);
         cameraPos = new Vector3f();
-        camera = new OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
+        cameraController = new OrthographicCameraController(1280f / 720f, true);
         shaderLibrary = new ShaderLibrary();
 
         triangle = VertexArray.create();
@@ -68,13 +66,8 @@ public class ExampleLayer extends Layer {
 
     @Override
     public void onUpdate(TimeStep timeStep) {
-        if (Input.isKeyPressed(YH_KEY_W)) cameraPos.y += 0.5f * timeStep.getMilliseconds();
-        if (Input.isKeyPressed(YH_KEY_S)) cameraPos.y -= 0.5f * timeStep.getMilliseconds();
-        if (Input.isKeyPressed(YH_KEY_D)) cameraPos.x += 0.5f * timeStep.getMilliseconds();
-        if (Input.isKeyPressed(YH_KEY_A)) cameraPos.x -= 0.5f * timeStep.getMilliseconds();
-
-        camera.setPosition(cameraPos);
-        Renderer.beginScene(camera);
+        cameraController.onUpdate(timeStep);
+        Renderer.beginScene(cameraController.getCamera());
 
         soldColorShader.bind();
         soldColorShader.UploadUniformFloat4("u_color", new Vector4f(col));
@@ -82,6 +75,11 @@ public class ExampleLayer extends Layer {
 
         Renderer.submit(textureShader, rectangle, transformation);
         Renderer.endScene();
+    }
+
+    @Override
+    public void onEvent(Event event) {
+        cameraController.onEvent(event);
     }
 
     @Override
