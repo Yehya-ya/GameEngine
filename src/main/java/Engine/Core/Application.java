@@ -19,6 +19,7 @@ public class Application {
     private final LayerStack layersStack;
     private final ImGuiLayer imGuiLayer;
     private boolean isRunning;
+    private boolean isMinimized;
     private float lastFrameTime;
 
     protected Application() {
@@ -29,9 +30,10 @@ public class Application {
         window = new WindowsWindow(new Window.WindowProp());
         window.setEventCallback(this::onEvent);
         isRunning = true;
+        isMinimized = false;
 
         RendererCommandAPI.init();
-        RendererCommandAPI.SetClearColor(new Vector4f(0.1f, 0.1f, 0.1f, 1));
+        RendererCommandAPI.setClearColor(new Vector4f(0.1f, 0.1f, 0.1f, 1));
         RendererCommandAPI.clear();
 
         imGuiLayer = new ImGuiLayer();
@@ -53,11 +55,13 @@ public class Application {
             float time = (float) glfwGetTime();
             TimeStep timeStep = new TimeStep(time - lastFrameTime);
             lastFrameTime = time;
-            RendererCommandAPI.SetClearColor(new Vector4f(0.1f, 0.1f, 0.1f, 1));
+            RendererCommandAPI.setClearColor(new Vector4f(0.1f, 0.1f, 0.1f, 1));
             RendererCommandAPI.clear();
 
-            for (Layer layer : layersStack) {
-                layer.onUpdate(timeStep);
+            if (!isMinimized) {
+                for (Layer layer : layersStack) {
+                    layer.onUpdate(timeStep);
+                }
             }
 
             imGuiLayer.begin();
@@ -85,6 +89,18 @@ public class Application {
             switch (e.getKeyCode()) {
                 case YH_KEY_F11 -> window.toggleFullScreen();
             }
+            return false;
+        });
+
+        new EventDispatcher(event).dispatch(EventType.WindowResize, event1 -> {
+            WindowEvents.WindowResizeEvent e = (WindowEvents.WindowResizeEvent) event1;
+            if (e.getHeight() == 0 || e.getWidth() == 0) {
+                isMinimized = true;
+                return false;
+            }
+
+            RendererCommandAPI.setViewport(e.getWidth(), e.getHeight());
+            isMinimized = false;
             return false;
         });
 

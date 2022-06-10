@@ -13,8 +13,12 @@ public class RendererCommandAPI {
         rendererCommand.init();
     }
 
-    public static void SetClearColor(Vector4f color) {
+    public static void setClearColor(Vector4f color) {
         rendererCommand.setClearColor(color);
+    }
+
+    public static void setViewport(int width, int height) {
+        rendererCommand.setViewport(width, height);
     }
 
     public static void clear() {
