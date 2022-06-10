@@ -20,6 +20,11 @@ public class OpenGLRendererCommand extends RendererCommand {
     }
 
     @Override
+    public void setViewport(int width, int height) {
+        glViewport(0, 0, width, height);
+    }
+
+    @Override
     public void clear() {
         glClear(GL_COLOR_BUFFER_BIT);
     }
