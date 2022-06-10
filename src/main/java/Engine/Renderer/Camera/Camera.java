@@ -49,6 +49,9 @@ public abstract class Camera {
     public float getRotation() {
         return rotation;
     }
+    public float getRotationInRadians() {
+        return (float) Math.toRadians(rotation);
+    }
 
     public void setRotation(int rotation) {
         this.rotation = rotation;

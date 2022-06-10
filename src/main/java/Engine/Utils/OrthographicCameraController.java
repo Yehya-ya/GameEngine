@@ -30,18 +30,34 @@ public class OrthographicCameraController {
     }
 
     public void onUpdate(TimeStep ts) {
-        if (Input.isKeyPressed(YH_KEY_A)) {
-            camera.translate(new Vector3f(-movingSpeed * ts.getMilliseconds(), 0.0f, 0.0f));
-        }
         if (Input.isKeyPressed(YH_KEY_D)) {
-            camera.translate(new Vector3f(movingSpeed * ts.getMilliseconds(), 0.0f, 0.0f));
+            camera.translate(new Vector3f(
+                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds(),
+                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds(),
+                    0.0f)
+            );
+        }
+
+        if (Input.isKeyPressed(YH_KEY_A)) {
+            camera.translate(new Vector3f(
+                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds() * -1,
+                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds() * -1,
+                    0.0f));
         }
 
         if (Input.isKeyPressed(YH_KEY_W)) {
-            camera.translate(new Vector3f(0.0f, movingSpeed * ts.getMilliseconds(), 0.0f));
+            camera.translate(new Vector3f(
+                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds() * -1,
+                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds(),
+                    0.0f)
+            );
         }
         if (Input.isKeyPressed(YH_KEY_S)) {
-            camera.translate(new Vector3f(0.0f, -movingSpeed * ts.getMilliseconds(), 0.0f));
+            camera.translate(new Vector3f(
+                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds(),
+                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds() * -1,
+                    0.0f)
+            );
         }
 
         if (isRotational) {
