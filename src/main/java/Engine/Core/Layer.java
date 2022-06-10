@@ -11,6 +11,10 @@ public abstract class Layer {
         this.name = name;
     }
 
+    public void delete() {
+
+    }
+
     public String getName() {
         return name;
     }

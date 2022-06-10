@@ -1,5 +1,7 @@
 package Engine.Renderer;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +22,16 @@ public class ShaderLibrary {
 
     public void add(ShaderProgram shaderProgram) {
         add(shaderProgram.getName(), shaderProgram);
+    }
+
+    public void remove(String name) {
+        ShaderProgram shaderProgram = get(name);
+        shaders.remove(name);
+        shaderProgram.delete();
+    }
+
+    public void remove(@NotNull ShaderProgram shaderProgram) {
+        remove(shaderProgram.getName());
     }
 
     public ShaderProgram load(String name, String path) {

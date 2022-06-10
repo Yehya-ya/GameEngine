@@ -14,8 +14,8 @@ public abstract class Window {
         init();
     }
 
-    public void destroy() {
-        YH_LOG_INFO("Destroying the window \"{}\"", prop.title);
+    public void delete() {
+        YH_LOG_INFO("Deleting the window \"{}\"", prop.title);
         shutdown();
     }
 

@@ -15,6 +15,12 @@ public class LayerStack implements Iterable<Layer> {
         insertIndex = 0;
     }
 
+    public void delete() {
+        for (Layer layer : layers) {
+            layer.onDetach();
+        }
+    }
+
     public int size() {
         return layers.size();
     }

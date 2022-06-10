@@ -30,7 +30,12 @@ public class OpenGLVertexArray extends VertexArray {
         vertexBufferIndex = 0;
     }
 
+    @Override
     public void delete() {
+        for (VertexBuffer vertexBuffer : vertexBuffers) {
+            vertexBuffer.delete();
+        }
+        indexBuffer.delete();
         glDeleteVertexArrays(this.rendererId);
     }
 

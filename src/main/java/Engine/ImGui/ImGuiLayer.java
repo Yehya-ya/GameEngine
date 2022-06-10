@@ -19,15 +19,20 @@ public class ImGuiLayer extends Layer {
 
     public ImGuiLayer() {
         super("ImGuiLayer");
+        ImGui.createContext();
         imGuiImplGlfw = new ImGuiImplGlfw();
         imGuiImplGl3 = new ImGuiImplGl3();
+    }
+
+    @Override
+    public void delete() {
+        ImGui.destroyContext();
     }
 
     @Override
     public void onAttach() {
         YH_LOG_INFO("Attach ImGui Layer");
         YH_LOG_INFO("   ImGui Version: {}", ImGui.getVersion());
-        ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
         io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard); // Enable Keyboard Controls
         // io.addConfigFlags(ImGuiConfigFlags.NavEnableGamepad); // Enable Gamepad Controls
@@ -53,7 +58,6 @@ public class ImGuiLayer extends Layer {
     public void onDetach() {
         imGuiImplGl3.dispose();
         imGuiImplGlfw.dispose();
-        ImGui.destroyContext();
     }
 
     public void begin() {
