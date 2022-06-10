@@ -1,5 +1,5 @@
-import Engine.Input;
-import Engine.Layer;
+import Engine.Core.Layer;
+import Engine.Events.Event;
 import Engine.Renderer.Buffer.BufferLayout;
 import Engine.Renderer.Buffer.IndexBuffer;
 import Engine.Renderer.Buffer.VertexBuffer;

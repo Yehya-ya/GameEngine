@@ -1,4 +1,4 @@
-package Engine;
+package Engine.Core;
 
 import Engine.Events.Event;
 import Engine.Utils.TimeStep;
