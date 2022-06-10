@@ -1,4 +1,4 @@
-package Engine;
+package Engine.Core;
 
 import Engine.Events.*;
 import Engine.ImGui.ImGuiLayer;

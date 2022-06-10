@@ -1,7 +1,7 @@
 package Platforms.Windows;
 
-import Engine.Application;
-import Engine.Input;
+import Engine.Core.Application;
+import Engine.Core.Input;
 import org.joml.Vector2d;
 
 import java.nio.DoubleBuffer;

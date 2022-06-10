@@ -1,4 +1,4 @@
-package Engine;
+package Engine.Core;
 
 import org.joml.Vector2d;
 

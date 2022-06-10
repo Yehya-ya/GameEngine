@@ -1,13 +1,14 @@
-package Engine;
+package Engine.Core;
 
 import Engine.Events.Event;
+import org.jetbrains.annotations.NotNull;
 
 import static Engine.Utils.YH_Log.YH_LOG_INFO;
 
 public abstract class Window {
     protected final WindowProp prop;
 
-    public Window(WindowProp prop) {
+    public Window(@NotNull WindowProp prop) {
         this.prop = prop;
         YH_LOG_INFO("Creating a window \"{}\" ({}, {})", prop.title, prop.width, prop.height);
         init();

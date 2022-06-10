@@ -1,7 +1,7 @@
 package Engine.ImGui;
 
-import Engine.Application;
-import Engine.Layer;
+import Engine.Core.Application;
+import Engine.Core.Layer;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImGuiStyle;
