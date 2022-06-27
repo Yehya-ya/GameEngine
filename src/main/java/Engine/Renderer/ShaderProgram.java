@@ -1,7 +1,7 @@
 package Engine.Renderer;
 
 import Platforms.OpenGL.OpenGLShaderProgram;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.joml.*;
 
 import java.util.Map;
@@ -12,12 +12,7 @@ import static Engine.Utils.YH_Log.YH_LOG_ERROR;
 public abstract class ShaderProgram {
     protected String name;
 
-
-    public String getName() {
-        return name;
-    }
-
-    public static @Nullable ShaderProgram create(String path) {
+    public static @NotNull ShaderProgram create(String path) {
         switch (RendererCommandAPI.getApi()) {
             case OpenGL -> {
                 return new OpenGLShaderProgram(path);
@@ -29,7 +24,7 @@ public abstract class ShaderProgram {
         return null;
     }
 
-    public static @Nullable ShaderProgram create(String name, String vertexPath, String fragmentPath) {
+    public static @NotNull ShaderProgram create(String name, String vertexPath, String fragmentPath) {
         switch (RendererCommandAPI.getApi()) {
             case OpenGL -> {
                 return new OpenGLShaderProgram(name, vertexPath, fragmentPath);
@@ -39,6 +34,10 @@ public abstract class ShaderProgram {
         YH_LOG_ERROR("unknown renderer type {}", RendererCommandAPI.getApi().name());
         YH_ASSERT(false, "unknown renderer type");
         return null;
+    }
+
+    public String getName() {
+        return name;
     }
 
     protected abstract void compile(Map<Integer, String> sourceMap);
