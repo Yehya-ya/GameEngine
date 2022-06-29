@@ -5,11 +5,35 @@ import Engine.Renderer.VertexArray;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
 
-import static org.lwjgl.opengl.GL11.*;
+import static Engine.Utils.YH_Log.*;
+import static org.lwjgl.opengl.GL45.*;
+import static org.lwjgl.system.MemoryUtil.memByteBuffer;
+import static org.lwjgl.system.MemoryUtil.memUTF8;
 
 public class OpenGLRendererCommand extends RendererCommand {
     @Override
     public void init() {
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback((source, type, id, severity, length, message, userParam) -> {
+            switch (severity) {
+                case GL_DEBUG_SEVERITY_HIGH, GL_DEBUG_SEVERITY_MEDIUM -> {
+                    YH_LOG_ERROR(memUTF8(memByteBuffer(message, length)));
+                    return;
+                }
+                case GL_DEBUG_SEVERITY_LOW -> {
+                    YH_LOG_WARN(memUTF8(memByteBuffer(message, length)));
+                    return;
+                }
+                case GL_DEBUG_SEVERITY_NOTIFICATION -> {
+                    YH_LOG_TRACE(memUTF8(memByteBuffer(message, length)));
+                    return;
+                }
+            }
+
+            YH_ASSERT(false, "Unknown severity level!");
+        }, 0);
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }

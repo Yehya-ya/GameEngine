@@ -3,8 +3,7 @@ package Platforms.OpenGL;
 import Engine.Renderer.GraphicsContext;
 import org.lwjgl.opengl.GL;
 
-import static Engine.Utils.YH_Log.YH_ASSERT;
-import static Engine.Utils.YH_Log.YH_LOG_INFO;
+import static Engine.Utils.YH_Log.*;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL45.*;
@@ -24,10 +23,10 @@ public class OpenGLContext extends GraphicsContext {
         glfwMakeContextCurrent(windowID);
         GL.createCapabilities();
 
-        YH_LOG_INFO("OpenGL Info:");
-        YH_LOG_INFO("   Vendor: {}", glGetString(GL_VENDOR));
-        YH_LOG_INFO("   Renderer: {}", glGetString(GL_RENDERER));
-        YH_LOG_INFO("   Version: {}", glGetString(GL_VERSION));
+        YH_LOG_TRACE("OpenGL Info:");
+        YH_LOG_TRACE("   Vendor: {}", glGetString(GL_VENDOR));
+        YH_LOG_TRACE("   Renderer: {}", glGetString(GL_RENDERER));
+        YH_LOG_TRACE("   Version: {}", glGetString(GL_VERSION));
     }
 
     @Override

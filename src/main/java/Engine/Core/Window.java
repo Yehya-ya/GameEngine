@@ -3,19 +3,19 @@ package Engine.Core;
 import Engine.Events.Event;
 import org.jetbrains.annotations.NotNull;
 
-import static Engine.Utils.YH_Log.YH_LOG_INFO;
+import static Engine.Utils.YH_Log.YH_LOG_TRACE;
 
 public abstract class Window {
     protected final WindowProp prop;
 
     public Window(@NotNull WindowProp prop) {
         this.prop = prop;
-        YH_LOG_INFO("Creating a window \"{}\" ({}, {})", prop.title, prop.width, prop.height);
+        YH_LOG_TRACE("Creating a window \"{}\" ({}, {})", prop.title, prop.width, prop.height);
         init();
     }
 
     public void delete() {
-        YH_LOG_INFO("Deleting the window \"{}\"", prop.title);
+        YH_LOG_TRACE("Deleting the window \"{}\"", prop.title);
         shutdown();
     }
 
