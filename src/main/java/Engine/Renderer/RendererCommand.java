@@ -12,6 +12,7 @@ public abstract class RendererCommand {
     public abstract void clear();
 
     public abstract void drawIndexed(VertexArray vertexArray);
+    public abstract void drawIndexed(int count);
 
     public abstract API getApi();
 
