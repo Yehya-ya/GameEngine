@@ -1,7 +1,9 @@
 package Platforms.OpenGL;
 
 import Engine.Renderer.Buffer.IndexBuffer;
+import org.jetbrains.annotations.NotNull;
 
+import static Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL45.glCreateBuffers;
 
@@ -9,7 +11,8 @@ public class OpenGLIndexBuffer extends IndexBuffer {
     private final int rendererId;
     private final int count;
 
-    public OpenGLIndexBuffer(int[] indices) {
+    public OpenGLIndexBuffer(int @NotNull [] indices) {
+        YH_LOG_TRACE("Creating OpenGLIndexBuffer with {} indices.", indices.length);
         this.rendererId = glCreateBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, this.rendererId);
         glBufferData(GL_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
@@ -19,6 +22,7 @@ public class OpenGLIndexBuffer extends IndexBuffer {
     @Override
     public void delete() {
         glDeleteBuffers(rendererId);
+        YH_LOG_TRACE("Deleting OpenGLIndexBuffer");
     }
 
     @Override

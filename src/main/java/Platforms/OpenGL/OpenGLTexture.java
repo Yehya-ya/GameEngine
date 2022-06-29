@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import static Engine.Utils.YH_Log.YH_ASSERT;
+import static Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.opengl.GL45.*;
 import static org.lwjgl.stb.STBImage.*;
 
@@ -18,6 +19,8 @@ public class OpenGLTexture extends Texture {
 
     public OpenGLTexture(int width, int height) {
         super(null);
+        YH_LOG_TRACE("Creating empty texture.");
+
         this.width = width;
         this.height = height;
 
@@ -36,6 +39,7 @@ public class OpenGLTexture extends Texture {
 
     public OpenGLTexture(String path) {
         super(path);
+        YH_LOG_TRACE("Creating OpenGLTexture from file path: \"{}\".", path);
 
         IntBuffer width = BufferUtils.createIntBuffer(1);
         IntBuffer height = BufferUtils.createIntBuffer(1);
@@ -96,5 +100,6 @@ public class OpenGLTexture extends Texture {
     @Override
     public void delete() {
         glDeleteTextures(textureId);
+        YH_LOG_TRACE("Deleting OpenGLTexture.");
     }
 }

@@ -4,15 +4,20 @@ import Engine.Renderer.Buffer.BufferLayout;
 import Engine.Renderer.Buffer.IndexBuffer;
 import Engine.Renderer.Buffer.VertexBuffer;
 import Engine.Renderer.Camera.Camera;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import static Engine.Utils.YH_Log.YH_LOG_TRACE;
+
 public class Renderer2D {
     public static Renderer2DStorage storage;
 
     public static void init() {
+        YH_LOG_TRACE("Creating Renderer2D.");
+
         storage = new Renderer2DStorage();
         float[] vertices = { //
                 1f, 1f, 0f, 1f, 1f, //
@@ -44,12 +49,13 @@ public class Renderer2D {
     }
 
     public static void shutdown() {
-        storage.vertexArray.delete();
         storage.shader.delete();
         storage.whiteTexture.delete();
+        storage.vertexArray.delete();
+        YH_LOG_TRACE("Deleting Renderer2D.");
     }
 
-    public static void begin(Camera camera) {
+    public static void begin(@NotNull Camera camera) {
         storage.shader.bind();
         storage.shader.UploadUniformMat4("uViewProjection", camera.getViewProjectionMatrix());
     }
@@ -63,7 +69,7 @@ public class Renderer2D {
     }
 
 
-    public static void drawQuad(Vector3f pos, Vector2f size, Vector4f color) {
+    public static void drawQuad(Vector3f pos, @NotNull Vector2f size, Vector4f color) {
         storage.whiteTexture.bind();
         storage.shader.UploadUniformFloat4("uColor", color);
 
@@ -79,7 +85,7 @@ public class Renderer2D {
     }
 
 
-    public static void drawQuad(Vector3f pos, Vector2f size, Texture texture) {
+    public static void drawQuad(Vector3f pos, @NotNull Vector2f size, @NotNull Texture texture) {
         storage.shader.UploadUniformFloat4("uColor", new Vector4f(1.0f));
         texture.bind();
 

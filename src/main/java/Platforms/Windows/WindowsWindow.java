@@ -1,10 +1,10 @@
 package Platforms.Windows;
 
+import Engine.Core.Window;
 import Engine.Events.KeyEvent;
 import Engine.Events.MouseEvents;
 import Engine.Events.WindowEvents;
 import Engine.Renderer.GraphicsContext;
-import Engine.Core.Window;
 import Platforms.OpenGL.OpenGLContext;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;

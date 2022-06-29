@@ -9,7 +9,7 @@ import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 
-import static Engine.Utils.YH_Log.YH_LOG_INFO;
+import static Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 
@@ -27,12 +27,13 @@ public class ImGuiLayer extends Layer {
     @Override
     public void delete() {
         ImGui.destroyContext();
+        super.delete();
     }
 
     @Override
     public void onAttach() {
-        YH_LOG_INFO("Attach ImGui Layer");
-        YH_LOG_INFO("   ImGui Version: {}", ImGui.getVersion());
+        YH_LOG_TRACE("Attach ImGui Layer");
+        YH_LOG_TRACE("   ImGui Version: {}", ImGui.getVersion());
         ImGuiIO io = ImGui.getIO();
         io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard); // Enable Keyboard Controls
         // io.addConfigFlags(ImGuiConfigFlags.NavEnableGamepad); // Enable Gamepad Controls

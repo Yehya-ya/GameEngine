@@ -15,8 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static Engine.Utils.YH_Log.YH_ASSERT;
-import static Engine.Utils.YH_Log.YH_LOG_ERROR;
+import static Engine.Utils.YH_Log.*;
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 
@@ -25,6 +24,8 @@ public class OpenGLShaderProgram extends ShaderProgram {
     private int programID;
 
     public OpenGLShaderProgram(@NotNull String path) {
+        YH_LOG_TRACE("Creating OpenGLShaderProgram with one file \"{}\".", path);
+
         String source = ReadFile(path);
         Map<Integer, String> sourceMap = preProcess(source);
         compile(sourceMap);
@@ -36,6 +37,8 @@ public class OpenGLShaderProgram extends ShaderProgram {
     }
 
     public OpenGLShaderProgram(String name, String vertexShader, String fragmentShader) {
+        YH_LOG_TRACE("Creating OpenGLShaderProgram with two files vertex shader: \"{}\" and fragment shader: \"{}\".", vertexShader, fragmentShader);
+
         Map<Integer, String> sourceMap = new HashMap<>();
         sourceMap.put(GL_VERTEX_SHADER, ReadFile(vertexShader));
         sourceMap.put(GL_FRAGMENT_SHADER, ReadFile(fragmentShader));
@@ -91,6 +94,7 @@ public class OpenGLShaderProgram extends ShaderProgram {
     @Override
     public void delete() {
         glDeleteProgram(programID);
+        YH_LOG_TRACE("Deleting OpenGLShaderProgram.");
     }
 
     @Override
@@ -107,6 +111,12 @@ public class OpenGLShaderProgram extends ShaderProgram {
     public void UploadUniformInt(String name, int value) {
         int location = glGetUniformLocation(programID, name);
         glUniform1i(location, value);
+    }
+
+    @Override
+    public void UploadUniformIntArray(String name, int[] value) {
+        int location = glGetUniformLocation(programID, name);
+        glUniform1iv(location, value);
     }
 
     @Override

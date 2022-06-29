@@ -5,12 +5,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import static Engine.Utils.YH_Log.YH_LOG_TRACE;
+
 public class LayerStack implements Iterable<Layer> {
 
     private final ArrayList<Layer> layers;
     private int insertIndex;
 
     public LayerStack() {
+        YH_LOG_TRACE("Creating the layers stack.");
         layers = new ArrayList<>();
         insertIndex = 0;
     }
@@ -19,6 +22,7 @@ public class LayerStack implements Iterable<Layer> {
         for (Layer layer : layers) {
             layer.onDetach();
         }
+        YH_LOG_TRACE("Deleting the layers stack.");
     }
 
     public int size() {

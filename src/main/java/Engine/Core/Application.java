@@ -9,7 +9,7 @@ import org.joml.Vector4f;
 
 import static Engine.Utils.KeyCodes.YH_KEY_F11;
 import static Engine.Utils.YH_Log.YH_ASSERT;
-import static Engine.Utils.YH_Log.YH_LOG_INFO;
+import static Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 public class Application {
@@ -23,7 +23,7 @@ public class Application {
     private float lastFrameTime;
 
     protected Application() {
-        YH_LOG_INFO("Creating the application.");
+        YH_LOG_TRACE("Creating the application.");
         YH_ASSERT(instance == null, "Application already exists!");
         instance = this;
         lastFrameTime = (float) glfwGetTime();
@@ -36,8 +36,8 @@ public class Application {
         RendererCommandAPI.setClearColor(new Vector4f(0.1f, 0.1f, 0.1f, 1));
         RendererCommandAPI.clear();
 
-        imGuiLayer = new ImGuiLayer();
         layersStack = new LayerStack();
+        imGuiLayer = new ImGuiLayer();
         pushOverlay(imGuiLayer);
     }
 
@@ -46,11 +46,12 @@ public class Application {
     }
 
     private void delete() {
-        this.shutdown();
         layersStack.delete();
         imGuiLayer.delete();
+        this.shutdown();
         window.delete();
         instance = null;
+        YH_LOG_TRACE("Deleting the application.");
     }
 
     public void shutdown() {
@@ -61,7 +62,7 @@ public class Application {
     }
 
     public void run() {
-        YH_LOG_INFO("The application starts running.");
+        YH_LOG_TRACE("The application starts running.");
         while (isRunning) {
             float time = (float) glfwGetTime();
             TimeStep timeStep = new TimeStep(time - lastFrameTime);
@@ -83,7 +84,7 @@ public class Application {
 
             window.onUpdate();
         }
-        YH_LOG_INFO("The application stops running.");
+        YH_LOG_TRACE("The application stops running.");
         this.delete();
     }
 

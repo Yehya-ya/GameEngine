@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Vector;
 
 import static Engine.Utils.YH_Log.YH_ASSERT;
+import static Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_INT;
 import static org.lwjgl.opengl.GL20.*;
@@ -25,6 +26,8 @@ public class OpenGLVertexArray extends VertexArray {
     private IndexBuffer indexBuffer;
 
     public OpenGLVertexArray() {
+        YH_LOG_TRACE("Creating OpenGLVertexArray.");
+
         vertexBuffers = new Vector<>();
         this.rendererId = glCreateVertexArrays();
         vertexBufferIndex = 0;
@@ -32,11 +35,12 @@ public class OpenGLVertexArray extends VertexArray {
 
     @Override
     public void delete() {
+        indexBuffer.delete();
         for (VertexBuffer vertexBuffer : vertexBuffers) {
             vertexBuffer.delete();
         }
-        indexBuffer.delete();
         glDeleteVertexArrays(this.rendererId);
+        YH_LOG_TRACE("Deleting OpenGLVertexArray.");
     }
 
     @Override
