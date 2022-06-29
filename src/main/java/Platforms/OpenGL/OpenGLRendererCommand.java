@@ -59,6 +59,11 @@ public class OpenGLRendererCommand extends RendererCommand {
     }
 
     @Override
+    public void drawIndexed(int count) {
+        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
+    }
+
+    @Override
     public API getApi() {
         return API.OpenGL;
     }

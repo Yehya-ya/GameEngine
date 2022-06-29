@@ -49,6 +49,7 @@ public abstract class ShaderProgram {
     public abstract void unbind();
 
     public abstract void UploadUniformInt(String name, int value);
+    public abstract void UploadUniformIntArray(String name, int[] value);
 
     public abstract void UploadUniformFloat(String name, float value);
 

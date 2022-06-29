@@ -81,7 +81,7 @@ public class WindowsWindow extends Window {
 
         graphicsContext = new OpenGLContext(windowID);
         graphicsContext.init();
-        setVSync(prop.vSync);
+        setVSync(false);
         glfwShowWindow(windowID);
     }
 

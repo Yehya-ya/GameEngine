@@ -7,6 +7,9 @@ import Engine.Utils.TimeStep;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
+import static Engine.Utils.YH_Log.YH_LOG_INFO;
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
+
 public class ExampleLayer2D extends Layer {
     private final OrthographicCameraController cameraController;
     private Texture texture;
@@ -27,17 +30,20 @@ public class ExampleLayer2D extends Layer {
         cameraController.onUpdate(timeStep);
 
         Renderer2D.begin(cameraController.getCamera());
-
-        Renderer2D.drawQuad(new Vector2f(-0.6f, 0.6f), new Vector2f(.2f, 0.3f), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
-        Renderer2D.drawQuad(new Vector2f(-0.4f, -0.4f), new Vector2f(.3f, 0.3f), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
-        Renderer2D.drawQuad(new Vector2f(0.4f, 0.2f), new Vector2f(.2f, 0.2f), texture);
-
+        double time = glfwGetTime();
+        for (int i = 0; i < 200; i++) {
+            for (int j = 0; j < 200; j++) {
+                Renderer2D.drawQuad(new Vector2f(-1.0f + (i * 0.01f), -1.0f + (j * 0.01f)), new Vector2f(0.003f, 0.003f), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
+            }
+        }
+        YH_LOG_INFO("time : {}", new TimeStep((float) (glfwGetTime() - time)).getMilliseconds());
         Renderer2D.end();
     }
 
     @Override
     public void onDetach() {
         Renderer2D.shutdown();
+        texture.delete();
     }
 
     @Override

@@ -102,4 +102,13 @@ public class OpenGLTexture extends Texture {
         glDeleteTextures(textureId);
         YH_LOG_TRACE("Deleting OpenGLTexture.");
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OpenGLTexture) {
+            OpenGLTexture texture = (OpenGLTexture) obj;
+            return textureId == texture.textureId;
+        }
+        return false;
+    }
 }

@@ -10,6 +10,18 @@ import static Engine.Utils.YH_Log.YH_LOG_ERROR;
 public abstract class VertexBuffer {
     protected BufferLayout bufferLayout;
 
+    public static @NotNull VertexBuffer create(long size) {
+        switch (RendererCommandAPI.getApi()) {
+            case OpenGL -> {
+                return new OpenGLVertexBuffer(size);
+            }
+        }
+
+        YH_LOG_ERROR("unknown renderer type {}", RendererCommandAPI.getApi().name());
+        YH_ASSERT(false, "unknown renderer type");
+        return null;
+    }
+
     public static @NotNull VertexBuffer create(float[] vertices) {
         switch (RendererCommandAPI.getApi()) {
             case OpenGL -> {
@@ -21,6 +33,8 @@ public abstract class VertexBuffer {
         YH_ASSERT(false, "unknown renderer type");
         return null;
     }
+
+    public abstract void setData(float[] data);
 
     public abstract void delete();
 
