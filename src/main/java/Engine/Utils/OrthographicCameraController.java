@@ -32,40 +32,40 @@ public class OrthographicCameraController {
     public void onUpdate(TimeStep ts) {
         if (Input.isKeyPressed(YH_KEY_D)) {
             camera.translate(new Vector3f(
-                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds(),
-                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds(),
+                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds(),
+                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds(),
                     0.0f)
             );
         }
 
         if (Input.isKeyPressed(YH_KEY_A)) {
             camera.translate(new Vector3f(
-                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds() * -1,
-                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds() * -1,
+                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds() * -1,
+                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds() * -1,
                     0.0f));
         }
 
         if (Input.isKeyPressed(YH_KEY_W)) {
             camera.translate(new Vector3f(
-                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds() * -1,
-                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds(),
+                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds() * -1,
+                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds(),
                     0.0f)
             );
         }
         if (Input.isKeyPressed(YH_KEY_S)) {
             camera.translate(new Vector3f(
-                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds(),
-                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getMilliseconds() * -1,
+                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds(),
+                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds() * -1,
                     0.0f)
             );
         }
 
         if (isRotational) {
             if (Input.isKeyPressed(YH_KEY_Q)) {
-                camera.rotate(-rotationSpeed * ts.getMilliseconds());
+                camera.rotate(-rotationSpeed * ts.getSeconds());
             }
             if (Input.isKeyPressed(YH_KEY_E)) {
-                camera.rotate(rotationSpeed * ts.getMilliseconds());
+                camera.rotate(rotationSpeed * ts.getSeconds());
             }
         }
     }

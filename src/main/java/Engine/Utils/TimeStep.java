@@ -9,10 +9,10 @@ public class TimeStep {
     }
 
     public float getMilliseconds() {
-        return time;
+        return time * 1000.0f;
     }
 
     public float getSeconds() {
-        return time * 1000.0f;
+        return time;
     }
 }
