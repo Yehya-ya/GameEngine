@@ -1,5 +1,8 @@
 package Engine.Renderer.Buffer;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Vector;
 
 import static Engine.Utils.YH_Log.YH_ASSERT;
@@ -68,7 +71,8 @@ public class BufferLayout {
         public final int offset;
         public final boolean normalized;
 
-        public BufferElement(ShaderDataType type, String name, boolean normalized, int offset) {
+        @Contract(pure = true)
+        public BufferElement(@NotNull ShaderDataType type, String name, boolean normalized, int offset) {
             this.name = name;
             this.type = type;
             this.offset = offset;
@@ -87,8 +91,10 @@ public class BufferLayout {
                 case Float4:
                     return 4;
                 case Mat3:
+                    YH_ASSERT(false, "Not Supported yet.");
                     return 3 * 3;
                 case Mat4:
+                    YH_ASSERT(false, "Not Supported yet.");
                     return 4 * 4;
                 case Int:
                     return 1;
