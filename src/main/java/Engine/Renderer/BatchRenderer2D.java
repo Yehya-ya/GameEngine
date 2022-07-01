@@ -13,6 +13,7 @@ import org.joml.Vector4f;
 import java.util.stream.IntStream;
 
 import static Engine.Renderer.BatchRenderer2D.QuadVertices.MaxIndices;
+import static Engine.Renderer.BatchRenderer2D.QuadVertices.MaxTextures;
 import static Engine.Utils.YH_Log.YH_LOG_TRACE;
 
 public class BatchRenderer2D {
@@ -54,6 +55,11 @@ public class BatchRenderer2D {
         storage.baseVertices[1] = new Vector3f(0.5f, -0.5f, 0.0f);
         storage.baseVertices[2] = new Vector3f(0.5f, 0.5f, 0.0f);
         storage.baseVertices[3] = new Vector3f(-0.5f, 0.5f, 0.0f);
+
+        storage.baseCoords[0] = new Vector2f(0.0f, 0.0f);
+        storage.baseCoords[1] = new Vector2f(1.0f, 0.0f);
+        storage.baseCoords[2] = new Vector2f(1.0f, 1.0f);
+        storage.baseCoords[3] = new Vector2f(0.0f, 1.0f);
 
         storage.quadVertices = new QuadVertices();
     }
@@ -157,10 +163,9 @@ public class BatchRenderer2D {
             resetAndFlush();
         }
 
-        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[0])), color, new Vector2f(0.0f, 0.0f), 1.0f, 0.0f);
-        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[1])), color, new Vector2f(1.0f, 0.0f), 1.0f, 0.0f);
-        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[2])), color, new Vector2f(1.0f, 1.0f), 1.0f, 0.0f);
-        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[3])), color, new Vector2f(0.0f, 1.0f), 1.0f, 0.0f);
+        for (int i = 0; i < storage.baseVertices.length; i++) {
+            storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[i])), color, storage.baseCoords[i], 1.0f, 0.0f);
+        }
         storage.quadVertices.quadIndexCount += 6;
 
         RendererStatistics.getInstance().addOneToQuadsCount();
@@ -183,15 +188,17 @@ public class BatchRenderer2D {
         }
 
         if (textureIndex == 0.0f) {
+            if (storage.texturesIndex >= MaxTextures) {
+                resetAndFlush();
+            }
             storage.textures[storage.texturesIndex] = texture;
             textureIndex = storage.texturesIndex;
             storage.texturesIndex++;
         }
 
-        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[0])), color, new Vector2f(0.0f, 0.0f), tilingFactor, textureIndex);
-        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[1])), color, new Vector2f(1.0f, 0.0f), tilingFactor, textureIndex);
-        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[2])), color, new Vector2f(1.0f, 1.0f), tilingFactor, textureIndex);
-        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[3])), color, new Vector2f(0.0f, 1.0f), tilingFactor, textureIndex);
+        for (int i = 0; i < storage.baseVertices.length; i++) {
+            storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[i])), color, storage.baseCoords[i], tilingFactor, textureIndex);
+        }
         storage.quadVertices.quadIndexCount += 6;
 
         RendererStatistics.getInstance().addOneToQuadsCount();
@@ -206,6 +213,7 @@ public class BatchRenderer2D {
         public Texture[] textures = new Texture[QuadVertices.MaxTextures];
         public int texturesIndex = 1;
         public Vector3f[] baseVertices = new Vector3f[4];
+        public Vector2f[] baseCoords = new Vector2f[4];
     }
 
     public static class QuadVertices {
