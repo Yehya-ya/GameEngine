@@ -50,7 +50,7 @@ public abstract class Texture {
 
     public abstract void setData(ByteBuffer data);
 
-    public abstract void bind();
+    public abstract void bind(int slot);
 
     public abstract void unbind();
 

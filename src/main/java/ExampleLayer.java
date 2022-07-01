@@ -59,7 +59,7 @@ public class ExampleLayer extends Layer {
         textureShader = shaderLibrary.load("assets/shaders/textureShader.glsl");
 
         texture = Texture.create("assets/textures/bricks.png");
-        texture.bind();
+        texture.bind(0);
     }
 
     @Override

@@ -12,7 +12,9 @@ import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 public class ExampleLayer2D extends Layer {
     private final OrthographicCameraController cameraController;
-    private Texture texture;
+    double lastRenderTime;
+    private Texture bricks;
+    private Texture dirt;
 
     public ExampleLayer2D() {
         super("Example Layer 2D");
@@ -21,8 +23,10 @@ public class ExampleLayer2D extends Layer {
 
     @Override
     public void onAttach() {
-        texture = Texture.create("assets/textures/bricks.png");
+        bricks = Texture.create("assets/textures/bricks.png");
+        dirt = Texture.create("assets/textures/dirt.png");
         Renderer2D.init();
+        lastRenderTime = glfwGetTime();
     }
 
     @Override
@@ -30,20 +34,27 @@ public class ExampleLayer2D extends Layer {
         cameraController.onUpdate(timeStep);
 
         Renderer2D.begin(cameraController.getCamera());
+
+        Renderer2D.drawQuad(new Vector2f(-2.0f, -2.0f), new Vector2f(4.0f, 4.0f), bricks);
+        Renderer2D.drawQuad(new Vector2f(2.0f, 2.0f), new Vector2f(1.0f, 1.0f), dirt);
+        Renderer2D.drawQuad(new Vector2f(-1.0f, 2.0f), new Vector2f(1.0f, 1.0f), dirt);
+
         double time = glfwGetTime();
-        for (int i = 0; i < 200; i++) {
-            for (int j = 0; j < 200; j++) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 Renderer2D.drawQuad(new Vector2f(-1.0f + (i * 0.01f), -1.0f + (j * 0.01f)), new Vector2f(0.003f, 0.003f), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
             }
         }
-        YH_LOG_INFO("time : {}", new TimeStep((float) (glfwGetTime() - time)).getMilliseconds());
+        YH_LOG_INFO("time : {}", new TimeStep((float) (glfwGetTime() - lastRenderTime)).getMilliseconds());
+        lastRenderTime = time;
         Renderer2D.end();
     }
 
     @Override
     public void onDetach() {
         Renderer2D.shutdown();
-        texture.delete();
+        bricks.delete();
+        dirt.delete();
     }
 
     @Override

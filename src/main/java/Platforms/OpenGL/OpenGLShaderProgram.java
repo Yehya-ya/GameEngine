@@ -3,11 +3,9 @@ package Platforms.OpenGL;
 import Engine.Renderer.ShaderProgram;
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
-import org.lwjgl.BufferUtils;
 
 import java.io.IOException;
 import java.lang.Math;
-import java.nio.FloatBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -146,17 +144,17 @@ public class OpenGLShaderProgram extends ShaderProgram {
     @Override
     public void UploadUniformMat3(String name, @NotNull Matrix3f matrix) {
         int location = glGetUniformLocation(programID, name);
-        FloatBuffer matBuffer = BufferUtils.createFloatBuffer(9);
-        matrix.get(matBuffer);
-        glUniformMatrix3fv(location, false, matBuffer);
+        float[] arr = new float[9];
+        matrix.get(arr);
+        glUniformMatrix3fv(location, false, arr);
     }
 
     @Override
     public void UploadUniformMat4(String name, @NotNull Matrix4f matrix) {
         int location = glGetUniformLocation(programID, name);
-        FloatBuffer matBuffer = BufferUtils.createFloatBuffer(16);
-        matrix.get(matBuffer);
-        glUniformMatrix4fv(location, false, matBuffer);
+        float[] arr = new float[16];
+        matrix.get(arr);
+        glUniformMatrix4fv(location, false, arr);
     }
 
     private @NotNull Map<Integer, String> preProcess(@NotNull String source) {

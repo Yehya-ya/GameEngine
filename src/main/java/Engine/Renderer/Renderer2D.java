@@ -70,7 +70,7 @@ public class Renderer2D {
 
 
     public static void drawQuad(Vector3f pos, @NotNull Vector2f size, Vector4f color) {
-        storage.whiteTexture.bind();
+        storage.whiteTexture.bind(0);
         storage.shader.UploadUniformFloat4("uColor", color);
 
         Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, 1.0f);
@@ -87,7 +87,7 @@ public class Renderer2D {
 
     public static void drawQuad(Vector3f pos, @NotNull Vector2f size, @NotNull Texture texture) {
         storage.shader.UploadUniformFloat4("uColor", new Vector4f(1.0f));
-        texture.bind();
+        texture.bind(0);
 
         Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, 1.0f);
         storage.shader.UploadUniformMat4("uTransformation", transformation);

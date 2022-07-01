@@ -1,6 +1,7 @@
 package Platforms.OpenGL;
 
 import Engine.Renderer.Buffer.VertexBuffer;
+import org.jetbrains.annotations.NotNull;
 
 import static Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.opengl.GL45.*;
@@ -16,7 +17,7 @@ public class OpenGLVertexBuffer extends VertexBuffer {
         YH_LOG_TRACE("size: {}", size);
     }
 
-    public OpenGLVertexBuffer(float[] vertices) {
+    public OpenGLVertexBuffer(float @NotNull [] vertices) {
         YH_LOG_TRACE("Creating OpenGLVertexBuffer with {} vertices.", vertices.length);
         rendererId = glCreateBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, rendererId);

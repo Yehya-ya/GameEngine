@@ -88,8 +88,8 @@ public class OpenGLTexture extends Texture {
     }
 
     @Override
-    public void bind() {
-        glBindTexture(GL_TEXTURE_2D, textureId);
+    public void bind(int slot) {
+        glBindTextureUnit(slot, textureId);
     }
 
     @Override
