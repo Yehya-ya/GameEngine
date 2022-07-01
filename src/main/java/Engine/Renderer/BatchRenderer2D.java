@@ -5,12 +5,14 @@ import Engine.Renderer.Buffer.IndexBuffer;
 import Engine.Renderer.Buffer.VertexBuffer;
 import Engine.Renderer.Camera.Camera;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.stream.IntStream;
 
+import static Engine.Renderer.BatchRenderer2D.QuadVertices.MaxIndices;
 import static Engine.Utils.YH_Log.YH_LOG_TRACE;
 
 public class BatchRenderer2D {
@@ -19,8 +21,8 @@ public class BatchRenderer2D {
     public static void init() {
         YH_LOG_TRACE("Creating BatchRenderer2D.");
 
-        int[] indices = new int[QuadVertices.MaxIndices];
-        for (int i = 0, offset = 0; i < QuadVertices.MaxIndices; i += 6, offset += 4) {
+        int[] indices = new int[MaxIndices];
+        for (int i = 0, offset = 0; i < MaxIndices; i += 6, offset += 4) {
             indices[i] = offset;
             indices[i + 1] = offset + 1;
             indices[i + 2] = offset + 2;
@@ -47,6 +49,13 @@ public class BatchRenderer2D {
 
         storage.shader.bind();
         storage.shader.UploadUniformIntArray("uTextures", texturesUniform);
+
+        storage.baseVertices[0] = new Vector3f(-0.5f, -0.5f, 0.0f);
+        storage.baseVertices[1] = new Vector3f(0.5f, -0.5f, 0.0f);
+        storage.baseVertices[2] = new Vector3f(0.5f, 0.5f, 0.0f);
+        storage.baseVertices[3] = new Vector3f(-0.5f, 0.5f, 0.0f);
+
+        storage.quadVertices = new QuadVertices();
     }
 
     public static void shutdown() {
@@ -59,7 +68,9 @@ public class BatchRenderer2D {
     public static void begin(@NotNull Camera camera) {
         storage.shader.bind();
         storage.shader.UploadUniformMat4("uViewProjection", camera.getViewProjectionMatrix());
-        storage.quadVertices = new QuadVertices();
+        storage.quadVertices.verticesCount = 0;
+        storage.quadVertices.quadIndexCount = 0;
+        storage.texturesIndex = 1;
         storage.textures[0] = storage.whiteTexture;
     }
 
@@ -74,6 +85,15 @@ public class BatchRenderer2D {
             storage.textures[i].bind(i);
         }
         RendererCommandAPI.drawIndexed(storage.quadVertices.quadIndexCount);
+        RendererStatistics.getInstance().addOneToDrawCallsCount();
+    }
+
+    public static void resetAndFlush() {
+        end();
+
+        storage.quadVertices.verticesCount = 0;
+        storage.quadVertices.quadIndexCount = 0;
+        storage.texturesIndex = 1;
     }
 
     public static void drawQuad(Vector2f pos, Vector2f size, Vector4f color) {
@@ -81,11 +101,9 @@ public class BatchRenderer2D {
     }
 
     public static void drawQuad(Vector3f pos, @NotNull Vector2f size, Vector4f color) {
-        storage.quadVertices.add(pos, color, new Vector2f(0.0f, 0.0f), 1.0f, 0.0f);
-        storage.quadVertices.add(new Vector3f(pos.x + size.x, pos.y, pos.z), color, new Vector2f(1.0f, 0.0f), 1.0f, 0.0f);
-        storage.quadVertices.add(new Vector3f(pos.x + size.x, pos.y + size.y, pos.z), color, new Vector2f(1.0f, 1.0f), 1.0f, 0.0f);
-        storage.quadVertices.add(new Vector3f(pos.x, pos.y + size.y, pos.z), color, new Vector2f(0.0f, 1.0f), 1.0f, 0.0f);
-        storage.quadVertices.quadIndexCount += 6;
+        Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, 1.0f);
+
+        drawWithColor(transformation, color);
     }
 
     public static void drawQuad(Vector2f pos, Vector2f size, Texture texture) {
@@ -100,7 +118,60 @@ public class BatchRenderer2D {
         drawQuad(new Vector3f(pos, 1.0f), size, texture, tilingFactor);
     }
 
-    public static void drawQuad(Vector3f pos, @NotNull Vector2f size, @NotNull Texture texture, float tilingFactor) {
+    public static void drawQuad(Vector3f pos, @NotNull Vector2f size, Texture texture, float tilingFactor) {
+        Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, 1.0f);
+
+        drawWithTexture(transformation, texture, tilingFactor);
+    }
+
+    public static void drawRotatedQuad(Vector2f pos, Vector2f size, float rotationAngle, Vector4f color) {
+        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotationAngle, color);
+    }
+
+    public static void drawRotatedQuad(Vector3f pos, @NotNull Vector2f size, float rotationAngle, Vector4f color) {
+        Matrix4f transformation = new Matrix4f().translate(pos).rotate((float) Math.toRadians(rotationAngle), new Vector3f(0.0f, 0.0f, 1.0f)).scale(size.x, size.y, 1.0f);
+
+        drawWithColor(transformation, color);
+    }
+
+    public static void drawRotatedQuad(Vector2f pos, Vector2f size, float rotationAngle, Texture texture) {
+        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotationAngle, texture, 1.0f);
+    }
+
+    public static void drawRotatedQuad(Vector3f pos, Vector2f size, float rotationAngle, Texture texture) {
+        drawRotatedQuad(pos, size, rotationAngle, texture, 1.0f);
+    }
+
+    public static void drawRotatedQuad(Vector2f pos, Vector2f size, float rotationAngle, Texture texture, float tilingFactor) {
+        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotationAngle, texture, tilingFactor);
+    }
+
+    public static void drawRotatedQuad(Vector3f pos, @NotNull Vector2f size, float rotationAngle, Texture texture, float tilingFactor) {
+        Matrix4f transformation = new Matrix4f().translate(pos).rotate((float) Math.toRadians(rotationAngle), new Vector3f(0.0f, 0.0f, 1.0f)).scale(size.x, size.y, 1.0f);
+
+        drawWithTexture(transformation, texture, tilingFactor);
+    }
+
+    private static void drawWithColor(@NotNull Matrix4f transformation, Vector4f color) {
+        if (storage.quadVertices.quadIndexCount >= MaxIndices) {
+            resetAndFlush();
+        }
+
+        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[0])), color, new Vector2f(0.0f, 0.0f), 1.0f, 0.0f);
+        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[1])), color, new Vector2f(1.0f, 0.0f), 1.0f, 0.0f);
+        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[2])), color, new Vector2f(1.0f, 1.0f), 1.0f, 0.0f);
+        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[3])), color, new Vector2f(0.0f, 1.0f), 1.0f, 0.0f);
+        storage.quadVertices.quadIndexCount += 6;
+
+        RendererStatistics.getInstance().addOneToQuadsCount();
+    }
+
+
+    private static void drawWithTexture(Matrix4f transformation, Texture texture, float tilingFactor) {
+        if (storage.quadVertices.quadIndexCount >= MaxIndices) {
+            resetAndFlush();
+        }
+
         Vector4f color = new Vector4f(1.0f);
 
         float textureIndex = 0.0f;
@@ -113,14 +184,17 @@ public class BatchRenderer2D {
 
         if (textureIndex == 0.0f) {
             storage.textures[storage.texturesIndex] = texture;
+            textureIndex = storage.texturesIndex;
             storage.texturesIndex++;
         }
 
-        storage.quadVertices.add(pos, color, new Vector2f(0.0f, 0.0f), tilingFactor, textureIndex);
-        storage.quadVertices.add(new Vector3f(pos.x + size.x, pos.y, pos.z), color, new Vector2f(1.0f, 0.0f), tilingFactor, textureIndex);
-        storage.quadVertices.add(new Vector3f(pos.x + size.x, pos.y + size.y, pos.z), color, new Vector2f(1.0f, 1.0f), tilingFactor, textureIndex);
-        storage.quadVertices.add(new Vector3f(pos.x, pos.y + size.y, pos.z), color, new Vector2f(0.0f, 1.0f), tilingFactor, textureIndex);
+        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[0])), color, new Vector2f(0.0f, 0.0f), tilingFactor, textureIndex);
+        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[1])), color, new Vector2f(1.0f, 0.0f), tilingFactor, textureIndex);
+        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[2])), color, new Vector2f(1.0f, 1.0f), tilingFactor, textureIndex);
+        storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[3])), color, new Vector2f(0.0f, 1.0f), tilingFactor, textureIndex);
         storage.quadVertices.quadIndexCount += 6;
+
+        RendererStatistics.getInstance().addOneToQuadsCount();
     }
 
     public static class Renderer2DStorage {
@@ -131,10 +205,11 @@ public class BatchRenderer2D {
         public QuadVertices quadVertices;
         public Texture[] textures = new Texture[QuadVertices.MaxTextures];
         public int texturesIndex = 1;
+        public Vector3f[] baseVertices = new Vector3f[4];
     }
 
     public static class QuadVertices {
-        public static final int MaxQuads = 100000;
+        public static final int MaxQuads = 2000;
         public static final int VertexFloatCounts = 11;
         public static final int MaxVertices = MaxQuads * 4;
         public static final int MaxFloats = MaxVertices * VertexFloatCounts;

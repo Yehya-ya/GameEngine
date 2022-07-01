@@ -1,9 +1,11 @@
 import Engine.Core.Layer;
 import Engine.Events.Event;
 import Engine.Renderer.Renderer2D;
+import Engine.Renderer.RendererStatistics;
 import Engine.Renderer.Texture;
 import Engine.Utils.OrthographicCameraController;
 import Engine.Utils.TimeStep;
+import imgui.ImGui;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -31,23 +33,34 @@ public class ExampleLayer2D extends Layer {
 
     @Override
     public void onUpdate(TimeStep timeStep) {
+        RendererStatistics.getInstance().reset();
         cameraController.onUpdate(timeStep);
-
         Renderer2D.begin(cameraController.getCamera());
 
-        Renderer2D.drawQuad(new Vector2f(-2.0f, -2.0f), new Vector2f(4.0f, 4.0f), bricks);
-        Renderer2D.drawQuad(new Vector2f(2.0f, 2.0f), new Vector2f(1.0f, 1.0f), dirt);
+        Renderer2D.drawQuad(new Vector2f(0.0f, 0.0f), new Vector2f(4.0f, 4.0f), bricks, 20.0f);
+        Renderer2D.drawRotatedQuad(new Vector2f(2.0f, 2.0f), new Vector2f(1.0f, 1.0f), 45, dirt, 3.0f);
         Renderer2D.drawQuad(new Vector2f(-1.0f, 2.0f), new Vector2f(1.0f, 1.0f), dirt);
 
         double time = glfwGetTime();
         for (int i = 0; i < 300; i++) {
             for (int j = 0; j < 300; j++) {
-                Renderer2D.drawQuad(new Vector2f(-1.0f + (i * 0.01f), -1.0f + (j * 0.01f)), new Vector2f(0.003f, 0.003f), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
+                Renderer2D.drawQuad(new Vector2f(-2.0f + (i * 0.01f), -2.0f + (j * 0.01f)), new Vector2f(0.009f, 0.009f), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
             }
         }
         YH_LOG_INFO("time : {}", new TimeStep((float) (glfwGetTime() - lastRenderTime)).getMilliseconds());
         lastRenderTime = time;
         Renderer2D.end();
+    }
+
+    @Override
+    public void onImgRender() {
+        super.onImgRender();
+        RendererStatistics stats = RendererStatistics.getInstance();
+        ImGui.begin("Settings");
+        ImGui.text("Renderer2D Stats:");
+        ImGui.text("Draw Calls: " + stats.getDrawCallsCount());
+        ImGui.text("Quads: " + stats.getQuadsCount());
+        ImGui.end();
     }
 
     @Override
