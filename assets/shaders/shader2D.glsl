@@ -20,9 +20,10 @@ void main()
 in vec2 fTexCoord;
 
 uniform vec4 uColor;
+uniform float uTilingFactor;
 uniform sampler2D uTexture;
 
 void main()
 {
-    gl_FragColor = texture(uTexture, fTexCoord) * uColor;
+    gl_FragColor = texture(uTexture, fTexCoord * uTilingFactor) * uColor;
 }
