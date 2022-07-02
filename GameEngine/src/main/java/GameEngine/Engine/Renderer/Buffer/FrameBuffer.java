@@ -13,6 +13,7 @@ public abstract class FrameBuffer {
 
     public FrameBuffer(FrameBufferSpecification specification) {
         this.specification = specification;
+        rendererId = colorAttachmentRendererId = depthAttachmentRendererId = 0;
     }
 
     public static @NotNull FrameBuffer create(FrameBufferSpecification specification) {
@@ -40,6 +41,8 @@ public abstract class FrameBuffer {
     public abstract void bind();
 
     public abstract void unbind();
+
+    public abstract void resize(int width, int height);
 
     public static class FrameBufferSpecification {
         public int width, height;
