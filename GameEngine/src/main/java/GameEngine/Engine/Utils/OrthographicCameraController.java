@@ -17,7 +17,11 @@ public class OrthographicCameraController {
     private float movingSpeed;
 
     public OrthographicCameraController(float aspectRatio, boolean isRotational) {
-        this.zoomLevel = 1.0f;
+        this(aspectRatio, 1.0f, isRotational);
+    }
+
+    public OrthographicCameraController(float aspectRatio, float zoomLevel, boolean isRotational) {
+        this.zoomLevel = zoomLevel;
         this.camera = new OrthographicCamera(-zoomLevel * aspectRatio, zoomLevel * aspectRatio, -zoomLevel, zoomLevel);
         this.isRotational = isRotational;
         this.aspectRatio = aspectRatio;
@@ -31,32 +35,33 @@ public class OrthographicCameraController {
 
     public void onUpdate(TimeStep ts) {
         if (Input.isKeyPressed(YH_KEY_D)) {
-            camera.translate(new Vector3f(
-                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds(),
-                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds(),
-                    0.0f)
+            camera.translate(new Vector3f( //
+                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds(), //
+                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds(), //
+                    0.0f) //
             );
         }
 
         if (Input.isKeyPressed(YH_KEY_A)) {
-            camera.translate(new Vector3f(
-                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds() * -1,
-                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds() * -1,
-                    0.0f));
+            camera.translate(new Vector3f( //
+                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds() * -1, //
+                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds() * -1, //
+                    0.0f) //
+            );
         }
 
         if (Input.isKeyPressed(YH_KEY_W)) {
-            camera.translate(new Vector3f(
-                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds() * -1,
-                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds(),
-                    0.0f)
+            camera.translate(new Vector3f( //
+                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds() * -1, //
+                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds(), //
+                    0.0f) //
             );
         }
         if (Input.isKeyPressed(YH_KEY_S)) {
-            camera.translate(new Vector3f(
-                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds(),
-                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds() * -1,
-                    0.0f)
+            camera.translate(new Vector3f( //
+                    (float) Math.sin(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds(), //
+                    (float) Math.cos(camera.getRotationInRadians()) * movingSpeed * ts.getSeconds() * -1, //
+                    0.0f) //
             );
         }
 
@@ -85,8 +90,12 @@ public class OrthographicCameraController {
 
     public boolean onWindowResize(Event e) {
         WindowEvents.WindowResizeEvent event = (WindowEvents.WindowResizeEvent) e;
-        aspectRatio = (float) event.getWidth() / (float) event.getHeight();
-        camera.setProjectionMatrix(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel);
+        resize((float) event.getWidth(), (float) event.getHeight());
         return false;
+    }
+
+    public void resize(float width, float height) {
+        aspectRatio = width / height;
+        camera.setProjectionMatrix(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel);
     }
 }

@@ -27,10 +27,11 @@ public class EditorLayer extends Layer {
     private Texture bricks;
     private Texture dirt;
     private FrameBuffer frameBuffer;
+    private Vector2f viewportSize;
 
     public EditorLayer() {
         super("Example Layer 2D");
-        cameraController = new OrthographicCameraController(1280f / 720f, true);
+        cameraController = new OrthographicCameraController(1280f / 720f, 3.0f, true);
     }
 
     @Override
@@ -46,6 +47,7 @@ public class EditorLayer extends Layer {
         specification.width = 1280;
         specification.height = 720;
         frameBuffer = FrameBuffer.create(specification);
+        viewportSize = new Vector2f(0);
     }
 
     @Override
@@ -146,10 +148,22 @@ public class EditorLayer extends Layer {
         ImGui.text("Renderer2D Stats:");
         ImGui.text("Draw Calls: " + stats.getDrawCallsCount());
         ImGui.text("Quads: " + stats.getQuadsCount());
-        ImGui.text("Average Rendering time for one frame: " + average);
-        int textureID = frameBuffer.getColorAttachmentRendererId();
-        ImGui.image(textureID, 1280.0f, 720.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+        ImGui.textWrapped("Average Rendering time for one frame: " + String.format("%2f", average) + " ms");
         ImGui.end();
+
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
+        ImGui.begin("Viewport");
+        int textureID = frameBuffer.getColorAttachmentRendererId();
+        Vector2f size = new Vector2f(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY());
+        if (!viewportSize.equals(size)) {
+            cameraController.resize(size.x, size.y);
+            frameBuffer.resize((int) size.x, (int) size.y);
+            viewportSize = size;
+        }
+
+        ImGui.image(textureID, size.x, size.y, 0.0f, 1.0f, 1.0f, 0.0f);
+        ImGui.end();
+        ImGui.popStyleVar();
 
         ImGui.end();
     }
