@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/Editor" />
             <option value="$PROJECT_DIR$/GameEngine" />
+            <option value="$PROJECT_DIR$/SandBox" />
           </set>
         </option>
       </GradleProjectSettings>
