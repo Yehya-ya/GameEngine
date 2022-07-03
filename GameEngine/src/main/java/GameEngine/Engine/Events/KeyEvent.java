@@ -4,6 +4,7 @@ public abstract class KeyEvent extends Event {
     private final int keyCode;
 
     public KeyEvent(int keyCode) {
+        super(EventCategory.Keyboard);
         this.keyCode = keyCode;
     }
 
