@@ -11,6 +11,7 @@ import GameEngine.Engine.Utils.TimeStep;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImGuiViewport;
+import imgui.ImVec2;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDockNodeFlags;
 import imgui.flag.ImGuiStyleVar;
@@ -28,6 +29,7 @@ public class EditorLayer extends Layer {
     private Texture dirt;
     private FrameBuffer frameBuffer;
     private Vector2f viewportSize;
+    private boolean isViewPortIsFocused, isViewPortIsHovered;
 
     public EditorLayer() {
         super("Example Layer 2D");
@@ -48,13 +50,24 @@ public class EditorLayer extends Layer {
         specification.height = 720;
         frameBuffer = FrameBuffer.create(specification);
         viewportSize = new Vector2f(0);
+        isViewPortIsFocused = false;
+        isViewPortIsHovered = false;
     }
 
     @Override
     public void onUpdate(TimeStep timeStep) {
-        RendererStatistics.getInstance().reset();
-        cameraController.onUpdate(timeStep);
+        // update
+        if (isViewPortIsFocused) {
+            cameraController.onUpdate(timeStep);
+        }
 
+        if (!viewportSize.equals(frameBuffer.getSpecification().width, frameBuffer.getSpecification().height)) {
+            frameBuffer.resize((int) viewportSize.x, (int) viewportSize.y);
+            cameraController.resize(viewportSize.x, viewportSize.y);
+        }
+
+        // render
+        RendererStatistics.getInstance().reset();
         frameBuffer.bind();
         RendererCommandAPI.setClearColor(new Vector4f(0.1f, 0.1f, 0.1f, 1));
         RendererCommandAPI.clear();
@@ -153,13 +166,14 @@ public class EditorLayer extends Layer {
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
         ImGui.begin("Viewport");
+
+        isViewPortIsFocused = ImGui.isWindowFocused();
+        isViewPortIsHovered = ImGui.isWindowHovered();
+        Application.get().getImGuiLayer().setBlockingEvents(!isViewPortIsFocused || !isViewPortIsHovered);
+
         int textureID = frameBuffer.getColorAttachmentRendererId();
-        Vector2f size = new Vector2f(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY());
-        if (!viewportSize.equals(size)) {
-            cameraController.resize(size.x, size.y);
-            frameBuffer.resize((int) size.x, (int) size.y);
-            viewportSize = size;
-        }
+        ImVec2 size = ImGui.getContentRegionAvail();
+        viewportSize = new Vector2f(size.x, size.y);
 
         ImGui.image(textureID, size.x, size.y, 0.0f, 1.0f, 1.0f, 0.0f);
         ImGui.end();

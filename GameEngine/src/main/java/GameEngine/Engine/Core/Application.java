@@ -111,7 +111,7 @@ public class Application {
         }
     }
 
-    public Layer getImGuiLayer() {
+    public ImGuiLayer getImGuiLayer() {
         return imGuiLayer;
     }
 

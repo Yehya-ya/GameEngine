@@ -2,6 +2,8 @@ package GameEngine.Engine.ImGui;
 
 import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
+import GameEngine.Engine.Events.Event;
+import GameEngine.Engine.Events.EventCategory;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImGuiStyle;
@@ -16,12 +18,14 @@ import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 public class ImGuiLayer extends Layer {
     private final ImGuiImplGlfw imGuiImplGlfw;
     private final ImGuiImplGl3 imGuiImplGl3;
+    private boolean isBlockingEvents;
 
     public ImGuiLayer() {
         super("ImGuiLayer");
         ImGui.createContext();
         imGuiImplGlfw = new ImGuiImplGlfw();
         imGuiImplGl3 = new ImGuiImplGl3();
+        isBlockingEvents = false;
     }
 
     @Override
@@ -56,6 +60,16 @@ public class ImGuiLayer extends Layer {
     }
 
     @Override
+    public void onEvent(Event event) {
+        super.onEvent(event);
+        if (isBlockingEvents) {
+            ImGuiIO io = ImGui.getIO();
+            event.handled |= io.getWantCaptureMouse() & event.isInCategory(EventCategory.Mouse);
+            event.handled |= io.getWantCaptureKeyboard() & event.isInCategory(EventCategory.Keyboard);
+        }
+    }
+
+    @Override
     public void onDetach() {
         imGuiImplGl3.dispose();
         imGuiImplGlfw.dispose();
@@ -76,5 +90,9 @@ public class ImGuiLayer extends Layer {
             ImGui.renderPlatformWindowsDefault();
             glfwMakeContextCurrent(backupWindowPtr);
         }
+    }
+
+    public void setBlockingEvents(boolean blockingEvents) {
+        isBlockingEvents = blockingEvents;
     }
 }
