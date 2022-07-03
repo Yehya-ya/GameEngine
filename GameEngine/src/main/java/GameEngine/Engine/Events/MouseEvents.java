@@ -5,6 +5,7 @@ public class MouseEvents {
         private final int button;
 
         public MouseButtonPressedEvent(int button) {
+            super(EventCategory.Mouse);
             this.button = button;
         }
 
@@ -23,6 +24,7 @@ public class MouseEvents {
         private final int button;
 
         public MouseButtonReleasedEvent(int button) {
+            super(EventCategory.Mouse);
             this.button = button;
         }
 
@@ -41,6 +43,7 @@ public class MouseEvents {
         private final double mouseX, mouseY;
 
         public MouseMovedEvent(double x, double y) {
+            super(EventCategory.Mouse);
             this.mouseX = x;
             this.mouseY = y;
         }
@@ -68,6 +71,7 @@ public class MouseEvents {
         private final double xOffset, yOffset;
 
         public MouseScrolledEvent(double xOffset, double yOffset) {
+            super(EventCategory.Mouse);
             this.xOffset = xOffset;
             this.yOffset = yOffset;
         }
