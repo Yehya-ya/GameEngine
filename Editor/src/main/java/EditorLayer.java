@@ -1,5 +1,9 @@
 import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
+import GameEngine.Engine.ECS.Components.SpriteComponent;
+import GameEngine.Engine.ECS.Components.TransformComponent;
+import GameEngine.Engine.ECS.Entity;
+import GameEngine.Engine.ECS.Scene;
 import GameEngine.Engine.Events.Event;
 import GameEngine.Engine.Renderer.BatchRenderer2D;
 import GameEngine.Engine.Renderer.Buffer.FrameBuffer;
@@ -18,6 +22,7 @@ import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
@@ -30,6 +35,8 @@ public class EditorLayer extends Layer {
     private FrameBuffer frameBuffer;
     private Vector2f viewportSize;
     private boolean isViewPortIsFocused, isViewPortIsHovered;
+    private Scene scene;
+    private Entity square5;
 
     public EditorLayer() {
         super("Example Layer 2D");
@@ -52,10 +59,60 @@ public class EditorLayer extends Layer {
         viewportSize = new Vector2f(0);
         isViewPortIsFocused = false;
         isViewPortIsHovered = false;
+
+        scene = new Scene(cameraController.getCamera());
+        //////////////////////
+        // BatchRenderer2D.drawQuad(new Vector2f(-0.6f, 0.6f), new Vector2f(.2f, 0.3f), );
+        Entity square = scene.createEntity();
+        TransformComponent transformComponent = new TransformComponent(new Vector3f(-0.6f, 0.6f, 1.0f), new Vector2f(.2f, 0.3f));
+        square.addComponent(transformComponent);
+        SpriteComponent spriteComponent = new SpriteComponent(new Vector4f(0.3f, 1.0f, 0.3f, 1.0f));
+        square.addComponent(spriteComponent);
+
+        //////////////////////
+        // BatchRenderer2D.drawQuad(new Vector2f(-0.4f, -0.4f), new Vector2f(.3f, 0.3f), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
+        Entity square2 = scene.createEntity();
+        TransformComponent transformComponent2 = new TransformComponent(new Vector3f(-0.4f, -0.4f, 1.0f), new Vector2f(.3f, 0.3f));
+        square2.addComponent(transformComponent2);
+        SpriteComponent spriteComponent2 = new SpriteComponent(new Vector4f(1.0f, 0.3f, 0.2f, 1.0f));
+        square2.addComponent(spriteComponent2);
+
+        //////////////////////
+        // BatchRenderer2D.drawQuad(new Vector2f(0.4f, 0.2f), new Vector2f(.2f, 0.2f), new Vector4f(0.0f,0.0f,1.0f,1.0f));
+        Entity square3 = scene.createEntity();
+        TransformComponent transformComponent3 = new TransformComponent(new Vector3f(0.4f, 0.2f, 1.0f), new Vector2f(.2f, 0.2f));
+        square3.addComponent(transformComponent3);
+        SpriteComponent spriteComponent3 = new SpriteComponent(new Vector4f(0.2f, 0.3f, 1.0f, 1.0f));
+        square3.addComponent(spriteComponent3);
+
+        //////////////////////
+        // BatchRenderer2D.drawQuad(new Vector2f(0.0f, 0.0f), new Vector2f(4.0f, 4.0f), bricks, 20.0f);
+        Entity square4 = scene.createEntity();
+        TransformComponent transformComponent4 = new TransformComponent(new Vector3f(0.0f, 0.0f, 1.0f), new Vector2f(0.4f, 0.4f));
+        square4.addComponent(transformComponent4);
+        SpriteComponent spriteComponent4 = new SpriteComponent(bricks, 20.0f);
+        square4.addComponent(spriteComponent4);
+
+        //////////////////////
+        // BatchRenderer2D.drawRotatedQuad(new Vector2f(2.0f, 2.0f), new Vector2f(1.0f, 1.0f), (float) (count), dirt, 3.0f);
+        square5 = scene.createEntity();
+        TransformComponent transformComponent5 = new TransformComponent(new Vector3f(2.0f, 2.0f, 1.0f), new Vector2f(1.0f, 1.0f), (float) (count));
+        square5.addComponent(transformComponent5);
+        SpriteComponent spriteComponent5 = new SpriteComponent(dirt, 3.0f);
+        square5.addComponent(spriteComponent5);
+
+        //////////////////////
+        // BatchRenderer2D.drawQuad(new Vector2f(-1.0f, 2.0f), new Vector2f(1.0f, 1.0f), dirt);
+        Entity square6 = scene.createEntity();
+        TransformComponent transformComponent6 = new TransformComponent(new Vector3f(-1.0f, 2.0f, 1.0f), new Vector2f(1.0f, 1.0f));
+        square6.addComponent(transformComponent6);
+        SpriteComponent spriteComponent6 = new SpriteComponent(dirt);
+        square6.addComponent(spriteComponent6);
     }
 
     @Override
     public void onUpdate(TimeStep timeStep) {
+        double time = glfwGetTime();
         // update
         if (isViewPortIsFocused) {
             cameraController.onUpdate(timeStep);
@@ -71,20 +128,21 @@ public class EditorLayer extends Layer {
         frameBuffer.bind();
         RendererCommandAPI.setClearColor(new Vector4f(0.1f, 0.1f, 0.1f, 1));
         RendererCommandAPI.clear();
+
+        // scene
+        square5.getComponent(TransformComponent.class).rotationAngle = (float) count;
+        scene.onUpdate(timeStep);
+
         BatchRenderer2D.begin(cameraController.getCamera());
 
-        // BatchRenderer2D.drawQuad(new Vector2f(-0.6f, 0.6f), new Vector2f(.2f, 0.3f), new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
-        // BatchRenderer2D.drawQuad(new Vector2f(-0.4f, -0.4f), new Vector2f(.3f, 0.3f), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
-        // BatchRenderer2D.drawQuad(new Vector2f(0.4f, 0.2f), new Vector2f(.2f, 0.2f), new Vector4f(0.0f,0.0f,1.0f,1.0f));
-        BatchRenderer2D.drawQuad(new Vector2f(0.0f, 0.0f), new Vector2f(4.0f, 4.0f), bricks, 20.0f);
-        BatchRenderer2D.drawRotatedQuad(new Vector2f(2.0f, 2.0f), new Vector2f(1.0f, 1.0f), (float) (count), dirt, 3.0f);
-        BatchRenderer2D.drawQuad(new Vector2f(-1.0f, 2.0f), new Vector2f(1.0f, 1.0f), dirt);
-        double time = glfwGetTime();
-        for (int i = 0; i < 50; i++) {
-            for (int j = 0; j < 50; j++) {
-                BatchRenderer2D.drawQuad(new Vector2f(-2.0f + (i * 0.05f), -2.0f + (j * 0.05f)), new Vector2f(0.04f, 0.04f), new Vector4f((float) i / 50, 0.4f, (float) j / 50, 0.5f));
-            }
-        }
+        // for (int i = 0; i < 50; i++) {
+        //     for (int j = 0; j < 50; j++) {
+        //         BatchRenderer2D.drawQuad(new Vector2f(-2.0f + (i * 0.05f), -2.0f + (j * 0.05f)), new Vector2f(0.04f, 0.04f), new Vector4f((float) i / 50, 0.4f, (float) j / 50, 0.5f));
+        //     }
+        // }
+
+        BatchRenderer2D.end();
+        frameBuffer.unbind();
 
         if (count <= 300) {
             average = new TimeStep((float) (glfwGetTime() - lastRenderTime)).getMilliseconds();
@@ -94,8 +152,6 @@ public class EditorLayer extends Layer {
         count++;
 
         lastRenderTime = time;
-        BatchRenderer2D.end();
-        frameBuffer.unbind();
     }
 
     @Override
