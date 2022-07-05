@@ -14,7 +14,6 @@ public class OpenGLVertexBuffer extends VertexBuffer {
         rendererId = glCreateBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, rendererId);
         glBufferData(GL_ARRAY_BUFFER, size, GL_DYNAMIC_DRAW);
-        YH_LOG_TRACE("size: {}", size);
     }
 
     public OpenGLVertexBuffer(float @NotNull [] vertices) {
