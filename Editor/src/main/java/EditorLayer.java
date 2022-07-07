@@ -1,5 +1,6 @@
 import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
+import GameEngine.Engine.ECS.Components.CameraComponent;
 import GameEngine.Engine.ECS.Components.SpriteComponent;
 import GameEngine.Engine.ECS.Components.TransformComponent;
 import GameEngine.Engine.ECS.Entity;
@@ -12,6 +13,7 @@ import GameEngine.Engine.Renderer.RendererStatistics;
 import GameEngine.Engine.Renderer.Texture;
 import GameEngine.Engine.Utils.OrthographicCameraController;
 import GameEngine.Engine.Utils.TimeStep;
+import Panels.SceneHierarchyPanel;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImGuiViewport;
@@ -36,7 +38,9 @@ public class EditorLayer extends Layer {
     private Vector2f viewportSize;
     private boolean isViewPortIsFocused, isViewPortIsHovered;
     private Scene scene;
-    private Entity square5;
+    private Entity camera;
+    private ImBoolean isCameraActive;
+    private SceneHierarchyPanel sceneHierarchyPanel;
 
     public EditorLayer() {
         super("Example Layer 2D");
@@ -60,54 +64,41 @@ public class EditorLayer extends Layer {
         isViewPortIsFocused = false;
         isViewPortIsHovered = false;
 
-        scene = new Scene(cameraController.getCamera());
+        scene = new Scene();
         //////////////////////
         // BatchRenderer2D.drawQuad(new Vector2f(-0.6f, 0.6f), new Vector2f(.2f, 0.3f), );
         Entity square = scene.createEntity();
-        TransformComponent transformComponent = new TransformComponent(new Vector3f(-0.6f, 0.6f, 1.0f), new Vector2f(.2f, 0.3f));
-        square.addComponent(transformComponent);
+        TransformComponent transformComponent = square.getComponent(TransformComponent.class);
+        transformComponent.transform = new Vector3f(-0.6f, 0.6f, 1.0f);
+        transformComponent.size = new Vector2f(.2f, 0.3f);
         SpriteComponent spriteComponent = new SpriteComponent(new Vector4f(0.3f, 1.0f, 0.3f, 1.0f));
         square.addComponent(spriteComponent);
 
         //////////////////////
         // BatchRenderer2D.drawQuad(new Vector2f(-0.4f, -0.4f), new Vector2f(.3f, 0.3f), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
         Entity square2 = scene.createEntity();
-        TransformComponent transformComponent2 = new TransformComponent(new Vector3f(-0.4f, -0.4f, 1.0f), new Vector2f(.3f, 0.3f));
-        square2.addComponent(transformComponent2);
+        TransformComponent transformComponent2 = square2.getComponent(TransformComponent.class);
+        transformComponent2.transform = new Vector3f(-0.4f, -0.4f, 1.0f);
+        transformComponent2.size = new Vector2f(.3f, 0.3f);
         SpriteComponent spriteComponent2 = new SpriteComponent(new Vector4f(1.0f, 0.3f, 0.2f, 1.0f));
         square2.addComponent(spriteComponent2);
 
         //////////////////////
-        // BatchRenderer2D.drawQuad(new Vector2f(0.4f, 0.2f), new Vector2f(.2f, 0.2f), new Vector4f(0.0f,0.0f,1.0f,1.0f));
-        Entity square3 = scene.createEntity();
-        TransformComponent transformComponent3 = new TransformComponent(new Vector3f(0.4f, 0.2f, 1.0f), new Vector2f(.2f, 0.2f));
-        square3.addComponent(transformComponent3);
-        SpriteComponent spriteComponent3 = new SpriteComponent(new Vector4f(0.2f, 0.3f, 1.0f, 1.0f));
-        square3.addComponent(spriteComponent3);
-
-        //////////////////////
         // BatchRenderer2D.drawQuad(new Vector2f(0.0f, 0.0f), new Vector2f(4.0f, 4.0f), bricks, 20.0f);
         Entity square4 = scene.createEntity();
-        TransformComponent transformComponent4 = new TransformComponent(new Vector3f(0.0f, 0.0f, 1.0f), new Vector2f(0.4f, 0.4f));
-        square4.addComponent(transformComponent4);
+        TransformComponent transformComponent3 = square4.getComponent(TransformComponent.class);
+        transformComponent3.transform = new Vector3f(-0.0f, -0.0f, 0.0f);
+        transformComponent3.size = new Vector2f(4.0f, 4.0f);
         SpriteComponent spriteComponent4 = new SpriteComponent(bricks, 20.0f);
         square4.addComponent(spriteComponent4);
 
-        //////////////////////
-        // BatchRenderer2D.drawRotatedQuad(new Vector2f(2.0f, 2.0f), new Vector2f(1.0f, 1.0f), (float) (count), dirt, 3.0f);
-        square5 = scene.createEntity();
-        TransformComponent transformComponent5 = new TransformComponent(new Vector3f(2.0f, 2.0f, 1.0f), new Vector2f(1.0f, 1.0f), (float) (count));
-        square5.addComponent(transformComponent5);
-        SpriteComponent spriteComponent5 = new SpriteComponent(dirt, 3.0f);
-        square5.addComponent(spriteComponent5);
+        ///////////////////////
+        camera = scene.createEntity("Camera");
+        CameraComponent cameraComponent = new CameraComponent(cameraController.getCamera(), true);
+        camera.addComponent(cameraComponent);
+        isCameraActive = new ImBoolean(true);
 
-        //////////////////////
-        // BatchRenderer2D.drawQuad(new Vector2f(-1.0f, 2.0f), new Vector2f(1.0f, 1.0f), dirt);
-        Entity square6 = scene.createEntity();
-        TransformComponent transformComponent6 = new TransformComponent(new Vector3f(-1.0f, 2.0f, 1.0f), new Vector2f(1.0f, 1.0f));
-        square6.addComponent(transformComponent6);
-        SpriteComponent spriteComponent6 = new SpriteComponent(dirt);
-        square6.addComponent(spriteComponent6);
+        sceneHierarchyPanel = new SceneHierarchyPanel(scene);
     }
 
     @Override
@@ -130,24 +121,14 @@ public class EditorLayer extends Layer {
         RendererCommandAPI.clear();
 
         // scene
-        square5.getComponent(TransformComponent.class).rotationAngle = (float) count;
         scene.onUpdate(timeStep);
 
-        BatchRenderer2D.begin(cameraController.getCamera());
-
-        // for (int i = 0; i < 50; i++) {
-        //     for (int j = 0; j < 50; j++) {
-        //         BatchRenderer2D.drawQuad(new Vector2f(-2.0f + (i * 0.05f), -2.0f + (j * 0.05f)), new Vector2f(0.04f, 0.04f), new Vector4f((float) i / 50, 0.4f, (float) j / 50, 0.5f));
-        //     }
-        // }
-
-        BatchRenderer2D.end();
         frameBuffer.unbind();
 
         if (count <= 300) {
             average = new TimeStep((float) (glfwGetTime() - lastRenderTime)).getMilliseconds();
         } else {
-            average = average * (count - 1) / count + (new TimeStep((float) (glfwGetTime() - lastRenderTime)).getMilliseconds()) / count;
+            average = average * (30 - 1) / 30 + (new TimeStep((float) (glfwGetTime() - lastRenderTime)).getMilliseconds()) / 30;
         }
         count++;
 
@@ -212,12 +193,18 @@ public class EditorLayer extends Layer {
             ImGui.endMenuBar();
         }
 
+        sceneHierarchyPanel.onImGuiRender();
+
         ImGui.begin("Settings");
         RendererStatistics stats = RendererStatistics.getInstance();
         ImGui.text("Renderer2D Stats:");
         ImGui.text("Draw Calls: " + stats.getDrawCallsCount());
         ImGui.text("Quads: " + stats.getQuadsCount());
         ImGui.textWrapped("Average Rendering time for one frame: " + String.format("%2f", average) + " ms");
+        ImGui.separator();
+        ImGui.checkbox("Activate Camera", isCameraActive);
+        camera.getComponent(CameraComponent.class).primary = isCameraActive.get();
+
         ImGui.end();
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
