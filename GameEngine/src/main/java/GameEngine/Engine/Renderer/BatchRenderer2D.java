@@ -69,7 +69,11 @@ public class BatchRenderer2D {
         YH_LOG_TRACE("Deleting BatchRenderer2D.");
     }
 
-    public static void begin(@NotNull Camera camera) {
+    public static void begin(Camera camera) {
+        if (camera == null) {
+            return;
+        }
+
         storage.shader.bind();
         storage.shader.UploadUniformMat4("uViewProjection", camera.getViewProjectionMatrix());
         storage.quadVertices.verticesCount = 0;
