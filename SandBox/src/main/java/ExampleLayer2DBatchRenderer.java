@@ -29,7 +29,7 @@ public class ExampleLayer2DBatchRenderer extends Layer {
 
     public ExampleLayer2DBatchRenderer() {
         super("Example Layer 2D");
-        cameraController = new OrthographicCameraController(1280f / 720f, true);
+        cameraController = new OrthographicCameraController(1280f / 720f);
     }
 
     @Override

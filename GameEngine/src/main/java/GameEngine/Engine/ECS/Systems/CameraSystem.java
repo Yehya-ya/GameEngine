@@ -1,6 +1,7 @@
 package GameEngine.Engine.ECS.Systems;
 
 import GameEngine.Engine.ECS.Components.CameraComponent;
+import GameEngine.Engine.ECS.Components.TransformComponent;
 import GameEngine.Engine.ECS.Scene;
 import GameEngine.Engine.Renderer.Camera.Camera;
 import com.artemis.ComponentMapper;
@@ -8,10 +9,11 @@ import com.artemis.Entity;
 import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
 
-@All(CameraComponent.class)
+@All({CameraComponent.class, TransformComponent.class})
 public class CameraSystem extends EntityProcessingSystem {
     private final Scene scene;
     private ComponentMapper<CameraComponent> cameraComponentsMapper;
+    private ComponentMapper<TransformComponent> transformComponentsMapper;
     private Camera mainCamera;
 
     public CameraSystem(Scene scene) {
@@ -29,6 +31,9 @@ public class CameraSystem extends EntityProcessingSystem {
         if (cameraComponent.primary) {
             mainCamera = cameraComponent.camera;
         }
+        TransformComponent transformComponent = transformComponentsMapper.get(e);
+        cameraComponent.camera.setPosition(transformComponent.transform);
+        cameraComponent.camera.setRotation(transformComponent.rotationAngle);
     }
 
     @Override

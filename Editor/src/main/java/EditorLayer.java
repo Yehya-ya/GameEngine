@@ -44,7 +44,7 @@ public class EditorLayer extends Layer {
 
     public EditorLayer() {
         super("Example Layer 2D");
-        cameraController = new OrthographicCameraController(1280f / 720f, 3.0f, true);
+        cameraController = new OrthographicCameraController(1280f / 720f, 3.0f);
     }
 
     @Override
@@ -201,10 +201,6 @@ public class EditorLayer extends Layer {
         ImGui.text("Draw Calls: " + stats.getDrawCallsCount());
         ImGui.text("Quads: " + stats.getQuadsCount());
         ImGui.textWrapped("Average Rendering time for one frame: " + String.format("%2f", average) + " ms");
-        ImGui.separator();
-        ImGui.checkbox("Activate Camera", isCameraActive);
-        camera.getComponent(CameraComponent.class).primary = isCameraActive.get();
-
         ImGui.end();
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
