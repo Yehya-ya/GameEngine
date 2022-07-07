@@ -28,7 +28,7 @@ public class ExampleLayer extends Layer {
         col = new float[4];
         col[3] = 1.0f;
         transformation = new Matrix4f().translate(new Vector3f(0.2f, 0.2f, 0.0f)).scale(0.1f);
-        cameraController = new OrthographicCameraController(1280f / 720f, true);
+        cameraController = new OrthographicCameraController(1280f / 720f);
         shaderLibrary = new ShaderLibrary();
 
         triangle = VertexArray.create();
