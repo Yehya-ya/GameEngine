@@ -77,15 +77,15 @@ public abstract class Window {
         }
 
         public WindowProp(String title, int width, int height) {
-            this(title, width, height, false, true);
+            this(title, width, height, false);
         }
 
         public WindowProp(String title) {
-            this(title, 1280, 720, false, true);
+            this(title, 1600, 900);
         }
 
         public WindowProp() {
-            this("default window", 1280, 720, false, true);
+            this("default window");
         }
 
         public void setEventCallback(EventCallBackHandler callback) {
