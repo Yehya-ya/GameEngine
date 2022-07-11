@@ -33,7 +33,7 @@ public class CameraSystem extends EntityProcessingSystem {
         }
         TransformComponent transformComponent = transformComponentsMapper.get(e);
         cameraComponent.camera.setPosition(transformComponent.transform);
-        cameraComponent.camera.setRotation(transformComponent.rotationAngle);
+        cameraComponent.camera.setRotation(transformComponent.rotation);
     }
 
     @Override

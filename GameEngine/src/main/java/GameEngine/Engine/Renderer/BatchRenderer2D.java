@@ -106,58 +106,58 @@ public class BatchRenderer2D {
         startBatch();
     }
 
-    public static void drawQuad(Vector2f pos, Vector2f size, Vector4f color) {
+    public static void drawQuad(Vector2f pos, Vector3f size, Vector4f color) {
         drawQuad(new Vector3f(pos, 1.0f), size, color);
     }
 
-    public static void drawQuad(Vector3f pos, @NotNull Vector2f size, Vector4f color) {
-        Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, 1.0f);
+    public static void drawQuad(Vector3f pos, @NotNull Vector3f size, Vector4f color) {
+        Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, size.z);
 
         drawWithColor(transformation, color);
     }
 
-    public static void drawQuad(Vector2f pos, Vector2f size, Texture texture) {
+    public static void drawQuad(Vector2f pos, Vector3f size, Texture texture) {
         drawQuad(new Vector3f(pos, 1.0f), size, texture, 1.0f);
     }
 
-    public static void drawQuad(Vector3f pos, Vector2f size, Texture texture) {
+    public static void drawQuad(Vector3f pos, Vector3f size, Texture texture) {
         drawQuad(pos, size, texture, 1.0f);
     }
 
-    public static void drawQuad(Vector2f pos, Vector2f size, Texture texture, float tilingFactor) {
+    public static void drawQuad(Vector2f pos, Vector3f size, Texture texture, float tilingFactor) {
         drawQuad(new Vector3f(pos, 1.0f), size, texture, tilingFactor);
     }
 
-    public static void drawQuad(Vector3f pos, @NotNull Vector2f size, Texture texture, float tilingFactor) {
-        Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, 1.0f);
+    public static void drawQuad(Vector3f pos, @NotNull Vector3f size, Texture texture, float tilingFactor) {
+        Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, size.z);
 
         drawWithTexture(transformation, texture, tilingFactor);
     }
 
-    public static void drawRotatedQuad(Vector2f pos, Vector2f size, float rotationAngle, Vector4f color) {
-        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotationAngle, color);
+    public static void drawRotatedQuad(Vector2f pos, Vector3f size, Vector3f rotation, Vector4f color) {
+        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, color);
     }
 
-    public static void drawRotatedQuad(Vector3f pos, @NotNull Vector2f size, float rotationAngle, Vector4f color) {
-        Matrix4f transformation = new Matrix4f().translate(pos).rotate((float) Math.toRadians(rotationAngle), new Vector3f(0.0f, 0.0f, 1.0f)).scale(size.x, size.y, 1.0f);
+    public static void drawRotatedQuad(Vector3f pos, @NotNull Vector3f size, @NotNull Vector3f rotation, Vector4f color) {
+        Matrix4f transformation = new Matrix4f().translate(pos).rotateAffineXYZ(rotation.x, rotation.y, rotation.z).scale(size.x, size.y, size.z);
 
         drawWithColor(transformation, color);
     }
 
-    public static void drawRotatedQuad(Vector2f pos, Vector2f size, float rotationAngle, Texture texture) {
-        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotationAngle, texture, 1.0f);
+    public static void drawRotatedQuad(Vector2f pos, Vector3f size, Vector3f rotation, Texture texture) {
+        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, texture, 1.0f);
     }
 
-    public static void drawRotatedQuad(Vector3f pos, Vector2f size, float rotationAngle, Texture texture) {
-        drawRotatedQuad(pos, size, rotationAngle, texture, 1.0f);
+    public static void drawRotatedQuad(Vector3f pos, Vector3f size, Vector3f rotation, Texture texture) {
+        drawRotatedQuad(pos, size, rotation, texture, 1.0f);
     }
 
-    public static void drawRotatedQuad(Vector2f pos, Vector2f size, float rotationAngle, Texture texture, float tilingFactor) {
-        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotationAngle, texture, tilingFactor);
+    public static void drawRotatedQuad(Vector2f pos, Vector3f size, Vector3f rotation, Texture texture, float tilingFactor) {
+        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, texture, tilingFactor);
     }
 
-    public static void drawRotatedQuad(Vector3f pos, @NotNull Vector2f size, float rotationAngle, Texture texture, float tilingFactor) {
-        Matrix4f transformation = new Matrix4f().translate(pos).rotate((float) Math.toRadians(rotationAngle), new Vector3f(0.0f, 0.0f, 1.0f)).scale(size.x, size.y, 1.0f);
+    public static void drawRotatedQuad(Vector3f pos, @NotNull Vector3f size, @NotNull Vector3f rotation, Texture texture, float tilingFactor) {
+        Matrix4f transformation = new Matrix4f().translate(pos).rotateAffineXYZ(rotation.x, rotation.y, rotation.z).scale(size.x, size.y, size.z);
 
         drawWithTexture(transformation, texture, tilingFactor);
     }
