@@ -13,6 +13,10 @@ public class Entity {
         return entity.getId();
     }
 
+    public <T extends Component> Boolean hasComponent(Class<T> tClass) {
+        return entity.getComponent(tClass) != null;
+    }
+
     public <T extends Component> T getComponent(Class<T> type) {
         return entity.getComponent(type);
     }

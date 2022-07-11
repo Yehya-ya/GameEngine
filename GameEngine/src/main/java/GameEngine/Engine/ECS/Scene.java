@@ -1,14 +1,13 @@
 package GameEngine.Engine.ECS;
 
+import GameEngine.Engine.ECS.Components.TagComponent;
 import GameEngine.Engine.ECS.Components.TransformComponent;
 import GameEngine.Engine.ECS.Systems.CameraSystem;
 import GameEngine.Engine.ECS.Systems.RenderSystem;
 import GameEngine.Engine.Renderer.Camera.Camera;
 import GameEngine.Engine.Utils.TimeStep;
-import com.artemis.World;
-import com.artemis.WorldConfiguration;
-import com.artemis.WorldConfigurationBuilder;
-import com.artemis.managers.TagManager;
+import com.artemis.*;
+import com.artemis.utils.IntBag;
 import org.jetbrains.annotations.NotNull;
 
 public class Scene {
@@ -18,11 +17,19 @@ public class Scene {
     public Scene() {
         WorldConfiguration configuration = new WorldConfigurationBuilder() //
                 .with(//
-                        new TagManager(), //
                         new CameraSystem(this), //
                         new RenderSystem(this) //
                 ).build();
         engine = new World(configuration);
+    }
+
+    public Entity getEntity(int id) {
+        return new Entity(engine.getEntity(id));
+    }
+
+    @SafeVarargs
+    public final IntBag getEntitiesIds(Class<? extends Component>... args) {
+        return engine.getAspectSubscriptionManager().get(Aspect.all(args)).getEntities();
     }
 
     public Camera getCamera() {
@@ -33,10 +40,6 @@ public class Scene {
         this.camera = camera;
     }
 
-    public TagManager getTagManager() {
-        return engine.getSystem(TagManager.class);
-    }
-
     public Entity createEntity() {
         return createEntity("untitled");
     }
@@ -44,13 +47,7 @@ public class Scene {
     public Entity createEntity(String name) {
         com.artemis.Entity e = engine.createEntity();
         Entity entity = new Entity(e);
-        TagManager tagManager = engine.getSystem(TagManager.class);
-        String tmpName = name;
-        int i = 1;
-        while (tagManager.isRegistered(tmpName)) {
-            tmpName = name + i++;
-        }
-        tagManager.register(tmpName, e);
+        entity.addComponent(new TagComponent(name));
         entity.addComponent(new TransformComponent());
         return entity;
     }

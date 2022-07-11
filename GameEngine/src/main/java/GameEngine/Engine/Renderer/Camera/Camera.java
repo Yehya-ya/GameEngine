@@ -9,7 +9,7 @@ public abstract class Camera {
     protected Matrix4f viewProjectionMatrix;
 
     protected Vector3f position;
-    protected float rotation;
+    protected Vector3f rotation;
 
     protected float aspectRatio;
     protected float far, near;
@@ -19,7 +19,7 @@ public abstract class Camera {
         viewMatrix = new Matrix4f();
         viewProjectionMatrix = new Matrix4f();
         position = new Vector3f(0.0f, 0.0f, 1.0f);
-        rotation = 0.0f;
+        rotation = new Vector3f();
         aspectRatio = 1.0f;
         far = 1.0f;
         near = -1.0f;
@@ -83,24 +83,18 @@ public abstract class Camera {
         recalculateViewProjectionMatrix();
     }
 
-    public float getRotation() {
+    public Vector3f getRotation() {
         return rotation;
     }
 
-    public void setRotation(float rotation) {
+    public void setRotation(Vector3f rotation) {
         this.rotation = rotation;
         recalculateViewMatrix();
         recalculateViewProjectionMatrix();
     }
 
-    public float getRotationInRadians() {
-        return (float) Math.toRadians(rotation);
-    }
-
-    public void rotate(float angle) {
-        this.rotation += angle;
-        recalculateViewMatrix();
-        recalculateViewProjectionMatrix();
+    protected Vector3f getRotationInRadians() {
+        return new Vector3f((float) Math.toRadians(rotation.x), (float) Math.toRadians(rotation.y), (float) Math.toRadians(rotation.z));
     }
 
     protected abstract void recalculateViewMatrix();

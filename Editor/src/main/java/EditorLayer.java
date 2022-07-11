@@ -70,7 +70,7 @@ public class EditorLayer extends Layer {
         Entity square = scene.createEntity();
         TransformComponent transformComponent = square.getComponent(TransformComponent.class);
         transformComponent.transform = new Vector3f(-0.6f, 0.6f, 1.0f);
-        transformComponent.size = new Vector2f(.2f, 0.3f);
+        transformComponent.size = new Vector3f(.2f, 0.3f, 1.0f);
         SpriteComponent spriteComponent = new SpriteComponent(new Vector4f(0.3f, 1.0f, 0.3f, 1.0f));
         square.addComponent(spriteComponent);
 
@@ -79,7 +79,7 @@ public class EditorLayer extends Layer {
         Entity square2 = scene.createEntity();
         TransformComponent transformComponent2 = square2.getComponent(TransformComponent.class);
         transformComponent2.transform = new Vector3f(-0.4f, -0.4f, 1.0f);
-        transformComponent2.size = new Vector2f(.3f, 0.3f);
+        transformComponent2.size = new Vector3f(.3f, 0.3f, 1.0f);
         SpriteComponent spriteComponent2 = new SpriteComponent(new Vector4f(1.0f, 0.3f, 0.2f, 1.0f));
         square2.addComponent(spriteComponent2);
 
@@ -88,7 +88,7 @@ public class EditorLayer extends Layer {
         Entity square4 = scene.createEntity();
         TransformComponent transformComponent3 = square4.getComponent(TransformComponent.class);
         transformComponent3.transform = new Vector3f(-0.0f, -0.0f, 0.0f);
-        transformComponent3.size = new Vector2f(4.0f, 4.0f);
+        transformComponent3.size = new Vector3f(4.0f, 4.0f, 1.0f);
         SpriteComponent spriteComponent4 = new SpriteComponent(bricks, 20.0f);
         square4.addComponent(spriteComponent4);
 

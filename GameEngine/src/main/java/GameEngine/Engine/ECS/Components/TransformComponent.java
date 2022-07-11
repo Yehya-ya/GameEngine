@@ -1,29 +1,31 @@
 package GameEngine.Engine.ECS.Components;
 
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class TransformComponent extends com.artemis.Component {
     public Vector3f transform;
-    public Vector2f size;
-    public float rotationAngle;
+    public Vector3f size;
+    public Vector3f rotation;
 
-    public TransformComponent(Vector3f transform, Vector2f size, float rotationAngle) {
+    public TransformComponent(Vector3f transform, Vector3f size, Vector3f rotation) {
         this.transform = transform;
         this.size = size;
-        this.rotationAngle = rotationAngle;
+        this.rotation = rotation;
     }
 
-    public TransformComponent(Vector3f transform, Vector2f size) {
-        this(transform, size, 0.0f);
+    public TransformComponent(Vector3f transform, Vector3f size) {
+        this(transform, size, new Vector3f());
     }
 
     public TransformComponent(Vector3f transform) {
-        this(transform, new Vector2f(1.0f), 0.0f);
+        this(transform, new Vector3f(1.0f), new Vector3f());
     }
 
-
     public TransformComponent() {
-        this(new Vector3f(0.0f), new Vector2f(1.0f), 0.0f);
+        this(new Vector3f(0.0f), new Vector3f(1.0f), new Vector3f());
+    }
+
+    public Vector3f getRotationInRadians() {
+        return new Vector3f((float) Math.toRadians(rotation.x), (float) Math.toRadians(rotation.y), (float) Math.toRadians(rotation.z));
     }
 }

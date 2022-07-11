@@ -1,6 +1,7 @@
 package GameEngine.Engine.Renderer.Camera;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 public class OrthographicCamera extends Camera {
     private float zoomLevel;
@@ -37,7 +38,8 @@ public class OrthographicCamera extends Camera {
 
     @Override
     protected void recalculateViewMatrix() {
-        Matrix4f transform = new Matrix4f().translate(position).rotateZ((float) Math.toRadians(rotation));
+        Vector3f rotation = getRotationInRadians();
+        Matrix4f transform = new Matrix4f().translate(position).rotateAffineXYZ(rotation.x, rotation.y, rotation.z);
         viewMatrix = transform.invert();
     }
 
