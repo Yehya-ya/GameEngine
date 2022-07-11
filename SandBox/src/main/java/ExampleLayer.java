@@ -1,9 +1,9 @@
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Events.Event;
-import GameEngine.Engine.Renderer.*;
 import GameEngine.Engine.Renderer.Buffer.BufferLayout;
 import GameEngine.Engine.Renderer.Buffer.IndexBuffer;
 import GameEngine.Engine.Renderer.Buffer.VertexBuffer;
+import GameEngine.Engine.Renderer.*;
 import GameEngine.Engine.Utils.OrthographicCameraController;
 import GameEngine.Engine.Utils.TimeStep;
 import imgui.ImGui;
@@ -27,7 +27,7 @@ public class ExampleLayer extends Layer {
         super("Example");
         col = new float[4];
         col[3] = 1.0f;
-        transformation = new Matrix4f().translate(new Vector3f(0.2f, 0.2f, 0.0f)).scale(0.1f);
+        transformation = new Matrix4f().translate(new Vector3f(0.2f, 0.2f, 1.0f)).scale(0.1f);
         cameraController = new OrthographicCameraController(1280f / 720f);
         shaderLibrary = new ShaderLibrary();
 
