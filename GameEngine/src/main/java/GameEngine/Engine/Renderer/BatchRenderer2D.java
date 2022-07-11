@@ -48,6 +48,7 @@ public class BatchRenderer2D {
 
         storage.shader.bind();
         storage.shader.UploadUniformIntArray("uTextures", texturesUniform);
+        storage.textures[0] = storage.whiteTexture;
 
         storage.baseVertices[0] = new Vector3f(-0.5f, -0.5f, 0.0f);
         storage.baseVertices[1] = new Vector3f(0.5f, -0.5f, 0.0f);
@@ -76,19 +77,23 @@ public class BatchRenderer2D {
 
         storage.shader.bind();
         storage.shader.UploadUniformMat4("uViewProjection", camera.getViewProjectionMatrix());
-        storage.quadVertices.verticesCount = 0;
-        storage.quadVertices.quadIndexCount = 0;
-        storage.texturesIndex = 1;
-        storage.textures[0] = storage.whiteTexture;
+
+        startBatch();
     }
 
     public static void end() {
-        storage.vertexBuffer.setData(storage.quadVertices.getBuffer());
-
         flush();
     }
 
+    public static void startBatch() {
+        storage.quadVertices.verticesCount = 0;
+        storage.quadVertices.quadIndexCount = 0;
+        storage.texturesIndex = 1;
+    }
+
     public static void flush() {
+        storage.vertexBuffer.setData(storage.quadVertices.getBuffer());
+
         for (int i = 0; i < storage.texturesIndex; i++) {
             storage.textures[i].bind(i);
         }
@@ -96,12 +101,9 @@ public class BatchRenderer2D {
         RendererStatistics.getInstance().addOneToDrawCallsCount();
     }
 
-    public static void resetAndFlush() {
-        end();
-
-        storage.quadVertices.verticesCount = 0;
-        storage.quadVertices.quadIndexCount = 0;
-        storage.texturesIndex = 1;
+    public static void nextBatch() {
+        flush();
+        startBatch();
     }
 
     public static void drawQuad(Vector2f pos, Vector2f size, Vector4f color) {
@@ -162,7 +164,7 @@ public class BatchRenderer2D {
 
     private static void drawWithColor(@NotNull Matrix4f transformation, Vector4f color) {
         if (storage.quadVertices.quadIndexCount >= QuadVertices.MaxIndices) {
-            resetAndFlush();
+            nextBatch();
         }
 
         for (int i = 0; i < storage.baseVertices.length; i++) {
@@ -176,7 +178,7 @@ public class BatchRenderer2D {
 
     private static void drawWithTexture(Matrix4f transformation, Texture texture, float tilingFactor) {
         if (storage.quadVertices.quadIndexCount >= QuadVertices.MaxIndices) {
-            resetAndFlush();
+            nextBatch();
         }
 
         Vector4f color = new Vector4f(1.0f);
@@ -191,7 +193,7 @@ public class BatchRenderer2D {
 
         if (textureIndex == 0.0f) {
             if (storage.texturesIndex >= QuadVertices.MaxTextures) {
-                resetAndFlush();
+                nextBatch();
             }
             storage.textures[storage.texturesIndex] = texture;
             textureIndex = storage.texturesIndex;
