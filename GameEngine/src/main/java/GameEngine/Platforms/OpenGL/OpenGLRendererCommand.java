@@ -18,15 +18,16 @@ public class OpenGLRendererCommand extends RendererCommand {
         glDebugMessageCallback((source, type, id, severity, length, message, userParam) -> {
             switch (severity) {
                 case GL_DEBUG_SEVERITY_HIGH, GL_DEBUG_SEVERITY_MEDIUM -> {
-                    YH_LOG_ERROR(memUTF8(memByteBuffer(message, length)));
+                    YH_LOG_ERROR("Id: {}, " + memUTF8(memByteBuffer(message, length)), id);
                     return;
                 }
                 case GL_DEBUG_SEVERITY_LOW -> {
-                    YH_LOG_WARN(memUTF8(memByteBuffer(message, length)));
+                    YH_LOG_WARN("Id: {}, " + memUTF8(memByteBuffer(message, length)), id);
                     return;
                 }
                 case GL_DEBUG_SEVERITY_NOTIFICATION -> {
-                    YH_LOG_TRACE(memUTF8(memByteBuffer(message, length)));
+                    if (id == 131185) return; // log with id = 131185, is about using gpu memory (can be ignored safely).
+                    YH_LOG_TRACE("Id: {}, "+memUTF8(memByteBuffer(message, length)), id);
                     return;
                 }
             }
