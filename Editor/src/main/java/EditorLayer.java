@@ -10,12 +10,12 @@ import GameEngine.Engine.Renderer.RendererStatistics;
 import GameEngine.Engine.Renderer.Texture;
 import GameEngine.Engine.Utils.TimeStep;
 import Panels.SceneHierarchyPanel;
+import Utils.FileDialog;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;
 import imgui.extension.imguifiledialog.ImGuiFileDialog;
-import imgui.extension.imguifiledialog.flag.ImGuiFileDialogFlags;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDockNodeFlags;
 import imgui.flag.ImGuiStyleVar;
@@ -25,8 +25,8 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 public class EditorLayer extends Layer {
-    static final long OpenFileDialogId = 101;
-    static final long SaveFileDialogId = 102;
+    public static final long OpenFileDialogId = 101;
+    public static final long SaveFileDialogId = 102;
     private double average;
     private Texture bricks;
     private Texture dirt;
@@ -132,28 +132,14 @@ public class EditorLayer extends Layer {
         if (ImGui.beginMenuBar()) {
             if (ImGui.beginMenu("File")) {
                 if (ImGui.menuItem("Open")) {
-                    ImGuiFileDialog.openModal(
-                            "openDialogKey",
-                            "Choose a file",
-                            "scene file(*.yaml){.yaml}",
-                            "",
-                            null,
-                            250,
-                            1,
-                            EditorLayer.OpenFileDialogId,
-                            ImGuiFileDialogFlags.HideColumnType | ImGuiFileDialogFlags.DisableCreateDirectoryButton);
+                    FileDialog.openFile(EditorLayer.OpenFileDialogId, "scene file(*.yaml){.yaml}", () -> {
+                        open(ImGuiFileDialog.getFilePathName());
+                    });
                 }
                 if (ImGui.menuItem("Save as")) {
-                    ImGuiFileDialog.openModal(
-                            "openDialogKey",
-                            "save as",
-                            "scene file(*.yaml){.yaml}",
-                            "untitled.yaml",
-                            null,
-                            250,
-                            1,
-                            EditorLayer.SaveFileDialogId,
-                            ImGuiFileDialogFlags.HideColumnType | ImGuiFileDialogFlags.DisableCreateDirectoryButton | ImGuiFileDialogFlags.ConfirmOverwrite);
+                    FileDialog.saveFile(EditorLayer.SaveFileDialogId, "scene file(*.yaml){.yaml}", () -> {
+                        saveAs(ImGuiFileDialog.getFilePathName());
+                    });
                 }
                 if (ImGui.menuItem("Exit")) {
                     Application.get().close();
@@ -164,17 +150,7 @@ public class EditorLayer extends Layer {
             ImGui.endMenuBar();
         }
 
-        if (ImGuiFileDialog.display("openDialogKey", ImGuiWindowFlags.NoCollapse, 500, 400, 1000, 800)) {
-            if (ImGuiFileDialog.isOk()) {
-                long userDatas = ImGuiFileDialog.getUserDatas();
-                if (userDatas == OpenFileDialogId) {
-                    open(ImGuiFileDialog.getFilePathName());
-                } else if (userDatas == SaveFileDialogId) {
-                    saveAs(ImGuiFileDialog.getFilePathName());
-                }
-            }
-            ImGuiFileDialog.close();
-        }
+        FileDialog.update();
         sceneHierarchyPanel.onImGuiRender();
 
         ImGui.begin("Stats");
