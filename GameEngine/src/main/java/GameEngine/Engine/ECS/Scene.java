@@ -1,7 +1,6 @@
 package GameEngine.Engine.ECS;
 
 import GameEngine.Engine.ECS.Components.TagComponent;
-import GameEngine.Engine.ECS.Components.TransformComponent;
 import GameEngine.Engine.ECS.Systems.CameraSystem;
 import GameEngine.Engine.ECS.Systems.RenderSystem;
 import GameEngine.Engine.Renderer.Camera.Camera;
@@ -48,7 +47,6 @@ public class Scene {
         com.artemis.Entity e = engine.createEntity();
         Entity entity = new Entity(e);
         entity.addComponent(new TagComponent(name));
-        entity.addComponent(new TransformComponent());
         return entity;
     }
 
