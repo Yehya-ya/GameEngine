@@ -4,3 +4,4 @@
 /**/imgui.ini
 /**/build/
 /.idea/
+/**/assets/scenes/*.yaml

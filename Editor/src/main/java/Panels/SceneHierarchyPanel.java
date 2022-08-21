@@ -27,6 +27,9 @@ public class SceneHierarchyPanel {
     private Scene scene;
     private Entity selectedEntity;
 
+    public SceneHierarchyPanel() {
+
+    }
 
     public SceneHierarchyPanel(Scene scene) {
         setScene(scene);
@@ -34,26 +37,29 @@ public class SceneHierarchyPanel {
 
     public void setScene(Scene scene) {
         this.scene = scene;
+        this.selectedEntity = null;
     }
 
     public void onImGuiRender() {
         ImGui.begin("Scene Hierarchy");
 
-        IntBag entitiesIds = scene.getEntitiesIds(TagComponent.class);
-        for (int i = 0; i < entitiesIds.size(); i++) {
-            drawEntityNode(scene.getEntity(entitiesIds.get(i)));
-        }
-
-        if (ImGui.isMouseDown(0) && ImGui.isWindowHovered()) {
-            selectedEntity = null;
-        }
-
-        if (ImGui.beginPopupContextWindow(ImGuiPopupFlags.NoOpenOverItems | ImGuiPopupFlags.MouseButtonRight)) {
-            if (ImGui.menuItem("Create Empty Entity")) {
-                scene.createEntity();
+        if (scene != null) {
+            IntBag entitiesIds = scene.getEntitiesIds(TagComponent.class);
+            for (int i = 0; i < entitiesIds.size(); i++) {
+                drawEntityNode(scene.getEntity(entitiesIds.get(i)));
             }
 
-            ImGui.endPopup();
+            if (ImGui.isMouseDown(0) && ImGui.isWindowHovered()) {
+                selectedEntity = null;
+            }
+
+            if (ImGui.beginPopupContextWindow(ImGuiPopupFlags.NoOpenOverItems | ImGuiPopupFlags.MouseButtonRight)) {
+                if (ImGui.menuItem("Create Empty Entity")) {
+                    scene.createEntity();
+                }
+
+                ImGui.endPopup();
+            }
         }
 
         ImGui.end();
