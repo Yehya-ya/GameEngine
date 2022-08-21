@@ -9,21 +9,24 @@ import GameEngine.Engine.ECS.Scene;
 import GameEngine.Engine.Renderer.Camera.CameraType;
 import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
 import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
+import GameEngine.Engine.Renderer.Texture;
+import Utils.FileDialog;
 import com.artemis.Component;
 import com.artemis.utils.IntBag;
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.extension.imguifiledialog.ImGuiFileDialog;
 import imgui.flag.*;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 import java.util.function.Function;
 
 public class SceneHierarchyPanel {
+    public static final long OpenTextureFileDialogId = 201;
     private Scene scene;
     private Entity selectedEntity;
 
@@ -74,13 +77,18 @@ public class SceneHierarchyPanel {
             }
 
             if (ImGui.beginPopup("AddComponent")) {
-                if (ImGui.menuItem("Camera")) {
+                if (ImGui.menuItem("Transformation Component")) {
+                    selectedEntity.addComponent(new TransformComponent());
+                    ImGui.closeCurrentPopup();
+                }
+
+                if (ImGui.menuItem("Camera Component")) {
                     selectedEntity.addComponent(new CameraComponent());
                     ImGui.closeCurrentPopup();
                 }
 
-                if (ImGui.menuItem("Sprite Renderer")) {
-                    selectedEntity.addComponent(new SpriteComponent(new Vector4f(1.0f)));
+                if (ImGui.menuItem("Sprite Renderer Component")) {
+                    selectedEntity.addComponent(new SpriteComponent());
                     ImGui.closeCurrentPopup();
                 }
 
@@ -170,7 +178,18 @@ public class SceneHierarchyPanel {
         });
 
         drawEntityComponentProperties("Sprite", e, SpriteComponent.class, spriteComponent -> {
-            if (spriteComponent.color != null) {
+            int type = spriteComponent.texture == null ? 0 : 1;
+            ImInt imInt = new ImInt(type);
+            ImGui.listBox("Type", imInt, new String[]{"color", "texture"});
+            if (type != imInt.get()) {
+                if (imInt.get() == 0) {
+                    spriteComponent.setToColor();
+                } else if (imInt.get() == 1) {
+                    spriteComponent.setToTexture();
+                }
+            }
+
+            if (spriteComponent.texture == null) {
                 float[] color = new float[]{spriteComponent.color.x, spriteComponent.color.y, spriteComponent.color.z, spriteComponent.color.w};
                 if (ImGui.colorEdit4("Color" + e.getId(), color)) {
                     spriteComponent.color.x = color[0];
@@ -178,11 +197,15 @@ public class SceneHierarchyPanel {
                     spriteComponent.color.z = color[2];
                     spriteComponent.color.w = color[3];
                 }
-            }
+            } else {
+                float[] tilingFactor = new float[]{spriteComponent.tilingFactor};
+                if (ImGui.dragFloat("Tiling Factor", tilingFactor, 0.1f)) {
+                    spriteComponent.tilingFactor = tilingFactor[0];
+                }
 
-            float[] tilingFactor = new float[]{spriteComponent.tilingFactor};
-            if (ImGui.dragFloat("Tiling Factor", tilingFactor, 0.1f)) {
-                spriteComponent.tilingFactor = tilingFactor[0];
+                if (ImGui.imageButton(spriteComponent.texture.getRendererId(), 50, 50)) {
+                    FileDialog.openFile(OpenTextureFileDialogId, "JPEG (*.JPG; *.JPEG; *.JPE){.jpg,.jpeg,jpe}PNG (.PNG){.png}", () -> spriteComponent.texture = Texture.create(ImGuiFileDialog.getFilePathName()));
+                }
             }
             return null;
         });
