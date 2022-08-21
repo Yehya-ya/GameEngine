@@ -6,6 +6,7 @@ import GameEngine.Engine.ECS.Components.TagComponent;
 import GameEngine.Engine.ECS.Components.TransformComponent;
 import GameEngine.Engine.Renderer.Camera.CameraType;
 import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
+import GameEngine.Engine.Renderer.Texture;
 import com.artemis.utils.IntBag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -78,7 +79,11 @@ public class SceneSerializer {
                     entity.addComponent(new CameraComponent(new OrthographicCamera(1.0f), cameraComponentData.primary));
                 }
                 if (componentData instanceof SpriteComponentData spriteComponentData) {
-                    entity.addComponent(new SpriteComponent(spriteComponentData.color));
+                    if (spriteComponentData.texturePath == null) {
+                        entity.addComponent(new SpriteComponent(spriteComponentData.color));
+                    } else {
+                        entity.addComponent(new SpriteComponent(Texture.create(spriteComponentData.texturePath), spriteComponentData.tilingFactor));
+                    }
                 }
             }
         }
@@ -174,6 +179,7 @@ public class SceneSerializer {
     public static class SpriteComponentData extends ComponentData {
         public Vector4f color;
         public float tilingFactor;
+        public String texturePath;
 
         public SpriteComponentData() {
         }
@@ -181,6 +187,7 @@ public class SceneSerializer {
         public SpriteComponentData(@NotNull SpriteComponent spriteComponent) {
             this.color = spriteComponent.color;
             this.tilingFactor = spriteComponent.tilingFactor;
+            this.texturePath = (spriteComponent.texture == null) ? null: spriteComponent.texture.getPath();
         }
     }
 }
