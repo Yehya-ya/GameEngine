@@ -40,6 +40,10 @@ public abstract class Texture {
         return null;
     }
 
+    public String getPath() {
+        return path;
+    }
+
     public abstract int getRendererId();
 
     public int getWidth() {
