@@ -83,7 +83,7 @@ public class SceneHierarchyPanel {
                 }
 
                 if (ImGui.menuItem("Camera Component")) {
-                    selectedEntity.addComponent(new CameraComponent());
+                    selectedEntity.addComponent(new CameraComponent(new OrthographicCamera(1.0f)));
                     ImGui.closeCurrentPopup();
                 }
 

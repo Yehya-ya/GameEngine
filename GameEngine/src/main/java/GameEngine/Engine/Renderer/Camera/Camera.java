@@ -15,14 +15,18 @@ public abstract class Camera {
     protected float far, near;
 
     public Camera() {
-        projectionMatrix = new Matrix4f();
-        viewMatrix = new Matrix4f();
-        viewProjectionMatrix = new Matrix4f();
-        position = new Vector3f(0.0f, 0.0f, 1.0f);
-        rotation = new Vector3f();
-        aspectRatio = 1.0f;
-        far = 1.0f;
-        near = -1.0f;
+        this(new Matrix4f(), new Matrix4f(), new Matrix4f(), new Vector3f(0.0f, 0.0f, 1.0f), new Vector3f(), 1.0f, 1.0f, -1.0f);
+    }
+
+    public Camera(Matrix4f projectionMatrix, Matrix4f viewMatrix, Matrix4f viewProjectionMatrix, Vector3f position, Vector3f rotation, float aspectRatio, float far, float near) {
+        this.projectionMatrix = projectionMatrix;
+        this.viewMatrix = viewMatrix;
+        this.viewProjectionMatrix = viewProjectionMatrix;
+        this.position = position;
+        this.rotation = rotation;
+        this.aspectRatio = aspectRatio;
+        this.far = far;
+        this.near = near;
     }
 
     public Matrix4f getProjectionMatrix() {
