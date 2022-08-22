@@ -19,6 +19,14 @@ public class OrthographicCamera extends Camera {
         recalculateViewProjectionMatrix();
     }
 
+    public OrthographicCamera(Matrix4f projectionMatrix, Matrix4f viewMatrix, Matrix4f viewProjectionMatrix, Vector3f position, Vector3f rotation, float aspectRatio, float far, float near, float zoomLevel) {
+        super(projectionMatrix, viewMatrix, viewProjectionMatrix, position, rotation, aspectRatio, far, near);
+        this.zoomLevel = zoomLevel;
+        recalculateViewMatrix();
+        recalculateProjectionMatrix();
+        recalculateViewProjectionMatrix();
+    }
+
     public float getZoomLevel() {
         return zoomLevel;
     }

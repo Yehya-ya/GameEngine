@@ -21,6 +21,14 @@ public class PerspectiveCamera extends Camera {
         recalculateViewProjectionMatrix();
     }
 
+    public PerspectiveCamera(Matrix4f projectionMatrix, Matrix4f viewMatrix, Matrix4f viewProjectionMatrix, Vector3f position, Vector3f rotation, float aspectRatio, float far, float near, float fov) {
+        super(projectionMatrix, viewMatrix, viewProjectionMatrix, position, rotation, aspectRatio, far, near);
+        this.fov = fov;
+        recalculateViewMatrix();
+        recalculateProjectionMatrix();
+        recalculateViewProjectionMatrix();
+    }
+
     public float getFov() {
         return fov;
     }

@@ -4,12 +4,15 @@ import GameEngine.Engine.ECS.Components.CameraComponent;
 import GameEngine.Engine.ECS.Components.SpriteComponent;
 import GameEngine.Engine.ECS.Components.TagComponent;
 import GameEngine.Engine.ECS.Components.TransformComponent;
+import GameEngine.Engine.Renderer.Camera.Camera;
 import GameEngine.Engine.Renderer.Camera.CameraType;
 import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
+import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
 import GameEngine.Engine.Renderer.Texture;
 import com.artemis.utils.IntBag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.yaml.snakeyaml.Yaml;
@@ -76,9 +79,32 @@ public class SceneSerializer {
                     entity.addComponent(new TransformComponent(transformComponentData.translate, transformComponentData.size, transformComponentData.rotation));
                 }
                 if (componentData instanceof CameraComponentData cameraComponentData) {
-                    entity.addComponent(new CameraComponent(new OrthographicCamera(1.0f), cameraComponentData.primary));
-                }
-                if (componentData instanceof SpriteComponentData spriteComponentData) {
+                    if (cameraComponentData.cameraData instanceof OrthographicCameraData orthographicCameraData) {
+                        entity.addComponent(new CameraComponent(new OrthographicCamera(
+                                orthographicCameraData.projectionMatrix,
+                                orthographicCameraData.viewMatrix,
+                                orthographicCameraData.viewProjectionMatrix,
+                                orthographicCameraData.position,
+                                orthographicCameraData.rotation,
+                                orthographicCameraData.aspectRatio,
+                                orthographicCameraData.far,
+                                orthographicCameraData.near,
+                                orthographicCameraData.zoomLevel
+                        ), cameraComponentData.primary));
+                    } else if (cameraComponentData.cameraData instanceof PerspectiveCameraData perspectiveCameraData) {
+                        entity.addComponent(new CameraComponent(new PerspectiveCamera(
+                                perspectiveCameraData.projectionMatrix,
+                                perspectiveCameraData.viewMatrix,
+                                perspectiveCameraData.viewProjectionMatrix,
+                                perspectiveCameraData.position,
+                                perspectiveCameraData.rotation,
+                                perspectiveCameraData.aspectRatio,
+                                perspectiveCameraData.far,
+                                perspectiveCameraData.near,
+                                perspectiveCameraData.fov
+                        ), cameraComponentData.primary));
+                    }
+                } if (componentData instanceof SpriteComponentData spriteComponentData) {
                     if (spriteComponentData.texturePath == null) {
                         entity.addComponent(new SpriteComponent(spriteComponentData.color));
                     } else {
@@ -166,6 +192,7 @@ public class SceneSerializer {
     public static class CameraComponentData extends ComponentData {
         public boolean primary;
         public CameraType cameraType;
+        public CameraData cameraData;
 
         public CameraComponentData() {
         }
@@ -173,6 +200,11 @@ public class SceneSerializer {
         public CameraComponentData(@NotNull CameraComponent cameraComponent) {
             this.primary = cameraComponent.primary;
             this.cameraType = cameraComponent.cameraType;
+            if (cameraComponent.camera instanceof OrthographicCamera orthographicCamera) {
+                this.cameraData = new OrthographicCameraData(orthographicCamera);
+            } else if (cameraComponent.camera instanceof PerspectiveCamera perspectiveCamera) {
+                this.cameraData = new PerspectiveCameraData(perspectiveCamera);
+            }
         }
     }
 
@@ -187,7 +219,59 @@ public class SceneSerializer {
         public SpriteComponentData(@NotNull SpriteComponent spriteComponent) {
             this.color = spriteComponent.color;
             this.tilingFactor = spriteComponent.tilingFactor;
-            this.texturePath = (spriteComponent.texture == null) ? null: spriteComponent.texture.getPath();
+            this.texturePath = (spriteComponent.texture == null) ? null : spriteComponent.texture.getPath();
+        }
+    }
+
+    public abstract static class CameraData {
+        public Matrix4f projectionMatrix;
+        public Matrix4f viewMatrix;
+        public Matrix4f viewProjectionMatrix;
+
+        public Vector3f position;
+        public Vector3f rotation;
+
+        public float aspectRatio;
+        public float far, near;
+
+        public CameraData() {
+        }
+
+        public CameraData(@NotNull Camera camera) {
+            this.projectionMatrix = camera.getProjectionMatrix();
+            this.viewMatrix = camera.getViewMatrix();
+            this.viewProjectionMatrix = camera.getViewProjectionMatrix();
+            this.position = camera.getPosition();
+            this.rotation = camera.getRotation();
+            this.aspectRatio = camera.getAspectRatio();
+            this.far = camera.getFar();
+            this.near = camera.getNear();
+        }
+    }
+
+    public static class OrthographicCameraData extends CameraData {
+        public float zoomLevel;
+
+        public OrthographicCameraData() {
+            super();
+        }
+
+        public OrthographicCameraData(OrthographicCamera camera) {
+            super(camera);
+            this.zoomLevel = camera.getZoomLevel();
+        }
+    }
+
+    public static class PerspectiveCameraData extends CameraData {
+        public float fov;
+
+        public PerspectiveCameraData() {
+            super();
+        }
+
+        public PerspectiveCameraData(PerspectiveCamera camera) {
+            super(camera);
+            this.fov = camera.getFov();
         }
     }
 }
