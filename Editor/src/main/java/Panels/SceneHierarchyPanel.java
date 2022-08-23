@@ -157,9 +157,9 @@ public class SceneHierarchyPanel {
             if (cameraComponent.cameraType != CameraType.getInstanceFromIndex(imInt.get())) {
                 cameraComponent.cameraType = CameraType.getInstanceFromIndex(imInt.get());
                 if (cameraComponent.cameraType == CameraType.Perspective) {
-                    cameraComponent.camera = new PerspectiveCamera(cameraComponent.camera.getAspectRatio());
+                    cameraComponent.camera = new PerspectiveCamera(cameraComponent.camera.getAspectRatio(), ((OrthographicCamera) cameraComponent.camera).getZoomLevel() * 9.0f, cameraComponent.camera.getNear(), cameraComponent.camera.getFar());
                 } else if (cameraComponent.cameraType == CameraType.Orthographic) {
-                    cameraComponent.camera = new OrthographicCamera(cameraComponent.camera.getAspectRatio());
+                    cameraComponent.camera = new OrthographicCamera(cameraComponent.camera.getAspectRatio(), ((PerspectiveCamera) cameraComponent.camera).getFov() / 9.0f, cameraComponent.camera.getNear(), cameraComponent.camera.getFar());
                 }
             }
 
