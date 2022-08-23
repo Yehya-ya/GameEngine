@@ -41,8 +41,7 @@ public class PerspectiveCamera extends Camera {
 
     @Override
     protected void recalculateViewMatrix() {
-        Vector3f rotation = getRotationInRadians();
-        viewMatrix = new Matrix4f().translate(position).rotateAffineXYZ(rotation.x,rotation.y,rotation.z).invert();
+        viewMatrix = new Matrix4f().translate(position).rotateAffineXYZ(rotation.x, rotation.y, rotation.z).invert();
     }
 
     @Override

@@ -46,7 +46,6 @@ public class OrthographicCamera extends Camera {
 
     @Override
     protected void recalculateViewMatrix() {
-        Vector3f rotation = getRotationInRadians();
         Matrix4f transform = new Matrix4f().translate(position).rotateAffineXYZ(rotation.x, rotation.y, rotation.z);
         viewMatrix = transform.invert();
     }

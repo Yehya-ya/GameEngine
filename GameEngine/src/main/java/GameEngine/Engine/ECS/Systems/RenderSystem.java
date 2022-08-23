@@ -35,9 +35,9 @@ public class RenderSystem extends EntityProcessingSystem {
             SpriteComponent spriteComponent = spriteComponentsMapper.get(e);
 
             if (spriteComponent.texture != null) {
-                BatchRenderer2D.drawRotatedQuad(transform.translate, transform.size, transform.getRotationInRadians(), spriteComponent.texture, spriteComponent.tilingFactor);
+                BatchRenderer2D.drawRotatedQuad(transform.translate, transform.size, transform.rotation, spriteComponent.texture, spriteComponent.tilingFactor);
             } else {
-                BatchRenderer2D.drawRotatedQuad(transform.translate, transform.size, transform.getRotationInRadians(), spriteComponent.color);
+                BatchRenderer2D.drawRotatedQuad(transform.translate, transform.size, transform.rotation, spriteComponent.color);
             }
         }
     }
