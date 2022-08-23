@@ -80,31 +80,12 @@ public class SceneSerializer {
                 }
                 if (componentData instanceof CameraComponentData cameraComponentData) {
                     if (cameraComponentData.cameraData instanceof OrthographicCameraData orthographicCameraData) {
-                        entity.addComponent(new CameraComponent(new OrthographicCamera(
-                                orthographicCameraData.projectionMatrix,
-                                orthographicCameraData.viewMatrix,
-                                orthographicCameraData.viewProjectionMatrix,
-                                orthographicCameraData.position,
-                                orthographicCameraData.rotation,
-                                orthographicCameraData.aspectRatio,
-                                orthographicCameraData.far,
-                                orthographicCameraData.near,
-                                orthographicCameraData.zoomLevel
-                        ), cameraComponentData.primary));
+                        entity.addComponent(new CameraComponent(new OrthographicCamera(orthographicCameraData.projectionMatrix, orthographicCameraData.viewMatrix, orthographicCameraData.viewProjectionMatrix, orthographicCameraData.position, orthographicCameraData.rotation, orthographicCameraData.aspectRatio, orthographicCameraData.near, orthographicCameraData.far, orthographicCameraData.zoomLevel), cameraComponentData.primary));
                     } else if (cameraComponentData.cameraData instanceof PerspectiveCameraData perspectiveCameraData) {
-                        entity.addComponent(new CameraComponent(new PerspectiveCamera(
-                                perspectiveCameraData.projectionMatrix,
-                                perspectiveCameraData.viewMatrix,
-                                perspectiveCameraData.viewProjectionMatrix,
-                                perspectiveCameraData.position,
-                                perspectiveCameraData.rotation,
-                                perspectiveCameraData.aspectRatio,
-                                perspectiveCameraData.far,
-                                perspectiveCameraData.near,
-                                perspectiveCameraData.fov
-                        ), cameraComponentData.primary));
+                        entity.addComponent(new CameraComponent(new PerspectiveCamera(perspectiveCameraData.projectionMatrix, perspectiveCameraData.viewMatrix, perspectiveCameraData.viewProjectionMatrix, perspectiveCameraData.position, perspectiveCameraData.rotation, perspectiveCameraData.aspectRatio, perspectiveCameraData.near, perspectiveCameraData.far, perspectiveCameraData.fov), cameraComponentData.primary));
                     }
-                } if (componentData instanceof SpriteComponentData spriteComponentData) {
+                }
+                if (componentData instanceof SpriteComponentData spriteComponentData) {
                     if (spriteComponentData.texturePath == null) {
                         entity.addComponent(new SpriteComponent(spriteComponentData.color));
                     } else {

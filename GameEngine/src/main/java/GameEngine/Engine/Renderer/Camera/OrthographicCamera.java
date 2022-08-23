@@ -11,16 +11,22 @@ public class OrthographicCamera extends Camera {
     }
 
     public OrthographicCamera(float aspectRatio, float zoomLevel) {
+        this(aspectRatio, zoomLevel, 0.01f, 1000.0f);
+    }
+
+    public OrthographicCamera(float aspectRatio, float zoomLevel, float near, float far) {
         super();
         this.aspectRatio = aspectRatio;
         this.zoomLevel = zoomLevel;
+        this.near = near;
+        this.far = far;
         recalculateViewMatrix();
         recalculateProjectionMatrix();
         recalculateViewProjectionMatrix();
     }
 
-    public OrthographicCamera(Matrix4f projectionMatrix, Matrix4f viewMatrix, Matrix4f viewProjectionMatrix, Vector3f position, Vector3f rotation, float aspectRatio, float far, float near, float zoomLevel) {
-        super(projectionMatrix, viewMatrix, viewProjectionMatrix, position, rotation, aspectRatio, far, near);
+    public OrthographicCamera(Matrix4f projectionMatrix, Matrix4f viewMatrix, Matrix4f viewProjectionMatrix, Vector3f position, Vector3f rotation, float aspectRatio, float near, float far, float zoomLevel) {
+        super(projectionMatrix, viewMatrix, viewProjectionMatrix, position, rotation, aspectRatio, near, far);
         this.zoomLevel = zoomLevel;
         recalculateViewMatrix();
         recalculateProjectionMatrix();
