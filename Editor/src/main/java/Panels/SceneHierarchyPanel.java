@@ -131,7 +131,9 @@ public class SceneHierarchyPanel {
         drawEntityComponentProperties("Transform", e, TransformComponent.class, transformComponent -> {
             drawVector3Editor("Size", transformComponent.size, 1.0f);
             drawVector3Editor("Transform", transformComponent.translate);
-            drawVector3Editor("Rotation", transformComponent.rotation);
+            Vector3f rotation = transformComponent.getRotationInDegrees();
+            drawVector3Editor("Rotation", rotation);
+            transformComponent.setRotationInDegrees(rotation);
 
             return null;
         });

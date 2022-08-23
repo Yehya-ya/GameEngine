@@ -97,10 +97,6 @@ public abstract class Camera {
         recalculateViewProjectionMatrix();
     }
 
-    protected Vector3f getRotationInRadians() {
-        return new Vector3f((float) Math.toRadians(rotation.x), (float) Math.toRadians(rotation.y), (float) Math.toRadians(rotation.z));
-    }
-
     protected abstract void recalculateViewMatrix();
 
     protected abstract void recalculateProjectionMatrix();

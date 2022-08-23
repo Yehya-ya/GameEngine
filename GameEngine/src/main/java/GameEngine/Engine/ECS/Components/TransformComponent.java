@@ -1,5 +1,6 @@
 package GameEngine.Engine.ECS.Components;
 
+import org.joml.Math;
 import org.joml.Vector3f;
 
 public class TransformComponent extends com.artemis.Component {
@@ -25,7 +26,11 @@ public class TransformComponent extends com.artemis.Component {
         this(new Vector3f(), new Vector3f(1.0f), new Vector3f());
     }
 
-    public Vector3f getRotationInRadians() {
-        return new Vector3f((float) Math.toRadians(rotation.x), (float) Math.toRadians(rotation.y), (float) Math.toRadians(rotation.z));
+    public Vector3f getRotationInDegrees() {
+        return new Vector3f((float) Math.toDegrees(rotation.x), (float) Math.toDegrees(rotation.y), (float) Math.toDegrees(rotation.z));
+    }
+
+    public void setRotationInDegrees(Vector3f rotation) {
+        this.rotation = new Vector3f(Math.toRadians(rotation.x), Math.toRadians(rotation.y), Math.toRadians(rotation.z));
     }
 }
