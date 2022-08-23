@@ -28,7 +28,6 @@ import java.util.function.Function;
 public class SceneHierarchyPanel {
     public static final long OpenTextureFileDialogId = 201;
     private Scene scene;
-    private Entity selectedEntity;
 
     public SceneHierarchyPanel() {
 
@@ -40,7 +39,6 @@ public class SceneHierarchyPanel {
 
     public void setScene(Scene scene) {
         this.scene = scene;
-        this.selectedEntity = null;
     }
 
     public void onImGuiRender() {
@@ -53,7 +51,7 @@ public class SceneHierarchyPanel {
             }
 
             if (ImGui.isMouseDown(0) && ImGui.isWindowHovered()) {
-                selectedEntity = null;
+                scene.setSelectedEntity(null);
             }
 
             if (ImGui.beginPopupContextWindow(ImGuiPopupFlags.NoOpenOverItems | ImGuiPopupFlags.MouseButtonRight)) {
@@ -69,6 +67,7 @@ public class SceneHierarchyPanel {
 
         ImGui.begin("Properties");
 
+        Entity selectedEntity = scene != null ? scene.getSelectedEntity() : null;
         if (selectedEntity != null) {
             drawEntityProperties(selectedEntity);
 
@@ -101,10 +100,10 @@ public class SceneHierarchyPanel {
 
     private void drawEntityNode(@NotNull Entity e) {
         String tag = e.getComponent(TagComponent.class).name;
-        int flags = ImGuiTreeNodeFlags.OpenOnArrow | (e == selectedEntity ? ImGuiTreeNodeFlags.Selected : 0);
+        int flags = ImGuiTreeNodeFlags.OpenOnArrow | (e == scene.getSelectedEntity() ? ImGuiTreeNodeFlags.Selected : 0);
         boolean opened = ImGui.treeNodeEx(e.getId(), flags, tag);
         if (ImGui.isItemClicked()) {
-            selectedEntity = e;
+            scene.setSelectedEntity(e);
         }
         if (ImGui.beginPopupContextItem()) {
             if (ImGui.menuItem("Delete Entity")) {
