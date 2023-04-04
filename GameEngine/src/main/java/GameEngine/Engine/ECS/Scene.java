@@ -14,8 +14,14 @@ public class Scene {
     private final World engine;
     private Camera camera;
     private Entity selectedEntity;
+    private String title;
+    private String uri;
 
     public Scene() {
+        this("Scene", null);
+    }
+
+    public Scene(String title, String uri) {
         WorldConfiguration configuration = new WorldConfigurationBuilder() //
                 .with(//
                         new CameraSystem(this), //
@@ -23,6 +29,20 @@ public class Scene {
                 ).build();
         engine = new World(configuration);
         selectedEntity = null;
+        this.title = title;
+        this.uri = uri;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     public Entity getSelectedEntity() {

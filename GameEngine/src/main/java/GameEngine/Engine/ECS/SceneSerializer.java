@@ -15,7 +15,13 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
+import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -30,17 +36,20 @@ public class SceneSerializer {
     }
 
     public static void serialize(@NotNull Scene scene, String path) {
+        scene.setUri(path);
         SceneData sceneData = new SceneData();
-        sceneData.name = "untitled";
+        sceneData.title = scene.getTitle();
         IntBag intBag = scene.getEntitiesIds(TagComponent.class);
         for (int i = 0; i < intBag.size(); i++) {
             Entity entity = scene.getEntity(intBag.get(i));
             sceneData.entities.add(new EntityData(entity));
         }
-        Yaml yaml = new Yaml();
+
+        Representer representer = new SceneDataRepresenter();
+        Yaml yaml = new Yaml(representer);
         try {
             FileWriter myWriter = new FileWriter(path);
-            myWriter.write(yaml.dumpAsMap(sceneData));
+            yaml.dump(sceneData, myWriter);
             myWriter.close();
             YH_LOG_TRACE("Successfully serialized the scene.");
         } catch (IOException e) {
@@ -52,18 +61,17 @@ public class SceneSerializer {
     public static @Nullable Scene deserialize(String path) {
         InputStream targetStream;
         try {
-            File initialFile = new File(path);
-            targetStream = new FileInputStream(initialFile);
+            targetStream = new FileInputStream(path);
         } catch (FileNotFoundException | NullPointerException e) {
             YH_LOG_ERROR("failed to deserialize the scene.The file `{}` not found.", path);
             YH_LOG_ERROR("{}", e.getMessage());
             return null;
         }
 
-        Yaml yaml = new Yaml();
-        SceneData sceneData = yaml.loadAs(targetStream, SceneData.class);
+        Yaml yaml = new Yaml(new SceneDataConstructor());
+        SceneData sceneData = yaml.load(targetStream);
 
-        Scene scene = new Scene();
+        Scene scene = new Scene(sceneData.title, path);
         for (EntityData entityData : sceneData.entities) {
             Entity entity = null;
             for (ComponentData componentData : entityData.components) {
@@ -98,16 +106,16 @@ public class SceneSerializer {
         return scene;
     }
 
-    public static class SceneData {
+    private static class SceneData {
         public List<EntityData> entities;
-        public String name;
+        public String title;
 
         public SceneData() {
             entities = new ArrayList<>();
         }
     }
 
-    public static class EntityData {
+    private static class EntityData {
         public List<ComponentData> components;
         public int entity;
 
@@ -140,11 +148,11 @@ public class SceneSerializer {
         }
     }
 
-    public static abstract class ComponentData {
+    private static abstract class ComponentData {
 
     }
 
-    public static class TagComponentData extends ComponentData {
+    private static class TagComponentData extends ComponentData {
         public String name;
 
         public TagComponentData() {
@@ -155,7 +163,7 @@ public class SceneSerializer {
         }
     }
 
-    public static class TransformComponentData extends ComponentData {
+    private static class TransformComponentData extends ComponentData {
         public Vector3f translate;
         public Vector3f size;
         public Vector3f rotation;
@@ -170,7 +178,7 @@ public class SceneSerializer {
         }
     }
 
-    public static class CameraComponentData extends ComponentData {
+    private static class CameraComponentData extends ComponentData {
         public boolean primary;
         public CameraType cameraType;
         public CameraData cameraData;
@@ -189,7 +197,7 @@ public class SceneSerializer {
         }
     }
 
-    public static class SpriteComponentData extends ComponentData {
+    private static class SpriteComponentData extends ComponentData {
         public Vector4f color;
         public float tilingFactor;
         public String texturePath;
@@ -204,7 +212,7 @@ public class SceneSerializer {
         }
     }
 
-    public abstract static class CameraData {
+    private abstract static class CameraData {
         public Matrix4f projectionMatrix;
         public Matrix4f viewMatrix;
         public Matrix4f viewProjectionMatrix;
@@ -230,7 +238,7 @@ public class SceneSerializer {
         }
     }
 
-    public static class OrthographicCameraData extends CameraData {
+    private static class OrthographicCameraData extends CameraData {
         public float zoomLevel;
 
         public OrthographicCameraData() {
@@ -243,7 +251,7 @@ public class SceneSerializer {
         }
     }
 
-    public static class PerspectiveCameraData extends CameraData {
+    private static class PerspectiveCameraData extends CameraData {
         public float fov;
 
         public PerspectiveCameraData() {
@@ -253,6 +261,34 @@ public class SceneSerializer {
         public PerspectiveCameraData(PerspectiveCamera camera) {
             super(camera);
             this.fov = camera.getFov();
+        }
+    }
+
+    private static class SceneDataRepresenter extends Representer {
+        public SceneDataRepresenter() {
+            super(new DumperOptions());
+
+            this.addClassTag(SceneData.class, new Tag("!Scene"));
+            this.addClassTag(TagComponentData.class, new Tag("!TagComponent"));
+            this.addClassTag(TransformComponentData.class, new Tag("!TransformComponent"));
+            this.addClassTag(CameraComponentData.class, new Tag("!CameraComponent"));
+            this.addClassTag(SpriteComponentData.class, new Tag("!SpriteComponent"));
+            this.addClassTag(OrthographicCameraData.class, new Tag("!OrthographicCamera"));
+            this.addClassTag(PerspectiveCameraData.class,new Tag("!PerspectiveCamera"));
+        }
+    }
+
+    private static class SceneDataConstructor extends Constructor {
+        public SceneDataConstructor() {
+            super(new LoaderOptions());
+
+            this.addTypeDescription(new TypeDescription(SceneData.class,"!Scene"));
+            this.addTypeDescription(new TypeDescription(TagComponentData.class,"!TagComponent"));
+            this.addTypeDescription(new TypeDescription(TransformComponentData.class,"!TransformComponent"));
+            this.addTypeDescription(new TypeDescription(CameraComponentData.class,"!CameraComponent"));
+            this.addTypeDescription(new TypeDescription(SpriteComponentData.class,"!SpriteComponent"));
+            this.addTypeDescription(new TypeDescription(OrthographicCameraData.class,"!OrthographicCamera"));
+            this.addTypeDescription(new TypeDescription(PerspectiveCameraData.class,"!PerspectiveCamera"));
         }
     }
 }
