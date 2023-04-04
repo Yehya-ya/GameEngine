@@ -28,4 +28,11 @@ public class Entity {
     public <T extends Component> void removeComponent(Class<T> type) {
         entity.edit().remove(type);
     }
+
+    public boolean equals(Object obj) {
+        if (obj instanceof Entity) {
+            return ((Entity) obj).getId() == this.getId();
+        }
+        return false;
+    }
 }
