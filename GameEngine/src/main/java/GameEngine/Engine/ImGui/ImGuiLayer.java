@@ -64,7 +64,6 @@ public class ImGuiLayer extends Layer {
 
     @Override
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (isBlockingEvents) {
             ImGuiIO io = ImGui.getIO();
             event.handled |= io.getWantCaptureMouse() & event.isInCategory(EventCategory.Mouse);
