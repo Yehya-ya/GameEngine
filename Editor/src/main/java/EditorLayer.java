@@ -26,14 +26,14 @@ import imgui.extension.imguifiledialog.ImGuiFileDialog;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
-import imgui.flag.ImGuiConfigFlags;
-import imgui.flag.ImGuiDockNodeFlags;
-import imgui.flag.ImGuiStyleVar;
-import imgui.flag.ImGuiWindowFlags;
+import imgui.flag.*;
 import imgui.type.ImBoolean;
 import org.joml.Math;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static GameEngine.Engine.Utils.KeyCodes.*;
 
@@ -46,6 +46,7 @@ public class EditorLayer extends Layer {
     private FrameBuffer frameBuffer;
     private Vector2f viewportSize;
     private boolean isViewPortIsFocused, isViewPortIsHovered;
+    private List<Scene> scenes;
     private Scene activeScene;
     private SceneHierarchyPanel sceneHierarchyPanel;
     private int imguizmoType;
@@ -56,6 +57,7 @@ public class EditorLayer extends Layer {
 
     @Override
     public void onAttach() {
+        scenes = new ArrayList<>();
         bricks = Texture.create("assets/textures/bricks.png");
         dirt = Texture.create("assets/textures/dirt.png");
         BatchRenderer2D.init();
@@ -146,15 +148,17 @@ public class EditorLayer extends Layer {
 
         if (ImGui.beginMenuBar()) {
             if (ImGui.beginMenu("File")) {
-                if (ImGui.menuItem("Open")) {
-                    FileDialog.openFile(EditorLayer.OpenFileDialogId, "scene file(*.yaml){.yaml}", () -> {
-                        open(ImGuiFileDialog.getFilePathName());
-                    });
+                if (ImGui.menuItem("New (Ctrl + N)")) {
+                    newSceneActivity();
                 }
-                if (ImGui.menuItem("Save as")) {
-                    FileDialog.saveFile(EditorLayer.SaveFileDialogId, "scene file(*.yaml){.yaml}", () -> {
-                        saveAs(ImGuiFileDialog.getFilePathName());
-                    });
+                if (ImGui.menuItem("Open (Ctrl + O)")) {
+                    open();
+                }
+                if (ImGui.menuItem("Save (Ctrl + S)")) {
+                    save();
+                }
+                if (ImGui.menuItem("Save as (Ctrl + Shift + S)")) {
+                    saveAs();
                 }
                 if (ImGui.menuItem("Exit")) {
                     Application.get().close();
@@ -178,6 +182,18 @@ public class EditorLayer extends Layer {
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
         ImGui.begin("Viewport");
+        ImGui.beginTabBar("Tabs");
+        for (Scene scene: scenes) {
+            int tabFlags = ImGuiTabItemFlags.Trailing;
+
+            if (ImGui.beginTabItem(scene.getTitle(), tabFlags)) {
+                if (!scene.equals(activeScene)) {
+                    setActiveScene(scene);
+                }
+                ImGui.endTabItem();
+            }
+        }
+        ImGui.endTabBar();
 
         isViewPortIsFocused = ImGui.isWindowFocused();
         isViewPortIsHovered = ImGui.isWindowHovered();
@@ -253,24 +269,75 @@ public class EditorLayer extends Layer {
             return false;
         }
 
+        boolean control = Input.isKeyPressed(YH_KEY_LEFT_CONTROL) || Input.isKeyPressed(YH_KEY_RIGHT_CONTROL);
+        boolean shift = Input.isKeyPressed(YH_KEY_LEFT_SHIFT) || Input.isKeyPressed(YH_KEY_RIGHT_SHIFT);
 
         switch (event.getKeyCode()) {
             case YH_KEY_Q -> imguizmoType = -1;
             case YH_KEY_W -> imguizmoType = Operation.TRANSLATE;
             case YH_KEY_E -> imguizmoType = Operation.SCALE;
             case YH_KEY_R -> imguizmoType = Operation.ROTATE;
+            case YH_KEY_S -> {
+                if (control && shift) {
+                    saveAs();
+                } else if (control) {
+                    save();
+                }
+            }
+            case YH_KEY_O -> {
+                if (control) {
+                    open();
+                }
+            }
+            case YH_KEY_N -> {
+                if (control) {
+                    newSceneActivity();
+                }
+            }
         }
 
         return true;
     }
 
-    public void open(String file) {
-        activeScene = SceneSerializer.deserialize(file);
-        sceneHierarchyPanel.setScene(activeScene);
+    public void open() {
+        FileDialog.openFile(EditorLayer.OpenFileDialogId, "scene file(*.yaml){.yaml}", () -> {
+            openActivity(ImGuiFileDialog.getFilePathName());
+        });
+    }
+
+    public void save() {
+        if (activeScene.getUri() != null) {
+            saveActivity(activeScene.getUri());
+        } else {
+            saveAs();
+        }
+    }
+
+    public void saveAs() {
+        FileDialog.saveFile(EditorLayer.SaveFileDialogId, "scene file(*.yaml){.yaml}", () -> {
+            saveActivity(ImGuiFileDialog.getFilePathName());
+        });
+    }
+
+    public void newSceneActivity() {
+        Scene scene = new Scene("Scene" + scenes.size(), null);
+        scenes.add(scene);
+        setActiveScene(scene);
+    }
+
+    public void openActivity(String file) {
+        Scene scene = SceneSerializer.deserialize(file);
+        scenes.add(scene);
+        setActiveScene(scene);
     }
 
 
-    public void saveAs(String directory) {
+    public void saveActivity(String directory) {
         SceneSerializer.serialize(activeScene, directory);
+    }
+
+    private void setActiveScene(Scene scene) {
+        activeScene = scene;
+        sceneHierarchyPanel.setScene(scene);
     }
 }
