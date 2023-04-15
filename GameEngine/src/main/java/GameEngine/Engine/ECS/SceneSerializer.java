@@ -12,7 +12,6 @@ import GameEngine.Engine.Renderer.Texture;
 import com.artemis.utils.IntBag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.yaml.snakeyaml.DumperOptions;
@@ -88,9 +87,9 @@ public class SceneSerializer {
                 }
                 if (componentData instanceof CameraComponentData cameraComponentData) {
                     if (cameraComponentData.cameraData instanceof OrthographicCameraData orthographicCameraData) {
-                        entity.addComponent(new CameraComponent(new OrthographicCamera(orthographicCameraData.projectionMatrix, orthographicCameraData.viewMatrix, orthographicCameraData.viewProjectionMatrix, orthographicCameraData.position, orthographicCameraData.rotation, orthographicCameraData.aspectRatio, orthographicCameraData.near, orthographicCameraData.far, orthographicCameraData.zoomLevel), cameraComponentData.primary));
+                        entity.addComponent(new CameraComponent(new OrthographicCamera(orthographicCameraData.position, orthographicCameraData.rotation, orthographicCameraData.aspectRatio, orthographicCameraData.near, orthographicCameraData.far, orthographicCameraData.zoomLevel), cameraComponentData.primary));
                     } else if (cameraComponentData.cameraData instanceof PerspectiveCameraData perspectiveCameraData) {
-                        entity.addComponent(new CameraComponent(new PerspectiveCamera(perspectiveCameraData.projectionMatrix, perspectiveCameraData.viewMatrix, perspectiveCameraData.viewProjectionMatrix, perspectiveCameraData.position, perspectiveCameraData.rotation, perspectiveCameraData.aspectRatio, perspectiveCameraData.near, perspectiveCameraData.far, perspectiveCameraData.fov), cameraComponentData.primary));
+                        entity.addComponent(new CameraComponent(new PerspectiveCamera(perspectiveCameraData.position, perspectiveCameraData.rotation, perspectiveCameraData.aspectRatio, perspectiveCameraData.near, perspectiveCameraData.far, perspectiveCameraData.fov), cameraComponentData.primary));
                     }
                 }
                 if (componentData instanceof SpriteComponentData spriteComponentData) {
@@ -213,10 +212,6 @@ public class SceneSerializer {
     }
 
     private abstract static class CameraData {
-        public Matrix4f projectionMatrix;
-        public Matrix4f viewMatrix;
-        public Matrix4f viewProjectionMatrix;
-
         public Vector3f position;
         public Vector3f rotation;
 
@@ -227,9 +222,6 @@ public class SceneSerializer {
         }
 
         public CameraData(@NotNull Camera camera) {
-            this.projectionMatrix = camera.getProjectionMatrix();
-            this.viewMatrix = camera.getViewMatrix();
-            this.viewProjectionMatrix = camera.getViewProjectionMatrix();
             this.position = camera.getPosition();
             this.rotation = camera.getRotation();
             this.aspectRatio = camera.getAspectRatio();
@@ -274,7 +266,7 @@ public class SceneSerializer {
             this.addClassTag(CameraComponentData.class, new Tag("!CameraComponent"));
             this.addClassTag(SpriteComponentData.class, new Tag("!SpriteComponent"));
             this.addClassTag(OrthographicCameraData.class, new Tag("!OrthographicCamera"));
-            this.addClassTag(PerspectiveCameraData.class,new Tag("!PerspectiveCamera"));
+            this.addClassTag(PerspectiveCameraData.class, new Tag("!PerspectiveCamera"));
         }
     }
 
@@ -282,13 +274,13 @@ public class SceneSerializer {
         public SceneDataConstructor() {
             super(new LoaderOptions());
 
-            this.addTypeDescription(new TypeDescription(SceneData.class,"!Scene"));
-            this.addTypeDescription(new TypeDescription(TagComponentData.class,"!TagComponent"));
-            this.addTypeDescription(new TypeDescription(TransformComponentData.class,"!TransformComponent"));
-            this.addTypeDescription(new TypeDescription(CameraComponentData.class,"!CameraComponent"));
-            this.addTypeDescription(new TypeDescription(SpriteComponentData.class,"!SpriteComponent"));
-            this.addTypeDescription(new TypeDescription(OrthographicCameraData.class,"!OrthographicCamera"));
-            this.addTypeDescription(new TypeDescription(PerspectiveCameraData.class,"!PerspectiveCamera"));
+            this.addTypeDescription(new TypeDescription(SceneData.class, "!Scene"));
+            this.addTypeDescription(new TypeDescription(TagComponentData.class, "!TagComponent"));
+            this.addTypeDescription(new TypeDescription(TransformComponentData.class, "!TransformComponent"));
+            this.addTypeDescription(new TypeDescription(CameraComponentData.class, "!CameraComponent"));
+            this.addTypeDescription(new TypeDescription(SpriteComponentData.class, "!SpriteComponent"));
+            this.addTypeDescription(new TypeDescription(OrthographicCameraData.class, "!OrthographicCamera"));
+            this.addTypeDescription(new TypeDescription(PerspectiveCameraData.class, "!PerspectiveCamera"));
         }
     }
 }
