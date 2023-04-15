@@ -3,6 +3,7 @@ package GameEngine.Platforms.Windows;
 import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Input;
 import org.joml.Vector2d;
+import org.lwjgl.BufferUtils;
 
 import java.nio.DoubleBuffer;
 
@@ -28,8 +29,8 @@ public class WindowsInput extends Input {
     @Override
     protected Vector2d protectedGetMousePosition() {
         long windowID = Application.get().getWindow().getWindowID();
-        DoubleBuffer posX = DoubleBuffer.allocate(1);
-        DoubleBuffer posY = DoubleBuffer.allocate(1);
+        DoubleBuffer posX = BufferUtils.createDoubleBuffer(1);
+        DoubleBuffer posY = BufferUtils.createDoubleBuffer(1);
         glfwGetCursorPos(windowID, posX, posY);
         return new Vector2d(posX.get(0), posY.get(0));
     }
