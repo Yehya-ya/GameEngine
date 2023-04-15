@@ -6,22 +6,16 @@ import org.joml.Vector3f;
 public abstract class Camera {
     protected Matrix4f projectionMatrix;
     protected Matrix4f viewMatrix;
-    protected Matrix4f viewProjectionMatrix;
-
     protected Vector3f position;
     protected Vector3f rotation;
-
     protected float aspectRatio;
     protected float far, near;
 
     public Camera() {
-        this(new Matrix4f(), new Matrix4f(), new Matrix4f(), new Vector3f(0.0f, 0.0f, 1.0f), new Vector3f(), 1.0f, 0.1f, 1000.0f);
+        this(new Vector3f(0.0f, 0.0f, 1.0f), new Vector3f(), 1.0f, 0.1f, 1000.0f);
     }
 
-    public Camera(Matrix4f projectionMatrix, Matrix4f viewMatrix, Matrix4f viewProjectionMatrix, Vector3f position, Vector3f rotation, float aspectRatio, float near, float far) {
-        this.projectionMatrix = projectionMatrix;
-        this.viewMatrix = viewMatrix;
-        this.viewProjectionMatrix = viewProjectionMatrix;
+    public Camera(Vector3f position, Vector3f rotation, float aspectRatio, float near, float far) {
         this.position = position;
         this.rotation = rotation;
         this.aspectRatio = aspectRatio;
@@ -38,7 +32,7 @@ public abstract class Camera {
     }
 
     public Matrix4f getViewProjectionMatrix() {
-        return viewProjectionMatrix;
+        return new Matrix4f().mul(projectionMatrix).mul(viewMatrix);
     }
 
     public Vector3f getPosition() {
@@ -47,8 +41,7 @@ public abstract class Camera {
 
     public void setPosition(Vector3f position) {
         this.position = position;
-        recalculateViewMatrix();
-        recalculateViewProjectionMatrix();
+        updateViewMatrix();
     }
 
     public float getAspectRatio() {
@@ -57,8 +50,7 @@ public abstract class Camera {
 
     public void setAspectRatio(float aspectRatio) {
         this.aspectRatio = aspectRatio;
-        recalculateProjectionMatrix();
-        recalculateViewProjectionMatrix();
+        updateProjectionMatrix();
     }
 
     public float getFar() {
@@ -67,8 +59,7 @@ public abstract class Camera {
 
     public void setFar(float far) {
         this.far = far;
-        recalculateProjectionMatrix();
-        recalculateViewProjectionMatrix();
+        updateProjectionMatrix();
     }
 
     public float getNear() {
@@ -77,14 +68,12 @@ public abstract class Camera {
 
     public void setNear(float near) {
         this.near = near;
-        recalculateProjectionMatrix();
-        recalculateViewProjectionMatrix();
+        updateProjectionMatrix();
     }
 
     public void translate(Vector3f offset) {
         this.position.add(offset);
-        recalculateViewMatrix();
-        recalculateViewProjectionMatrix();
+        updateViewMatrix();
     }
 
     public Vector3f getRotation() {
@@ -93,13 +82,10 @@ public abstract class Camera {
 
     public void setRotation(Vector3f rotation) {
         this.rotation = rotation;
-        recalculateViewMatrix();
-        recalculateViewProjectionMatrix();
+        updateViewMatrix();
     }
 
-    protected abstract void recalculateViewMatrix();
+    protected abstract void updateViewMatrix();
 
-    protected abstract void recalculateProjectionMatrix();
-
-    protected abstract void recalculateViewProjectionMatrix();
+    protected abstract void updateProjectionMatrix();
 }

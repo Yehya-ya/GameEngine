@@ -20,17 +20,15 @@ public class PerspectiveCamera extends Camera {
         this.far = far;
         this.aspectRatio = aspectRatio;
         this.fov = fov;
-        recalculateViewMatrix();
-        recalculateProjectionMatrix();
-        recalculateViewProjectionMatrix();
+        updateViewMatrix();
+        updateProjectionMatrix();
     }
 
-    public PerspectiveCamera(Matrix4f projectionMatrix, Matrix4f viewMatrix, Matrix4f viewProjectionMatrix, Vector3f position, Vector3f rotation, float aspectRatio, float near, float far, float fov) {
-        super(projectionMatrix, viewMatrix, viewProjectionMatrix, position, rotation, aspectRatio, near, far);
+    public PerspectiveCamera(Vector3f position, Vector3f rotation, float aspectRatio, float near, float far, float fov) {
+        super(position, rotation, aspectRatio, near, far);
         this.fov = fov;
-        recalculateViewMatrix();
-        recalculateProjectionMatrix();
-        recalculateViewProjectionMatrix();
+        updateViewMatrix();
+        updateProjectionMatrix();
     }
 
     public float getFov() {
@@ -39,22 +37,16 @@ public class PerspectiveCamera extends Camera {
 
     public void setFov(float fov) {
         this.fov = fov;
-        recalculateProjectionMatrix();
-        recalculateViewProjectionMatrix();
+        updateProjectionMatrix();
     }
 
     @Override
-    protected void recalculateViewMatrix() {
+    protected void updateViewMatrix() {
         viewMatrix = new Matrix4f().translate(position).rotateAffineXYZ(rotation.x, rotation.y, rotation.z).invert();
     }
 
     @Override
-    protected void recalculateProjectionMatrix() {
+    protected void updateProjectionMatrix() {
         projectionMatrix = new Matrix4f().perspective((float) Math.toRadians(fov), aspectRatio, near, far);
-    }
-
-    @Override
-    protected void recalculateViewProjectionMatrix() {
-        viewProjectionMatrix = new Matrix4f().mul(projectionMatrix).mul(viewMatrix);
     }
 }
