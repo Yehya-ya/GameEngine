@@ -1,5 +1,5 @@
 #type vertex
-#version 330 core
+#version 450
 layout (location=0) in vec3 aPos;
 layout (location=1) in vec4 aColor;
 layout (location=2) in vec2 aTexCoord;
@@ -10,7 +10,7 @@ uniform mat4 uViewProjection;
 out vec4 fColor;
 out vec2 fTexCoord;
 out float fTilingFactor;
-out float fTextureIndex;
+out flat float fTextureIndex;
 void main()
 {
     fColor = aColor;
@@ -21,13 +21,13 @@ void main()
 }
 
 #type fragment
-#version 330 core
+#version 450
 
 
 in vec4 fColor;
 in vec2 fTexCoord;
 in float fTilingFactor;
-in float fTextureIndex;
+in flat float fTextureIndex;
 
 uniform sampler2D uTextures[32];
 
