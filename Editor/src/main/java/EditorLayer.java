@@ -1,8 +1,6 @@
 import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Input;
 import GameEngine.Engine.Core.Layer;
-import GameEngine.Engine.ECS.Components.TransformComponent;
-import GameEngine.Engine.ECS.Entity;
 import GameEngine.Engine.ECS.Scene;
 import GameEngine.Engine.ECS.SceneSerializer;
 import GameEngine.Engine.Events.Event;
@@ -10,9 +8,6 @@ import GameEngine.Engine.Events.EventDispatcher;
 import GameEngine.Engine.Events.EventType;
 import GameEngine.Engine.Events.KeyEvent;
 import GameEngine.Engine.Renderer.BatchRenderer2D;
-import GameEngine.Engine.Renderer.Buffer.FrameBuffer;
-import GameEngine.Engine.Renderer.Camera.Camera;
-import GameEngine.Engine.Renderer.RendererCommandAPI;
 import GameEngine.Engine.Renderer.RendererStatistics;
 import GameEngine.Engine.Renderer.Texture;
 import GameEngine.Engine.Utils.TimeStep;
@@ -23,14 +18,9 @@ import imgui.ImGuiIO;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;
 import imgui.extension.imguifiledialog.ImGuiFileDialog;
-import imgui.extension.imguizmo.ImGuizmo;
-import imgui.extension.imguizmo.flag.Mode;
-import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.*;
 import imgui.type.ImBoolean;
-import org.joml.Math;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,13 +33,10 @@ public class EditorLayer extends Layer {
     private double average;
     private Texture bricks;
     private Texture dirt;
-    private FrameBuffer frameBuffer;
     private Vector2f viewportSize;
-    private boolean isViewPortIsFocused, isViewPortIsHovered;
     private List<Scene> scenes;
     private Scene activeScene;
     private SceneHierarchyPanel sceneHierarchyPanel;
-    private int imguizmoType;
 
     public EditorLayer() {
         super("Example Layer 2D");
@@ -63,14 +50,7 @@ public class EditorLayer extends Layer {
         BatchRenderer2D.init();
         average = 0;
 
-        FrameBuffer.FrameBufferSpecification specification = new FrameBuffer.FrameBufferSpecification();
-        specification.width = 1280;
-        specification.height = 720;
-        frameBuffer = FrameBuffer.create(specification);
         viewportSize = new Vector2f(0);
-        isViewPortIsFocused = false;
-        isViewPortIsHovered = false;
-        imguizmoType = -1;
 
         sceneHierarchyPanel = new SceneHierarchyPanel();
     }
@@ -78,25 +58,17 @@ public class EditorLayer extends Layer {
     @Override
     public void onUpdate(TimeStep timeStep) {
         // update
-        if (isViewPortIsFocused) {
-        }
-
-        if (!viewportSize.equals(frameBuffer.getSpecification().width, frameBuffer.getSpecification().height)) {
-            frameBuffer.resize((int) viewportSize.x, (int) viewportSize.y);
+        if (activeScene != null) {
+            activeScene.setViewportSize(viewportSize);
         }
 
         // render
         RendererStatistics.getInstance().reset();
-        frameBuffer.bind();
-        RendererCommandAPI.setClearColor(new Vector4f(0.1f, 0.1f, 0.1f, 1));
-        RendererCommandAPI.clear();
 
         // scene
         if (activeScene != null) {
             activeScene.onUpdate(timeStep);
         }
-
-        frameBuffer.unbind();
 
         average = average * (30 - 1) / 30 + timeStep.getMilliseconds() / 30;
     }
@@ -183,7 +155,7 @@ public class EditorLayer extends Layer {
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
         ImGui.begin("Viewport");
         ImGui.beginTabBar("Tabs");
-        for (Scene scene: scenes) {
+        for (Scene scene : scenes) {
             int tabFlags = ImGuiTabItemFlags.Trailing;
 
             if (ImGui.beginTabItem(scene.getTitle(), tabFlags)) {
@@ -195,52 +167,11 @@ public class EditorLayer extends Layer {
         }
         ImGui.endTabBar();
 
-        isViewPortIsFocused = ImGui.isWindowFocused();
-        isViewPortIsHovered = ImGui.isWindowHovered();
-        Application.get().getImGuiLayer().setBlockingEvents(!isViewPortIsFocused && !isViewPortIsHovered);
-
-        int textureID = frameBuffer.getColorAttachmentRendererId();
         ImVec2 size = ImGui.getContentRegionAvail();
         viewportSize = new Vector2f(size.x, size.y);
 
-        ImGui.image(textureID, size.x, size.y, 0.0f, 1.0f, 1.0f, 0.0f);
-
-        Entity selectedEntity = activeScene != null ? activeScene.getSelectedEntity() : null;
-        if (selectedEntity != null && imguizmoType != -1) {
-            ImGuizmo.setOrthographic(true);
-            ImGuizmo.setDrawList();
-            ImGuizmo.setRect(ImGui.getWindowPosX(), ImGui.getWindowPosY(), ImGui.getWindowWidth(), ImGui.getWindowHeight());
-
-            Camera mainCamera = activeScene.getCamera();
-            float[] projection = new float[16];
-            projection = mainCamera.getProjectionMatrix().get(projection);
-            float[] view = new float[16];
-            view = mainCamera.getViewMatrix().get(view);
-            TransformComponent transformComponent = selectedEntity.getComponent(TransformComponent.class);
-            float[] transformation = new float[16];
-            ImGuizmo.recomposeMatrixFromComponents(transformation, new float[]{transformComponent.translate.x, transformComponent.translate.y, transformComponent.translate.z}, new float[]{(float) Math.toDegrees(transformComponent.rotation.x), (float) Math.toDegrees(transformComponent.rotation.y), (float) Math.toDegrees(transformComponent.rotation.z)}, new float[]{transformComponent.size.x, transformComponent.size.y, transformComponent.size.z});
-
-            boolean snap = Input.isKeyPressed(YH_KEY_LEFT_CONTROL);
-            float snapValue = 0.5f;
-            if (imguizmoType == Operation.ROTATE) {
-                snapValue = 45.0f;
-            }
-
-            float[] snapValues = {snapValue, snapValue, snapValue};
-            if (snap) {
-                ImGuizmo.manipulate(view, projection, transformation, imguizmoType, Mode.LOCAL, snapValues);
-            } else {
-                ImGuizmo.manipulate(view, projection, transformation, imguizmoType, Mode.LOCAL);
-            }
-            if (ImGuizmo.isUsing()) {
-                float[] translate = new float[3];
-                float[] rotation = new float[3];
-                float[] scale = new float[3];
-                ImGuizmo.decomposeMatrixToComponents(transformation, translate, rotation, scale);
-                transformComponent.translate.set(translate);
-                transformComponent.rotation.set(Math.toRadians(rotation[0]), Math.toRadians(rotation[1]), Math.toRadians(rotation[2]));
-                transformComponent.size.set(scale);
-            }
+        if (activeScene != null) {
+            activeScene.onImgRender();
         }
 
         ImGui.end();
@@ -259,6 +190,9 @@ public class EditorLayer extends Layer {
     @Override
     public void onEvent(Event event) {
         (new EventDispatcher(event)).dispatch(EventType.KeyPressed, this::onKeyPressed);
+        if (activeScene != null) {
+            activeScene.onEvent(event);
+        }
     }
 
     private boolean onKeyPressed(Event e) {
@@ -273,10 +207,6 @@ public class EditorLayer extends Layer {
         boolean shift = Input.isKeyPressed(YH_KEY_LEFT_SHIFT) || Input.isKeyPressed(YH_KEY_RIGHT_SHIFT);
 
         switch (event.getKeyCode()) {
-            case YH_KEY_Q -> imguizmoType = -1;
-            case YH_KEY_W -> imguizmoType = Operation.TRANSLATE;
-            case YH_KEY_E -> imguizmoType = Operation.SCALE;
-            case YH_KEY_R -> imguizmoType = Operation.ROTATE;
             case YH_KEY_S -> {
                 if (control && shift) {
                     saveAs();

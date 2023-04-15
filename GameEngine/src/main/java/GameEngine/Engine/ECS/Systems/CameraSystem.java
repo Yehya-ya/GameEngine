@@ -27,13 +27,15 @@ public class CameraSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity e) {
-        CameraComponent cameraComponent = cameraComponentsMapper.get(e);
-        if (cameraComponent.primary) {
-            mainCamera = cameraComponent.camera;
+        if (!scene.getRuntime()) {
+            CameraComponent cameraComponent = cameraComponentsMapper.get(e);
+            if (cameraComponent.primary) {
+                mainCamera = cameraComponent.camera;
+            }
+            TransformComponent transformComponent = transformComponentsMapper.get(e);
+            cameraComponent.camera.setPosition(transformComponent.translate);
+            cameraComponent.camera.setRotation(transformComponent.rotation);
         }
-        TransformComponent transformComponent = transformComponentsMapper.get(e);
-        cameraComponent.camera.setPosition(transformComponent.translate);
-        cameraComponent.camera.setRotation(transformComponent.rotation);
     }
 
     @Override
