@@ -139,7 +139,17 @@ public class EditorCamera extends Camera {
     }
 
     private Quaternionf getOrientation() {
-        return new Quaternionf(-pitch, -yaw, 0.0f, 1.0f);
+        float cPitch = Math.cos(-pitch * 0.5f);
+        float sPitch = Math.sin(-pitch * 0.5f);
+        float cYaw = Math.cos(-yaw * 0.5f);
+        float sYaw = Math.sin(-yaw * 0.5f);
+
+        float qx = sPitch * cYaw;
+        float qy = cPitch * sYaw;
+        float qz = -sPitch * sYaw;
+        float qw = cPitch * cYaw;
+
+        return new Quaternionf(qx, qy, qz, qw);
     }
 
     public void setViewportSize(float width, float height) {
@@ -156,7 +166,7 @@ public class EditorCamera extends Camera {
     protected void updateViewMatrix() {
         position = calculatePosition();
         Quaternionf orientation = getOrientation();
-        viewMatrix = new Matrix4f().translate(position).mul(new Matrix4f().set(orientation));
+        viewMatrix = new Matrix4f().translate(position).rotate(orientation);
         viewMatrix = viewMatrix.invert();
     }
 
