@@ -27,7 +27,7 @@ public class CameraSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity e) {
-        if (!scene.getRuntime()) {
+        if (scene.getRuntime()) {
             CameraComponent cameraComponent = cameraComponentsMapper.get(e);
             if (cameraComponent.primary) {
                 mainCamera = cameraComponent.camera;
