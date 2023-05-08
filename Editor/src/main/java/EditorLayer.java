@@ -11,6 +11,7 @@ import GameEngine.Engine.Renderer.BatchRenderer2D;
 import GameEngine.Engine.Renderer.RendererStatistics;
 import GameEngine.Engine.Renderer.Texture;
 import GameEngine.Engine.Utils.TimeStep;
+import Panels.ContentBrowserPanel;
 import Panels.SceneHierarchyPanel;
 import Utils.FileDialog;
 import imgui.ImGui;
@@ -22,6 +23,7 @@ import imgui.flag.*;
 import imgui.type.ImBoolean;
 import org.joml.Vector2f;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +39,7 @@ public class EditorLayer extends Layer {
     private List<Scene> scenes;
     private Scene activeScene;
     private SceneHierarchyPanel sceneHierarchyPanel;
+    private ContentBrowserPanel contentBrowserPanel;
 
     public EditorLayer() {
         super("Example Layer 2D");
@@ -53,6 +56,7 @@ public class EditorLayer extends Layer {
         viewportSize = new Vector2f(0);
 
         sceneHierarchyPanel = new SceneHierarchyPanel();
+        contentBrowserPanel = new ContentBrowserPanel();
     }
 
     @Override
@@ -143,6 +147,7 @@ public class EditorLayer extends Layer {
 
         FileDialog.update();
         sceneHierarchyPanel.onImGuiRender();
+        contentBrowserPanel.onImGuiRender();
 
         ImGui.begin("Stats");
         RendererStatistics stats = RendererStatistics.getInstance();
@@ -172,6 +177,18 @@ public class EditorLayer extends Layer {
 
         if (activeScene != null) {
             activeScene.onImgRender();
+        }
+
+        if (ImGui.beginDragDropTarget()) {
+            File file = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
+            if (file != null) {
+                int index = file.getName().lastIndexOf('.');
+                String extension = index > 0 ? file.getName().substring(index + 1) : "";
+                if (extension.equals("yaml")) {
+                    openActivity(file.getPath());
+                }
+            }
+            ImGui.endDragDropTarget();
         }
 
         ImGui.end();
@@ -236,17 +253,21 @@ public class EditorLayer extends Layer {
     }
 
     public void save() {
-        if (activeScene.getUri() != null) {
-            saveActivity(activeScene.getUri());
-        } else {
-            saveAs();
+        if (activeScene != null) {
+            if (activeScene.getUri() != null) {
+                saveActivity(activeScene.getUri());
+            } else {
+                saveAs();
+            }
         }
     }
 
     public void saveAs() {
-        FileDialog.saveFile(EditorLayer.SaveFileDialogId, "scene file(*.yaml){.yaml}", () -> {
-            saveActivity(ImGuiFileDialog.getFilePathName());
-        });
+        if (activeScene != null) {
+            FileDialog.saveFile(EditorLayer.SaveFileDialogId, "scene file(*.yaml){.yaml}", () -> {
+                saveActivity(ImGuiFileDialog.getFilePathName());
+            });
+        }
     }
 
     public void newSceneActivity() {

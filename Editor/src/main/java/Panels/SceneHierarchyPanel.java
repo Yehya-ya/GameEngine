@@ -23,6 +23,7 @@ import imgui.type.ImString;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
+import java.io.File;
 import java.util.function.Function;
 
 public class SceneHierarchyPanel {
@@ -100,7 +101,7 @@ public class SceneHierarchyPanel {
 
     private void drawEntityNode(@NotNull Entity e) {
         String tag = e.getComponent(TagComponent.class).name;
-        int flags = ImGuiTreeNodeFlags.OpenOnArrow | (e.equals(scene.getSelectedEntity())? ImGuiTreeNodeFlags.Selected : 0);
+        int flags = ImGuiTreeNodeFlags.OpenOnArrow | (e.equals(scene.getSelectedEntity()) ? ImGuiTreeNodeFlags.Selected : 0);
         boolean opened = ImGui.treeNodeEx(e.getId(), flags, tag);
         if (ImGui.isItemClicked()) {
             scene.setSelectedEntity(e);
@@ -206,6 +207,13 @@ public class SceneHierarchyPanel {
 
                 if (ImGui.imageButton(spriteComponent.texture.getRendererId(), 50, 50)) {
                     FileDialog.openFile(OpenTextureFileDialogId, "JPEG (*.JPG; *.JPEG; *.JPE){.jpg,.jpeg,jpe}PNG (.PNG){.png}", () -> spriteComponent.texture = Texture.create(ImGuiFileDialog.getFilePathName()));
+                }
+                if (ImGui.beginDragDropTarget()) {
+                    Object file = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
+                    if (file instanceof File) {
+                        spriteComponent.texture = Texture.create(((File) file).getPath());
+                    }
+                    ImGui.endDragDropTarget();
                 }
             }
             return null;
