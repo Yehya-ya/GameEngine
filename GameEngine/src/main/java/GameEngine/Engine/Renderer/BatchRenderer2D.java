@@ -38,7 +38,8 @@ public class BatchRenderer2D {
                 .addBufferElement(BufferLayout.ShaderDataType.Float4, "aColor", false)//
                 .addBufferElement(BufferLayout.ShaderDataType.Float2, "aTexCoord", false)//
                 .addBufferElement(BufferLayout.ShaderDataType.Float, "aTilingFactor", false)//
-                .addBufferElement(BufferLayout.ShaderDataType.Float, "aTextureIndex", false));
+                .addBufferElement(BufferLayout.ShaderDataType.Float, "aTextureIndex", false)//
+                .addBufferElement(BufferLayout.ShaderDataType.Float, "aEntityID", false));
         storage.vertexArray.addVertexBuffer(storage.vertexBuffer);
         storage.vertexArray.setIndexBuffer(IndexBuffer.create(indices));
 
@@ -107,68 +108,72 @@ public class BatchRenderer2D {
     }
 
     public static void drawQuad(Vector2f pos, Vector3f size, Vector4f color) {
-        drawQuad(new Vector3f(pos, 1.0f), size, color);
+        drawQuad(new Vector3f(pos, 1.0f), size, color, -1);
     }
 
-    public static void drawQuad(Vector3f pos, @NotNull Vector3f size, Vector4f color) {
+    public static void drawQuad(Vector2f pos, Vector3f size, Vector4f color, int entityId) {
+        drawQuad(new Vector3f(pos, 1.0f), size, color, entityId);
+    }
+
+    public static void drawQuad(Vector3f pos, @NotNull Vector3f size, Vector4f color, int entityId) {
         Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, size.z);
 
-        drawWithColor(transformation, color);
+        drawWithColor(transformation, color, entityId);
     }
 
-    public static void drawQuad(Vector2f pos, Vector3f size, Texture texture) {
-        drawQuad(new Vector3f(pos, 1.0f), size, texture, 1.0f);
+    public static void drawQuad(Vector2f pos, Vector3f size, Texture texture, int entityId) {
+        drawQuad(new Vector3f(pos, 1.0f), size, texture, 1.0f, entityId);
     }
 
-    public static void drawQuad(Vector3f pos, Vector3f size, Texture texture) {
-        drawQuad(pos, size, texture, 1.0f);
+    public static void drawQuad(Vector3f pos, Vector3f size, Texture texture, int entityId) {
+        drawQuad(pos, size, texture, 1.0f, entityId);
     }
 
-    public static void drawQuad(Vector2f pos, Vector3f size, Texture texture, float tilingFactor) {
-        drawQuad(new Vector3f(pos, 1.0f), size, texture, tilingFactor);
+    public static void drawQuad(Vector2f pos, Vector3f size, Texture texture, float tilingFactor, int entityId) {
+        drawQuad(new Vector3f(pos, 1.0f), size, texture, tilingFactor, entityId);
     }
 
-    public static void drawQuad(Vector3f pos, @NotNull Vector3f size, Texture texture, float tilingFactor) {
+    public static void drawQuad(Vector3f pos, @NotNull Vector3f size, Texture texture, float tilingFactor, int entityId) {
         Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, size.z);
 
-        drawWithTexture(transformation, texture, tilingFactor);
+        drawWithTexture(transformation, texture, tilingFactor, entityId);
     }
 
-    public static void drawRotatedQuad(Vector2f pos, Vector3f size, Vector3f rotation, Vector4f color) {
-        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, color);
+    public static void drawRotatedQuad(Vector2f pos, Vector3f size, Vector3f rotation, Vector4f color, int entityId) {
+        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, color, entityId);
     }
 
-    public static void drawRotatedQuad(Vector3f pos, @NotNull Vector3f size, @NotNull Vector3f rotation, Vector4f color) {
+    public static void drawRotatedQuad(Vector3f pos, @NotNull Vector3f size, @NotNull Vector3f rotation, Vector4f color, int entityId) {
         Matrix4f transformation = new Matrix4f().translate(pos).rotateAffineXYZ(rotation.x, rotation.y, rotation.z).scale(size.x, size.y, size.z);
 
-        drawWithColor(transformation, color);
+        drawWithColor(transformation, color, entityId);
     }
 
-    public static void drawRotatedQuad(Vector2f pos, Vector3f size, Vector3f rotation, Texture texture) {
-        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, texture, 1.0f);
+    public static void drawRotatedQuad(Vector2f pos, Vector3f size, Vector3f rotation, Texture texture, int entityId) {
+        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, texture, 1.0f, entityId);
     }
 
-    public static void drawRotatedQuad(Vector3f pos, Vector3f size, Vector3f rotation, Texture texture) {
-        drawRotatedQuad(pos, size, rotation, texture, 1.0f);
+    public static void drawRotatedQuad(Vector3f pos, Vector3f size, Vector3f rotation, Texture texture, int entityId) {
+        drawRotatedQuad(pos, size, rotation, texture, 1.0f, entityId);
     }
 
-    public static void drawRotatedQuad(Vector2f pos, Vector3f size, Vector3f rotation, Texture texture, float tilingFactor) {
-        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, texture, tilingFactor);
+    public static void drawRotatedQuad(Vector2f pos, Vector3f size, Vector3f rotation, Texture texture, float tilingFactor, int entityId) {
+        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, texture, tilingFactor, entityId);
     }
 
-    public static void drawRotatedQuad(Vector3f pos, @NotNull Vector3f size, @NotNull Vector3f rotation, Texture texture, float tilingFactor) {
+    public static void drawRotatedQuad(Vector3f pos, @NotNull Vector3f size, @NotNull Vector3f rotation, Texture texture, float tilingFactor, int entityId) {
         Matrix4f transformation = new Matrix4f().translate(pos).rotateAffineXYZ(rotation.x, rotation.y, rotation.z).scale(size.x, size.y, size.z);
 
-        drawWithTexture(transformation, texture, tilingFactor);
+        drawWithTexture(transformation, texture, tilingFactor, entityId);
     }
 
-    private static void drawWithColor(@NotNull Matrix4f transformation, Vector4f color) {
+    private static void drawWithColor(@NotNull Matrix4f transformation, Vector4f color, int entityId) {
         if (storage.quadVertices.quadIndexCount >= QuadVertices.MaxIndices) {
             nextBatch();
         }
 
         for (int i = 0; i < storage.baseVertices.length; i++) {
-            storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[i])), color, storage.baseCoords[i], 1.0f, 0.0f);
+            storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[i])), color, storage.baseCoords[i], 1.0f, 0.0f, entityId);
         }
         storage.quadVertices.quadIndexCount += 6;
 
@@ -176,7 +181,7 @@ public class BatchRenderer2D {
     }
 
 
-    private static void drawWithTexture(Matrix4f transformation, Texture texture, float tilingFactor) {
+    private static void drawWithTexture(Matrix4f transformation, Texture texture, float tilingFactor, int entityId) {
         if (storage.quadVertices.quadIndexCount >= QuadVertices.MaxIndices) {
             nextBatch();
         }
@@ -201,7 +206,7 @@ public class BatchRenderer2D {
         }
 
         for (int i = 0; i < storage.baseVertices.length; i++) {
-            storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[i])), color, storage.baseCoords[i], tilingFactor, textureIndex);
+            storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[i])), color, storage.baseCoords[i], tilingFactor, textureIndex, entityId);
         }
         storage.quadVertices.quadIndexCount += 6;
 
@@ -222,9 +227,10 @@ public class BatchRenderer2D {
 
     public static class QuadVertices {
         public static final int MaxQuads = 2000;
-        public static final int VertexFloatCounts = 11;
+        public static final int VertexFloatCounts = 12;
         public static final int MaxVertices = MaxQuads * 4;
         public static final int MaxFloats = MaxVertices * VertexFloatCounts;
+        public static final int MaxBytes = MaxFloats * 4;
         public static final int MaxIndices = MaxQuads * 6;
         public static final int MaxTextures = 32;
 
@@ -238,7 +244,7 @@ public class BatchRenderer2D {
             verticesCount = 0;
         }
 
-        public void add(@NotNull Vector3f position, @NotNull Vector4f color, @NotNull Vector2f texCoord, float TilingFactor, float TextureIndex) {
+        public void add(@NotNull Vector3f position, @NotNull Vector4f color, @NotNull Vector2f texCoord, float TilingFactor, float TextureIndex, int entityId) {
             vertices[verticesCount] = position.x;
             vertices[verticesCount + 1] = position.y;
             vertices[verticesCount + 2] = position.z;
@@ -250,6 +256,7 @@ public class BatchRenderer2D {
             vertices[verticesCount + 8] = texCoord.y;
             vertices[verticesCount + 9] = TilingFactor;
             vertices[verticesCount + 10] = TextureIndex;
+            vertices[verticesCount + 11] = (float) entityId;
 
             verticesCount += VertexFloatCounts;
         }
