@@ -9,6 +9,10 @@ public class MouseEvents {
             this.button = button;
         }
 
+        public int getButton() {
+            return button;
+        }
+
         @Override
         public EventType getEventType() {
             return EventType.MouseButtonPressed;
