@@ -1,14 +1,15 @@
 package GameEngine.Engine.ECS;
 
 import GameEngine.Engine.Core.Input;
-import GameEngine.Engine.ECS.Components.TagComponent;
-import GameEngine.Engine.ECS.Components.TransformComponent;
+import GameEngine.Engine.ECS.Components.*;
 import GameEngine.Engine.ECS.Systems.CameraSystem;
 import GameEngine.Engine.ECS.Systems.RenderSystem;
 import GameEngine.Engine.Events.*;
 import GameEngine.Engine.Renderer.Buffer.FrameBuffer;
 import GameEngine.Engine.Renderer.Camera.Camera;
 import GameEngine.Engine.Renderer.Camera.EditorCamera;
+import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
+import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
 import GameEngine.Engine.Renderer.RendererCommandAPI;
 import GameEngine.Engine.Utils.MouseCodes;
 import GameEngine.Engine.Utils.TimeStep;
@@ -22,7 +23,10 @@ import imgui.extension.imguizmo.flag.Operation;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
+
+import java.util.UUID;
 
 import static GameEngine.Engine.Utils.KeyCodes.*;
 
@@ -39,6 +43,7 @@ public class Scene {
     private int imguizmoType;
     private int hoveredEntityId;
     private boolean viewportHovered;
+    private Vector2f viewportSize;
 
 
     public Scene() {
@@ -68,6 +73,8 @@ public class Scene {
         specification.attachments.addAttachments(new FrameBuffer.FramebufferTextureSpecification(FrameBuffer.FramebufferTextureFormat.RED_INTEGER));
         specification.attachments.addAttachments(new FrameBuffer.FramebufferTextureSpecification(FrameBuffer.FramebufferTextureFormat.Depth));
         this.frameBuffer = FrameBuffer.create(specification);
+
+        viewportSize = new Vector2f();
     }
 
     public String getTitle() {
@@ -120,10 +127,21 @@ public class Scene {
     }
 
     public Entity createEntity(String name) {
+        return createEntityWithUuid(name, UUID.randomUUID());
+    }
+
+    public Entity createEntityWithUuid(String name, UUID uuid) {
         com.artemis.Entity e = engine.createEntity();
         Entity entity = new Entity(e);
         entity.addComponent(new TagComponent(name));
+        entity.addComponent(new IdComponent(uuid));
         entity.addComponent(new TransformComponent());
+        return entity;
+    }
+
+    public Entity emptyEntity() {
+        com.artemis.Entity e = engine.createEntity();
+        Entity entity = new Entity(e);
         return entity;
     }
 
@@ -171,6 +189,7 @@ public class Scene {
 
     public boolean onKeyPressed(Event e) {
         KeyEvent.KeyPressedEvent event = (KeyEvent.KeyPressedEvent) e;
+        boolean control = Input.isKeyPressed(YH_KEY_LEFT_CONTROL) || Input.isKeyPressed(YH_KEY_RIGHT_CONTROL);
         switch (event.getKeyCode()) {
             case YH_KEY_Q -> {
                 if (!ImGuizmo.isUsing()) {
@@ -192,6 +211,10 @@ public class Scene {
                     imguizmoType = Operation.ROTATE;
                 }
             }
+            case YH_KEY_D -> {
+                if (control)
+                    duplicateEntity(this.selectedEntity);
+            }
         }
         return true;
     }
@@ -208,6 +231,77 @@ public class Scene {
             }
         }
         return true;
+    }
+
+    public Component copyComponent(Component component) {
+        if (component instanceof IdComponent) {
+            return new IdComponent();
+        }
+        if (component instanceof TagComponent tagComponent) {
+            return new TagComponent(tagComponent.name + " copy");
+        }
+        if (component instanceof TransformComponent transformComponent) {
+            return new TransformComponent(
+                    new Vector3f(transformComponent.translate),
+                    new Vector3f(transformComponent.size),
+                    new Vector3f(transformComponent.rotation));
+        }
+        if (component instanceof SpriteComponent spriteComponent) {
+            if (spriteComponent.texture != null) {
+                return new SpriteComponent(spriteComponent.texture, spriteComponent.tilingFactor);
+            } else {
+                return new SpriteComponent(new Vector4f(spriteComponent.color));
+            }
+        }
+
+        if (component instanceof CameraComponent cameraComponent) {
+            if (cameraComponent.camera instanceof OrthographicCamera orthographicCamera) {
+                return new CameraComponent(
+                        new OrthographicCamera(
+                            new Vector3f(orthographicCamera.getPosition()),
+                            new Vector3f(orthographicCamera.getRotation()),
+                            orthographicCamera.getAspectRatio(),
+                            orthographicCamera.getNear(),
+                            orthographicCamera.getFar(),
+                            orthographicCamera.getZoomLevel()
+                        ),
+                        cameraComponent.primary);
+            } else if (cameraComponent.camera instanceof PerspectiveCamera perspectiveCamera) {
+                return new CameraComponent(
+                        new PerspectiveCamera(
+                                new Vector3f(perspectiveCamera.getPosition()),
+                                new Vector3f(perspectiveCamera.getRotation()),
+                                perspectiveCamera.getAspectRatio(),
+                                perspectiveCamera.getNear(),
+                                perspectiveCamera.getFar(),
+                                perspectiveCamera.getFov()
+                        ), cameraComponent.primary);
+            }
+        }
+
+        return null;
+    }
+
+    public Scene copy(Scene other) {
+        Scene newScene = new Scene();
+        newScene.setViewportSize(other.viewportSize);
+
+        IntBag entitiesIds = other.getEntitiesIds(IdComponent.class);
+        for (int i = 0; i < entitiesIds.size(); i++) {
+            Entity srcEntity = other.getEntity(entitiesIds.get(i));
+            Entity disEntity = newScene.emptyEntity();
+            for (Component component : srcEntity.getAllComponents()) {
+                disEntity.addComponent(copyComponent(component));
+            }
+        }
+        return newScene;
+    }
+
+    public void duplicateEntity(Entity srcEntity) {
+        Entity disEntity = emptyEntity();
+        for (Component component : srcEntity.getAllComponents()) {
+            disEntity.addComponent(copyComponent(component));
+        }
     }
 
     public void onImgRender() {
@@ -236,7 +330,7 @@ public class Scene {
             float[] transformation = new float[16];
             ImGuizmo.recomposeMatrixFromComponents(transformation, new float[]{transformComponent.translate.x, transformComponent.translate.y, transformComponent.translate.z}, new float[]{(float) Math.toDegrees(transformComponent.rotation.x), (float) Math.toDegrees(transformComponent.rotation.y), (float) Math.toDegrees(transformComponent.rotation.z)}, new float[]{transformComponent.size.x, transformComponent.size.y, transformComponent.size.z});
 
-            boolean snap = Input.isKeyPressed(YH_KEY_LEFT_CONTROL);
+            boolean snap = Input.isKeyPressed(YH_KEY_LEFT_CONTROL) || Input.isKeyPressed(YH_KEY_RIGHT_CONTROL);
             float snapValue = 0.5f;
             if (imguizmoType == Operation.ROTATE) {
                 snapValue = 45.0f;
@@ -261,6 +355,7 @@ public class Scene {
     }
 
     public void setViewportSize(Vector2f viewportSize) {
+        this.viewportSize = viewportSize;
         if (!viewportSize.equals(frameBuffer.getSpecification().width, frameBuffer.getSpecification().height)) {
             frameBuffer.resize((int) viewportSize.x, (int) viewportSize.y);
         }
