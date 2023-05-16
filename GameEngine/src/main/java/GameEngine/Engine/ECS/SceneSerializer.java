@@ -1,9 +1,6 @@
 package GameEngine.Engine.ECS;
 
-import GameEngine.Engine.ECS.Components.CameraComponent;
-import GameEngine.Engine.ECS.Components.SpriteComponent;
-import GameEngine.Engine.ECS.Components.TagComponent;
-import GameEngine.Engine.ECS.Components.TransformComponent;
+import GameEngine.Engine.ECS.Components.*;
 import GameEngine.Engine.Renderer.Camera.Camera;
 import GameEngine.Engine.Renderer.Camera.CameraType;
 import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
@@ -25,6 +22,7 @@ import org.yaml.snakeyaml.representer.Representer;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
@@ -72,14 +70,14 @@ public class SceneSerializer {
 
         Scene scene = new Scene(sceneData.title, path);
         for (EntityData entityData : sceneData.entities) {
-            Entity entity = null;
+            Entity entity = scene.emptyEntity();
             for (ComponentData componentData : entityData.components) {
-                if (componentData instanceof TagComponentData tagComponentData) {
-                    entity = scene.createEntity(tagComponentData.name);
+                if (componentData instanceof IdComponentData idComponentData) {
+                    entity.addComponent(new IdComponent(idComponentData.id));
                 }
 
-                if (entity == null) {
-                    continue;
+                if (componentData instanceof TagComponentData tagComponentData) {
+                    entity.addComponent(new TagComponent(tagComponentData.name));
                 }
 
                 if (componentData instanceof TransformComponentData transformComponentData) {
@@ -125,6 +123,11 @@ public class SceneSerializer {
         public EntityData(@NotNull Entity entity) {
             this.entity = entity.getId();
             components = new ArrayList<>();
+            IdComponent idComponent = entity.getComponent(IdComponent.class);
+            if (idComponent != null) {
+                components.add(new IdComponentData(idComponent));
+            }
+
             TagComponent tagComponent = entity.getComponent(TagComponent.class);
             if (tagComponent != null) {
                 components.add(new TagComponentData(tagComponent));
@@ -149,6 +152,17 @@ public class SceneSerializer {
 
     private static abstract class ComponentData {
 
+    }
+
+    private static class IdComponentData extends ComponentData {
+        public UUID id;
+
+        public IdComponentData() {
+        }
+
+        public IdComponentData(@NotNull IdComponent idComponent) {
+            this.id = idComponent.id;
+        }
     }
 
     private static class TagComponentData extends ComponentData {
@@ -261,12 +275,14 @@ public class SceneSerializer {
             super(new DumperOptions());
 
             this.addClassTag(SceneData.class, new Tag("!Scene"));
+            this.addClassTag(IdComponentData.class, new Tag("!IdComponent"));
             this.addClassTag(TagComponentData.class, new Tag("!TagComponent"));
             this.addClassTag(TransformComponentData.class, new Tag("!TransformComponent"));
             this.addClassTag(CameraComponentData.class, new Tag("!CameraComponent"));
             this.addClassTag(SpriteComponentData.class, new Tag("!SpriteComponent"));
             this.addClassTag(OrthographicCameraData.class, new Tag("!OrthographicCamera"));
             this.addClassTag(PerspectiveCameraData.class, new Tag("!PerspectiveCamera"));
+            this.addClassTag(UUID.class, new Tag("!UUID"));
         }
     }
 
@@ -275,12 +291,14 @@ public class SceneSerializer {
             super(new LoaderOptions());
 
             this.addTypeDescription(new TypeDescription(SceneData.class, "!Scene"));
+            this.addTypeDescription(new TypeDescription(IdComponentData.class, "!IdComponent"));
             this.addTypeDescription(new TypeDescription(TagComponentData.class, "!TagComponent"));
             this.addTypeDescription(new TypeDescription(TransformComponentData.class, "!TransformComponent"));
             this.addTypeDescription(new TypeDescription(CameraComponentData.class, "!CameraComponent"));
             this.addTypeDescription(new TypeDescription(SpriteComponentData.class, "!SpriteComponent"));
             this.addTypeDescription(new TypeDescription(OrthographicCameraData.class, "!OrthographicCamera"));
             this.addTypeDescription(new TypeDescription(PerspectiveCameraData.class, "!PerspectiveCamera"));
+            this.addTypeDescription(new TypeDescription(UUID.class, "!UUID"));
         }
     }
 }
