@@ -40,9 +40,15 @@ public class EditorLayer extends Layer {
     private Scene activeScene;
     private SceneHierarchyPanel sceneHierarchyPanel;
     private ContentBrowserPanel contentBrowserPanel;
+    private final Texture iconPlay;
+    private final Texture iconStop;
+    private SceneState sceneState;
 
     public EditorLayer() {
         super("Example Layer 2D");
+
+        iconPlay = Texture.create("resources/Icons/PlayButton.png");
+        iconStop = Texture.create("resources/Icons/StopButton.png");
     }
 
     @Override
@@ -57,6 +63,7 @@ public class EditorLayer extends Layer {
 
         sceneHierarchyPanel = new SceneHierarchyPanel();
         contentBrowserPanel = new ContentBrowserPanel();
+        sceneState = SceneState.Edit;
     }
 
     @Override
@@ -75,6 +82,14 @@ public class EditorLayer extends Layer {
         }
 
         average = average * (30 - 1) / 30 + timeStep.getMilliseconds() / 30;
+    }
+
+    public void onScenePlay() {
+        sceneState = SceneState.Play;
+    }
+
+    public void onSceneStop() {
+        sceneState = SceneState.Edit;
     }
 
     @Override
@@ -159,23 +174,24 @@ public class EditorLayer extends Layer {
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
         ImGui.begin("Viewport");
-        ImGui.beginTabBar("Tabs");
-        for (Scene scene : scenes) {
-            int tabFlags = ImGuiTabItemFlags.Trailing;
-
-            if (ImGui.beginTabItem(scene.getTitle(), tabFlags)) {
-                if (!scene.equals(activeScene)) {
-                    setActiveScene(scene);
-                }
-                ImGui.endTabItem();
-            }
-        }
-        ImGui.endTabBar();
+//        ImGui.beginTabBar("Tabs");
+//        for (Scene scene : scenes) {
+//            int tabFlags = ImGuiTabItemFlags.Trailing;
+//
+//            if (ImGui.beginTabItem(scene.getTitle(), tabFlags)) {
+//                if (!scene.equals(activeScene)) {
+//                    setActiveScene(scene);
+//                }
+//                ImGui.endTabItem();
+//            }
+//        }
+//        ImGui.endTabBar();
 
         ImVec2 size = ImGui.getContentRegionAvail();
         viewportSize = new Vector2f(size.x, size.y);
 
         if (activeScene != null) {
+            uiToolbar();
             activeScene.onImgRender();
         }
 
@@ -290,5 +306,34 @@ public class EditorLayer extends Layer {
     private void setActiveScene(Scene scene) {
         activeScene = scene;
         sceneHierarchyPanel.setScene(scene);
+    }
+
+    // UI Panels
+    public void uiToolbar() {
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 2);
+        ImGui.pushStyleVar(ImGuiStyleVar.ItemInnerSpacing, 0, 0);
+        ImGui.pushStyleColor(ImGuiCol.Button, 0, 0, 0, 0);
+        float[][] colors = ImGui.getStyle().getColors();
+        float[] buttonHovered = colors[ImGuiCol.ButtonHovered];
+        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, buttonHovered[0], buttonHovered[1], buttonHovered[2], 0.5f);
+        float[] buttonActive = colors[ImGuiCol.ButtonActive];
+        ImGui.pushStyleColor(ImGuiCol.ButtonActive, buttonActive[0], buttonActive[1], buttonActive[2], 0.5f);
+
+        ImGui.begin("##toolbar", new ImBoolean(false), ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoNav);
+
+        float size = ImGui.getWindowHeight() - 4.0f;
+        Texture icon = sceneState == SceneState.Edit ? iconPlay : iconStop;
+        ImGui.setCursorPosX((ImGui.getWindowContentRegionMaxX() * 0.5f) - (size * 0.5f));
+        if (ImGui.imageButton(icon.getRendererId(), size, size, 0, 0, 1, 1, 0)) {
+            if (sceneState == SceneState.Edit) onScenePlay();
+            else if (sceneState == SceneState.Play) onSceneStop();
+        }
+        ImGui.popStyleVar(2);
+        ImGui.popStyleColor(3);
+        ImGui.end();
+    }
+
+    public enum SceneState {
+        Edit, Play
     }
 }
