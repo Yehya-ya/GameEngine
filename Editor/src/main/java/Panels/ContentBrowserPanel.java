@@ -7,20 +7,22 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiMouseButton;
 
 import java.io.File;
-import java.util.Objects;
 
 public class ContentBrowserPanel {
     private static final File assetDirectory = new File("assets");
     private static final float padding = 16.0f;
     private static final float thumbnailSize = 128.0f;
-    private static final Texture directoryIcon = Texture.create("resources/Icons/ContentBrowser/DirectoryIcon.png");
-    private static final Texture fileIcon = Texture.create("resources/Icons/ContentBrowser/FileIcon.png");
+    private Texture directoryIcon;
+    private Texture fileIcon;
 
     private Scene scene;
     private File currentDirectory;
+    private File[] currentFileList;
 
     public ContentBrowserPanel() {
-        currentDirectory = new File("assets");
+        setCurrentDirectory(new File("assets"));
+        directoryIcon = Texture.create("resources/Icons/ContentBrowser/DirectoryIcon.png");
+        fileIcon = Texture.create("resources/Icons/ContentBrowser/FileIcon.png");
     }
 
     public ContentBrowserPanel(Scene scene) {
@@ -32,12 +34,17 @@ public class ContentBrowserPanel {
         this.scene = scene;
     }
 
+    public void setCurrentDirectory(File file) {
+        currentDirectory = file;
+        currentFileList = file.listFiles();
+    }
+
     public void onImGuiRender() {
         ImGui.begin("Content Browser");
 
         if (!currentDirectory.equals(assetDirectory)) {
             if (ImGui.button("<-")) {
-                currentDirectory = currentDirectory.getParentFile();
+                setCurrentDirectory(currentDirectory.getParentFile());
             }
         }
 
@@ -49,9 +56,10 @@ public class ContentBrowserPanel {
 
         ImGui.columns(columnCount);
 
-        for (File file : Objects.requireNonNull(currentDirectory.listFiles())) {
+        for (File file : currentFileList) {
             ImGui.pushID(file.getPath());
-            Texture icon = file.isDirectory() ? directoryIcon : fileIcon;
+            boolean isDirectory = file.isDirectory();
+            Texture icon = isDirectory ? directoryIcon : fileIcon;
             ImGui.pushStyleColor(ImGuiCol.Button, 0, 0, 0, 0);
             ImGui.imageButton(icon.getRendererId(), thumbnailSize, thumbnailSize, 0, 1, 1, 0);
             if (ImGui.beginDragDropSource()) {
@@ -60,8 +68,8 @@ public class ContentBrowserPanel {
             }
             ImGui.popStyleColor();
             if (ImGui.isItemHovered() && ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)) {
-                if (file.isDirectory()) {
-                    currentDirectory = file;
+                if (isDirectory) {
+                    setCurrentDirectory(file);
                 }
             }
             ImGui.textWrapped(file.getName());
