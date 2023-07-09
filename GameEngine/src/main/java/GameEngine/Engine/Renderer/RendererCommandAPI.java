@@ -26,11 +26,11 @@ public class RendererCommandAPI {
     }
 
     public static void drawIndexed(VertexArray vertexArray) {
-        rendererCommand.drawIndexed(vertexArray);
+        rendererCommand.drawIndexed(vertexArray, vertexArray.getIndexBuffer().getCount());
     }
 
-    public static void drawIndexed(int count) {
-        rendererCommand.drawIndexed(count);
+    public static void drawIndexed(VertexArray vertexArray, int count) {
+        rendererCommand.drawIndexed(vertexArray, count);
     }
 
     public static RendererCommand.API getApi() {

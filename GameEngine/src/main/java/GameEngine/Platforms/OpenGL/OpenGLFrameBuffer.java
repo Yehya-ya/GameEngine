@@ -19,8 +19,7 @@ public class OpenGLFrameBuffer extends FrameBuffer {
     private final FrameBufferSpecification specification;
     private FramebufferTextureSpecification depthAttachmentSpecification = new FramebufferTextureSpecification();
     private int[] colorAttachments;
-    private int depthAttachment = 0;
-    private int rendererId, depthAttachmentRendererId;
+    private int rendererId;
 
     public OpenGLFrameBuffer(FrameBufferSpecification specification) {
         this.specification = specification;
@@ -48,7 +47,6 @@ public class OpenGLFrameBuffer extends FrameBuffer {
     public void delete() {
         glDeleteFramebuffers(rendererId);
         glDeleteTextures(colorAttachments);
-        glDeleteTextures(depthAttachmentRendererId);
     }
 
     @Override
@@ -93,11 +91,11 @@ public class OpenGLFrameBuffer extends FrameBuffer {
     }
 
     public void invalidate() {
+        int depthAttachment;
         if (rendererId != 0) {
             delete();
 
             colorAttachments = new int[0];
-            depthAttachment = 0;
         }
 
         rendererId = glCreateFramebuffers();
@@ -112,12 +110,8 @@ public class OpenGLFrameBuffer extends FrameBuffer {
             for (int i = 0; i < colorAttachments.length; i++) {
                 Utils.bindTexture(multisample, colorAttachments[i]);
                 switch (colorAttachmentSpecifications.get(i).textureFormat) {
-                    case RGBA8 -> {
-                        Utils.attachColorTexture(colorAttachments[i], specification.samples, GL_RGBA8, GL_RGBA, specification.width, specification.height, i);
-                    }
-                    case RED_INTEGER -> {
-                        Utils.attachColorTexture(colorAttachments[i], specification.samples, GL_R32I, GL_RED_INTEGER, specification.width, specification.height, i);
-                    }
+                    case RGBA8 -> Utils.attachColorTexture(colorAttachments[i], specification.samples, GL_RGBA8, GL_RGBA, specification.width, specification.height, i);
+                    case RED_INTEGER -> Utils.attachColorTexture(colorAttachments[i], specification.samples, GL_R32I, GL_RED_INTEGER, specification.width, specification.height, i);
                 }
             }
         }
@@ -145,23 +139,23 @@ public class OpenGLFrameBuffer extends FrameBuffer {
     }
 
     private static class Utils {
-        static int TextureTarget(boolean multisampled) {
-            return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+        static int TextureTarget(boolean multisampling) {
+            return multisampling ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
         }
 
-        static int[] createTextures(boolean multisampled, int count) {
+        static int[] createTextures(boolean multisampling, int count) {
             int[] out = new int[count];
-            glCreateTextures(TextureTarget(multisampled), out);
+            glCreateTextures(TextureTarget(multisampling), out);
             return out;
         }
 
-        static void bindTexture(boolean multisampled, int id) {
-            glBindTexture(TextureTarget(multisampled), id);
+        static void bindTexture(boolean multisampling, int id) {
+            glBindTexture(TextureTarget(multisampling), id);
         }
 
         static void attachColorTexture(int id, int samples, int internalFormat, int format, int width, int height, int index) {
-            boolean multisampled = samples > 1;
-            if (multisampled) {
+            boolean multisampling = samples > 1;
+            if (multisampling) {
                 glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, false);
             } else {
                 glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, (ByteBuffer) null);
@@ -173,12 +167,12 @@ public class OpenGLFrameBuffer extends FrameBuffer {
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             }
 
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multisampled), id, 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multisampling), id, 0);
         }
 
         static void attachDepthTexture(int id, int samples, int format, int attachmentType, int width, int height) {
-            boolean multisampled = samples > 1;
-            if (multisampled) {
+            boolean multisampling = samples > 1;
+            if (multisampling) {
                 glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, false);
             } else {
                 glTexStorage2D(GL_TEXTURE_2D, 1, format, width, height);
@@ -190,7 +184,7 @@ public class OpenGLFrameBuffer extends FrameBuffer {
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             }
 
-            glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(multisampled), id, 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(multisampling), id, 0);
         }
 
         static boolean isDepthFormat(FramebufferTextureFormat format) {
