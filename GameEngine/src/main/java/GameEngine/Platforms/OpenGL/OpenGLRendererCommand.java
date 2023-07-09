@@ -56,12 +56,8 @@ public class OpenGLRendererCommand extends RendererCommand {
     }
 
     @Override
-    public void drawIndexed(@NotNull VertexArray vertexArray) {
-        glDrawElements(GL_TRIANGLES, vertexArray.getIndexBuffer().getCount(), GL_UNSIGNED_INT, 0);
-    }
-
-    @Override
-    public void drawIndexed(int count) {
+    public void drawIndexed(@NotNull VertexArray vertexArray, int count) {
+        vertexArray.bind();
         glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
     }
 

@@ -37,7 +37,7 @@ public class SpriteComponent extends com.artemis.Component {
 
     public void setToTexture() {
         this.color = null;
-        this.texture = BatchRenderer2D.storage.whiteTexture;
+        this.texture = BatchRenderer2D.storage.textures[0];
         this.tilingFactor = 1.0f;
     }
 }

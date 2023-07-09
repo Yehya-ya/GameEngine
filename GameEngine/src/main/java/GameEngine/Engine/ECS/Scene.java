@@ -44,6 +44,7 @@ public class Scene {
     private int hoveredEntityId;
     private boolean viewportHovered;
     private Vector2f viewportSize;
+    private Vector2f mousePos;
 
 
     public Scene() {
@@ -169,12 +170,8 @@ public class Scene {
         vec2.y -= viewportBounds[0].y;
         Vector2f viewportSize = new Vector2f(viewportBounds[1]).sub(viewportBounds[0]);
         vec2.y = viewportSize.y - vec2.y;
-        int mouseX = (int) vec2.x;
-        int mouseY = (int) vec2.y;
 
-        if (mouseX >= 0 && mouseY >= 0 && mouseX < (int) viewportSize.x && mouseY < (int) viewportSize.y) {
-            hoveredEntityId = frameBuffer.ReadPixel(1, mouseX, mouseY);
-        }
+        mousePos = new Vector2f(vec2.x, vec2.y);
 
         frameBuffer.unbind();
     }
@@ -223,10 +220,17 @@ public class Scene {
         MouseEvents.MouseButtonPressedEvent event = (MouseEvents.MouseButtonPressedEvent) e;
         if (event.getButton() == MouseCodes.GLFW_MOUSE_BUTTON_LEFT) {
             if (viewportHovered && !ImGuizmo.isOver() && !Input.isKeyPressed(YH_KEY_LEFT_ALT)) {
-                if (hoveredEntityId >= 0) {
-                    setSelectedEntity(this.getEntity(hoveredEntityId));
-                } else {
-                    setSelectedEntity(null);
+                int mouseX = (int) mousePos.x;
+                int mouseY = (int) mousePos.y;
+                if (mouseX >= 0 && mouseY >= 0 && mouseX < (int) viewportSize.x && mouseY < (int) viewportSize.y) {
+                    frameBuffer.bind();
+                    hoveredEntityId = frameBuffer.ReadPixel(1, mouseX, mouseY);
+                    frameBuffer.unbind();
+                    if (hoveredEntityId >= 0) {
+                        setSelectedEntity(this.getEntity(hoveredEntityId));
+                    } else {
+                        setSelectedEntity(null);
+                    }
                 }
             }
         }
