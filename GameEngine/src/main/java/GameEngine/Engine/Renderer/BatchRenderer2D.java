@@ -12,7 +12,6 @@ import org.joml.Vector4f;
 
 import java.util.stream.IntStream;
 
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_DEBUG;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 
 public class BatchRenderer2D {
@@ -61,7 +60,6 @@ public class BatchRenderer2D {
         storage.circleVertexArray.setIndexBuffer(IndexBuffer.create(indices)); // Use quad IB
 
         Texture whiteTexture = Texture.create("assets/textures/white.png");
-        int[] texturesUniform = IntStream.range(0, Renderer2DStorage.MaxTextures).toArray();
 
         storage.quadShader = ShaderProgram.create("assets/shaders/quadShader.glsl");
         storage.textures[0] = whiteTexture;
@@ -296,7 +294,6 @@ public class BatchRenderer2D {
         }
 
         public void add(@NotNull Vector3f position, @NotNull Vector4f color, @NotNull Vector2f texCoord, float TilingFactor, float TextureIndex, int entityId) {
-            YH_LOG_DEBUG(""+TextureIndex);
             vertices[verticesCount] = position.x;
             vertices[verticesCount + 1] = position.y;
             vertices[verticesCount + 2] = position.z;
