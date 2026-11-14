@@ -41,6 +41,7 @@ public class Viewport {
     private Scene scene;
     private int gizmoOperation;
     private boolean isHovered;
+    private boolean isPlaying;
 
     public Viewport(Selection selection) {
         this.selection = selection;
@@ -60,8 +61,17 @@ public class Viewport {
         this.frameBuffer = FrameBuffer.create(specification);
     }
 
-    public void setScene(Scene scene) {
+    public void edit(Scene scene) {
         this.scene = scene;
+        isPlaying = false;
+    }
+
+    public void play(Scene runtimeScene) {
+        this.scene = runtimeScene;
+        isPlaying = true;
+    }
+
+    public void resetCamera() {
         editorCamera = new EditorCamera();
     }
 
@@ -74,7 +84,11 @@ public class Viewport {
         if (!size.equals(specification.width, specification.height)) {
             frameBuffer.resize((int) size.x, (int) size.y);
         }
-        editorCamera.setViewportSize(size);
+        if (isPlaying) {
+            resizeSceneCameras(size);
+        } else {
+            editorCamera.setViewportSize(size);
+        }
     }
 
     public void onUpdate(@NotNull TimeStep timeStep) {
@@ -83,13 +97,20 @@ public class Viewport {
         RendererCommandAPI.clear();
         frameBuffer.clearAttachment(entityIdAttachment, noEntity);
 
-        editorCamera.onUpdate(timeStep);
-        scene.onUpdateEditor(timeStep, editorCamera);
+        if (isPlaying) {
+            scene.onUpdateRuntime(timeStep);
+        } else {
+            editorCamera.onUpdate(timeStep);
+            scene.onUpdateEditor(timeStep, editorCamera);
+        }
 
         frameBuffer.unbind();
     }
 
     public void onEvent(Event event) {
+        if (isPlaying) {
+            return;
+        }
         new EventDispatcher(event).dispatch(EventType.KeyPressed, this::onKeyPressed);
         new EventDispatcher(event).dispatch(EventType.MouseButtonPressed, this::onMousePressed);
         editorCamera.onEvent(event);
@@ -99,8 +120,15 @@ public class Viewport {
         isHovered = ImGui.isWindowHovered();
         drawImage();
         Entity selectedEntity = selection.getEntity();
-        if (selectedEntity != null && gizmoOperation != noGizmo) {
+        if (!isPlaying && selectedEntity != null && gizmoOperation != noGizmo) {
             drawGizmo(selectedEntity);
+        }
+    }
+
+    private void resizeSceneCameras(Vector2f size) {
+        boolean hasArea = size.x > 0 && size.y > 0;
+        if (hasArea) {
+            scene.onViewportResize(size.x, size.y);
         }
     }
 

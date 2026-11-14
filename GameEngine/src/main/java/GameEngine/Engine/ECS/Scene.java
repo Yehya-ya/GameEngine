@@ -110,17 +110,25 @@ public class Scene {
         process(timeStep);
     }
 
+    public void onViewportResize(float width, float height) {
+        IntBag cameraEntities = getEntitiesIds(CameraComponent.class);
+        for (int i = 0; i < cameraEntities.size(); i++) {
+            Camera camera = getEntity(cameraEntities.get(i)).getComponent(CameraComponent.class).camera;
+            camera.setAspectRatio(width / height);
+        }
+    }
+
     private void process(@NotNull TimeStep timeStep) {
         engine.setDelta(timeStep.getSeconds());
         engine.process();
     }
 
-    public Component copyComponent(Component component) {
-        if (component instanceof IdComponent) {
-            return new IdComponent();
+    private Component copyComponent(Component component) {
+        if (component instanceof IdComponent idComponent) {
+            return new IdComponent(idComponent.id);
         }
         if (component instanceof TagComponent tagComponent) {
-            return new TagComponent(tagComponent.name + " copy");
+            return new TagComponent(tagComponent.name);
         }
         if (component instanceof TransformComponent transformComponent) {
             return new TransformComponent(
@@ -163,24 +171,34 @@ public class Scene {
         return null;
     }
 
-    public Scene copy(Scene other) {
-        Scene newScene = new Scene();
+    private Component duplicateComponent(Component component) {
+        if (component instanceof IdComponent) {
+            return new IdComponent();
+        }
+        if (component instanceof TagComponent tagComponent) {
+            return new TagComponent(tagComponent.name + " copy");
+        }
+        return copyComponent(component);
+    }
 
-        IntBag entitiesIds = other.getEntitiesIds(IdComponent.class);
+    public Scene copy() {
+        Scene copy = new Scene(title, null);
+
+        IntBag entitiesIds = getEntitiesIds(IdComponent.class);
         for (int i = 0; i < entitiesIds.size(); i++) {
-            Entity srcEntity = other.getEntity(entitiesIds.get(i));
-            Entity disEntity = newScene.emptyEntity();
-            for (Component component : srcEntity.getAllComponents()) {
-                disEntity.addComponent(copyComponent(component));
+            Entity source = getEntity(entitiesIds.get(i));
+            Entity target = copy.emptyEntity();
+            for (Component component : source.getAllComponents()) {
+                target.addComponent(copyComponent(component));
             }
         }
-        return newScene;
+        return copy;
     }
 
     public void duplicateEntity(Entity srcEntity) {
         Entity disEntity = emptyEntity();
         for (Component component : srcEntity.getAllComponents()) {
-            disEntity.addComponent(copyComponent(component));
+            disEntity.addComponent(duplicateComponent(component));
         }
     }
 }

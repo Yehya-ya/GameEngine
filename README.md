@@ -15,6 +15,7 @@ The screenshots show a demo level; scene files aren't kept in the repo.
 - Click an entity in the viewport to select it.
 - Scenes saved and opened as YAML, with stable IDs for every entity. Drag textures and scenes in from the content browser.
 - Orthographic and perspective cameras, plus an editor camera that orbits, pans and zooms.
+- Play runs a copy of the scene through its primary camera; Stop throws the copy away and returns to the scene as it was.
 
 ## How it works
 

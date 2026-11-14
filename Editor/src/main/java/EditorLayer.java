@@ -43,6 +43,8 @@ public class EditorLayer extends Layer {
     private double average;
     private Vector2f viewportSize;
     private int sceneCount;
+    private Scene editorScene;
+    private Scene runtimeScene;
     private Scene activeScene;
     private List<Scene> scenesToDeleteNextFrame;
     private Selection selection;
@@ -101,11 +103,21 @@ public class EditorLayer extends Layer {
     }
 
     public void onScenePlay() {
+        if (editorScene == null) {
+            return;
+        }
         sceneState = SceneState.Play;
+        runtimeScene = editorScene.copy();
+        showScene(runtimeScene);
+        viewport.play(runtimeScene);
     }
 
     public void onSceneStop() {
         sceneState = SceneState.Edit;
+        scenesToDeleteNextFrame.add(runtimeScene);
+        runtimeScene = null;
+        showScene(editorScene);
+        viewport.edit(editorScene);
     }
 
     @Override
@@ -249,10 +261,15 @@ public class EditorLayer extends Layer {
     @Override
     public void onDetach() {
         deleteScenesFromPreviousFrame();
-        if (activeScene != null) {
-            activeScene.delete();
-            activeScene = null;
+        if (runtimeScene != null) {
+            runtimeScene.delete();
+            runtimeScene = null;
         }
+        if (editorScene != null) {
+            editorScene.delete();
+            editorScene = null;
+        }
+        activeScene = null;
         viewport.delete();
         TextureLibrary.clear();
         BatchRenderer2D.shutdown();
@@ -312,9 +329,9 @@ public class EditorLayer extends Layer {
     }
 
     public void save() {
-        if (activeScene != null) {
-            if (activeScene.getUri() != null) {
-                saveActivity(activeScene.getUri());
+        if (editorScene != null) {
+            if (editorScene.getUri() != null) {
+                saveActivity(editorScene.getUri());
             } else {
                 saveAs();
             }
@@ -322,7 +339,7 @@ public class EditorLayer extends Layer {
     }
 
     public void saveAs() {
-        if (activeScene != null) {
+        if (editorScene != null) {
             FileDialog.saveFile(EditorLayer.SaveFileDialogId, "scene file(*.yaml){.yaml}", () -> {
                 saveActivity(ImGuiFileDialog.getFilePathName());
             });
@@ -331,28 +348,37 @@ public class EditorLayer extends Layer {
 
     public void newSceneActivity() {
         Scene scene = new Scene("Scene" + sceneCount++, null);
-        setActiveScene(scene);
+        setEditorScene(scene);
     }
 
     public void openActivity(String file) {
         Scene scene = SceneSerializer.deserialize(file, project);
         if (scene != null) {
-            setActiveScene(scene);
+            setEditorScene(scene);
         }
     }
 
     public void saveActivity(String directory) {
-        SceneSerializer.serialize(activeScene, directory, project);
+        SceneSerializer.serialize(editorScene, directory, project);
     }
 
-    private void setActiveScene(Scene scene) {
-        if (activeScene != null && activeScene != scene) {
-            scenesToDeleteNextFrame.add(activeScene);
+    private void setEditorScene(Scene scene) {
+        if (sceneState == SceneState.Play) {
+            onSceneStop();
         }
+        if (editorScene != null && editorScene != scene) {
+            scenesToDeleteNextFrame.add(editorScene);
+        }
+        editorScene = scene;
+        showScene(scene);
+        viewport.resetCamera();
+        viewport.edit(scene);
+    }
+
+    private void showScene(Scene scene) {
         activeScene = scene;
         selection.clear();
         sceneHierarchyPanel.setScene(scene);
-        viewport.setScene(scene);
     }
 
     private void duplicateSelectedEntity() {
