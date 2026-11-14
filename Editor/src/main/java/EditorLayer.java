@@ -4,6 +4,7 @@ import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Input;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Core.Project;
+import GameEngine.Engine.ECS.Entity;
 import GameEngine.Engine.ECS.Scene;
 import GameEngine.Engine.ECS.SceneSerializer;
 import GameEngine.Engine.Events.Event;
@@ -17,6 +18,7 @@ import GameEngine.Engine.Renderer.TextureLibrary;
 import GameEngine.Engine.Utils.TimeStep;
 import Panels.ContentBrowserPanel;
 import Panels.SceneHierarchyPanel;
+import Panels.Selection;
 import Utils.FileDialog;
 import imgui.ImGui;
 import imgui.ImGuiIO;
@@ -43,6 +45,8 @@ public class EditorLayer extends Layer {
     private int sceneCount;
     private Scene activeScene;
     private List<Scene> scenesToDeleteNextFrame;
+    private Selection selection;
+    private Viewport viewport;
     private SceneHierarchyPanel sceneHierarchyPanel;
     private ContentBrowserPanel contentBrowserPanel;
     private final Texture iconPlay;
@@ -71,7 +75,9 @@ public class EditorLayer extends Layer {
         viewportSize = new Vector2f(0);
 
         FileDialog.setStartDirectory(project.getAssetDirectory());
-        sceneHierarchyPanel = new SceneHierarchyPanel();
+        selection = new Selection();
+        viewport = new Viewport(selection);
+        sceneHierarchyPanel = new SceneHierarchyPanel(selection);
         contentBrowserPanel = new ContentBrowserPanel(project.getAssetDirectory());
         sceneState = SceneState.Edit;
     }
@@ -80,7 +86,7 @@ public class EditorLayer extends Layer {
     public void onUpdate(TimeStep timeStep) {
         // update
         if (activeScene != null) {
-            activeScene.setViewportSize(viewportSize);
+            viewport.resize(viewportSize);
         }
 
         // render
@@ -88,7 +94,7 @@ public class EditorLayer extends Layer {
 
         // scene
         if (activeScene != null) {
-            activeScene.onUpdate(timeStep);
+            viewport.onUpdate(timeStep);
         }
 
         average = average * (30 - 1) / 30 + timeStep.getMilliseconds() / 30;
@@ -219,7 +225,7 @@ public class EditorLayer extends Layer {
 
         if (activeScene != null) {
             uiToolbar();
-            activeScene.onImgRender();
+            viewport.onImGuiRender();
         }
 
         if (ImGui.beginDragDropTarget()) {
@@ -247,6 +253,7 @@ public class EditorLayer extends Layer {
             activeScene.delete();
             activeScene = null;
         }
+        viewport.delete();
         TextureLibrary.clear();
         BatchRenderer2D.shutdown();
     }
@@ -255,7 +262,7 @@ public class EditorLayer extends Layer {
     public void onEvent(Event event) {
         (new EventDispatcher(event)).dispatch(EventType.KeyPressed, this::onKeyPressed);
         if (activeScene != null) {
-            activeScene.onEvent(event);
+            viewport.onEvent(event);
         }
     }
 
@@ -286,6 +293,11 @@ public class EditorLayer extends Layer {
             case YH_KEY_N -> {
                 if (control) {
                     newSceneActivity();
+                }
+            }
+            case YH_KEY_D -> {
+                if (control) {
+                    duplicateSelectedEntity();
                 }
             }
         }
@@ -338,7 +350,16 @@ public class EditorLayer extends Layer {
             scenesToDeleteNextFrame.add(activeScene);
         }
         activeScene = scene;
+        selection.clear();
         sceneHierarchyPanel.setScene(scene);
+        viewport.setScene(scene);
+    }
+
+    private void duplicateSelectedEntity() {
+        Entity selectedEntity = selection.getEntity();
+        if (activeScene != null && selectedEntity != null) {
+            activeScene.duplicateEntity(selectedEntity);
+        }
     }
 
     private void deleteScenesFromPreviousFrame() {

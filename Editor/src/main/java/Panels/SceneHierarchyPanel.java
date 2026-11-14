@@ -30,12 +30,11 @@ public class SceneHierarchyPanel {
     public static final long OpenTextureFileDialogId = 201;
     public static final String HierarchyWindowName = "Scene Hierarchy";
     public static final String PropertiesWindowName = "Properties";
+    private final Selection selection;
     private Scene scene;
 
-    public SceneHierarchyPanel() {}
-
-    public SceneHierarchyPanel(Scene scene) {
-        setScene(scene);
+    public SceneHierarchyPanel(Selection selection) {
+        this.selection = selection;
     }
 
     public void setScene(Scene scene) {
@@ -52,7 +51,7 @@ public class SceneHierarchyPanel {
             }
 
             if (ImGui.isMouseDown(0) && ImGui.isWindowHovered()) {
-                scene.setSelectedEntity(null);
+                selection.clear();
             }
 
             if (ImGui.beginPopupContextWindow(ImGuiPopupFlags.NoOpenOverItems | ImGuiPopupFlags.MouseButtonRight)) {
@@ -68,7 +67,7 @@ public class SceneHierarchyPanel {
 
         ImGui.begin(PropertiesWindowName);
 
-        Entity selectedEntity = scene != null ? scene.getSelectedEntity() : null;
+        Entity selectedEntity = selection.getEntity();
         if (selectedEntity != null) {
             drawEntityProperties(selectedEntity);
 
@@ -101,14 +100,16 @@ public class SceneHierarchyPanel {
 
     private void drawEntityNode(@NotNull Entity e) {
         String tag = e.getComponent(TagComponent.class).name;
-        int flags = ImGuiTreeNodeFlags.OpenOnArrow
-                | (e.equals(scene.getSelectedEntity()) ? ImGuiTreeNodeFlags.Selected : 0);
+        int flags = ImGuiTreeNodeFlags.OpenOnArrow | (selection.isSelected(e) ? ImGuiTreeNodeFlags.Selected : 0);
         boolean opened = ImGui.treeNodeEx(e.getId(), flags, tag);
         if (ImGui.isItemClicked()) {
-            scene.setSelectedEntity(e);
+            selection.select(e);
         }
         if (ImGui.beginPopupContextItem()) {
             if (ImGui.menuItem("Delete Entity")) {
+                if (selection.isSelected(e)) {
+                    selection.clear();
+                }
                 scene.deleteEntity(e);
             }
 

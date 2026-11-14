@@ -22,14 +22,14 @@ public class RenderSystem extends EntityProcessingSystem {
 
     @Override
     protected void begin() {
-        if (scene.getCamera() != null) {
-            BatchRenderer2D.begin(scene.getCamera());
+        if (scene.getRenderCamera() != null) {
+            BatchRenderer2D.begin(scene.getRenderCamera());
         }
     }
 
     @Override
     protected void process(@NotNull Entity e) {
-        if (scene.getCamera() != null) {
+        if (scene.getRenderCamera() != null) {
             TransformComponent transform = transformComponentsMapper.get(e);
             SpriteComponent spriteComponent = spriteComponentsMapper.get(e);
 
@@ -50,7 +50,7 @@ public class RenderSystem extends EntityProcessingSystem {
 
     @Override
     protected void end() {
-        if (scene.getCamera() != null) {
+        if (scene.getRenderCamera() != null) {
             BatchRenderer2D.end();
         }
     }
