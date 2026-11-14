@@ -42,7 +42,3 @@ dependencies {
 application {
     mainClass = 'Main'
 }
-
-tasks.named('run') {
-    workingDir = rootProject.file('Editor/src/main')
-}

@@ -21,6 +21,7 @@ import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -219,12 +220,13 @@ public class SceneHierarchyPanel {
                     FileDialog.openFile(
                             OpenTextureFileDialogId,
                             "JPEG (*.JPG; *.JPEG; *.JPE){.jpg,.jpeg,jpe}PNG (.PNG){.png}",
-                            () -> spriteComponent.texture = TextureLibrary.get(ImGuiFileDialog.getFilePathName()));
+                            () -> spriteComponent.texture =
+                                    TextureLibrary.get(Path.of(ImGuiFileDialog.getFilePathName())));
                 }
                 if (ImGui.beginDragDropTarget()) {
                     Object file = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
                     if (file instanceof File) {
-                        spriteComponent.texture = TextureLibrary.get(((File) file).getPath());
+                        spriteComponent.texture = TextureLibrary.get(((File) file).toPath());
                     }
                     ImGui.endDragDropTarget();
                 }

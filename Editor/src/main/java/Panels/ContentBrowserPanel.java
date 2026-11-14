@@ -6,12 +6,14 @@ import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiMouseButton;
 import java.io.File;
+import java.nio.file.Path;
+import org.jetbrains.annotations.NotNull;
 
 public class ContentBrowserPanel {
     public static final String WindowName = "Content Browser";
-    private static final File assetDirectory = new File("assets");
     private static final float padding = 16.0f;
     private static final float thumbnailSize = 128.0f;
+    private final File assetDirectory;
     private Texture directoryIcon;
     private Texture fileIcon;
 
@@ -19,24 +21,22 @@ public class ContentBrowserPanel {
     private File currentDirectory;
     private File[] currentFileList;
 
-    public ContentBrowserPanel() {
-        setCurrentDirectory(new File("assets"));
-        directoryIcon = Texture.create("resources/Icons/ContentBrowser/DirectoryIcon.png");
-        fileIcon = Texture.create("resources/Icons/ContentBrowser/FileIcon.png");
-    }
-
-    public ContentBrowserPanel(Scene scene) {
-        this();
-        this.scene = scene;
+    public ContentBrowserPanel(@NotNull Path assetDirectory) {
+        this.assetDirectory = assetDirectory.toFile();
+        setCurrentDirectory(this.assetDirectory);
+        directoryIcon = Texture.createFromResource("/Icons/ContentBrowser/DirectoryIcon.png");
+        fileIcon = Texture.createFromResource("/Icons/ContentBrowser/FileIcon.png");
     }
 
     public void setScene(Scene scene) {
         this.scene = scene;
     }
 
-    public void setCurrentDirectory(File file) {
-        currentDirectory = file;
-        currentFileList = file.listFiles();
+    public void setCurrentDirectory(File directory) {
+        currentDirectory = directory;
+        File[] files = directory.listFiles();
+        boolean isReadableDirectory = files != null;
+        currentFileList = isReadableDirectory ? files : new File[0];
     }
 
     public void onImGuiRender() {

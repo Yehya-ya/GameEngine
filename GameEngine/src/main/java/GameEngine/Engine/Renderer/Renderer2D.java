@@ -39,9 +39,9 @@ public class Renderer2D {
         storage.vertexArray.addVertexBuffer(vertexBuffer);
         storage.vertexArray.setIndexBuffer(IndexBuffer.create(indices));
 
-        storage.whiteTexture = Texture.create("assets/textures/white.png");
+        storage.whiteTexture = Texture.createWhite();
 
-        storage.shader = ShaderProgram.create("assets/shaders/shader2D.glsl");
+        storage.shader = ShaderProgram.createFromResource("/engine/shaders/shader2D.glsl");
         storage.shader.bind();
         storage.shader.UploadUniformInt("uTexture", 0);
     }

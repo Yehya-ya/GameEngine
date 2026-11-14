@@ -47,5 +47,5 @@ application {
 }
 
 tasks.named('run') {
-    workingDir = file('src/main')
+    args = [rootProject.file('SampleProject').path]
 }

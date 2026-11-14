@@ -56,11 +56,11 @@ public class BatchRenderer2D {
         storage.circleVertexArray.addVertexBuffer(storage.circleVertexBuffer);
         storage.circleVertexArray.setIndexBuffer(IndexBuffer.create(indices)); // Use quad IB
 
-        storage.whiteTexture = Texture.create("assets/textures/white.png");
+        storage.whiteTexture = Texture.createWhite();
 
-        storage.quadShader = ShaderProgram.create("assets/shaders/quadShader.glsl");
+        storage.quadShader = ShaderProgram.createFromResource("/engine/shaders/quadShader.glsl");
         storage.textures[0] = storage.whiteTexture;
-        storage.circleShader = ShaderProgram.create("assets/shaders/circleShader.glsl");
+        storage.circleShader = ShaderProgram.createFromResource("/engine/shaders/circleShader.glsl");
 
         storage.baseVertices[0] = new Vector3f(-0.5f, -0.5f, 0.0f);
         storage.baseVertices[1] = new Vector3f(0.5f, -0.5f, 0.0f);

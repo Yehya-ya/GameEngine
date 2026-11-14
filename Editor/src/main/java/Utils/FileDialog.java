@@ -4,17 +4,25 @@ import GameEngine.Engine.Utils.Action;
 import imgui.extension.imguifiledialog.ImGuiFileDialog;
 import imgui.extension.imguifiledialog.flag.ImGuiFileDialogFlags;
 import imgui.flag.ImGuiWindowFlags;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 
 public class FileDialog {
 
     private static final HashMap<Long, Action> actions = new HashMap<>();
+    private static Path startDirectory = Path.of("");
+
+    public static void setStartDirectory(Path directory) {
+        startDirectory = directory;
+    }
 
     public static void openFile(long id, String fileTypes, Action action) {
         ImGuiFileDialog.openModal(
                 "FileDialogKey",
                 "Choose a file",
                 fileTypes,
+                startPath(),
                 "",
                 null,
                 250,
@@ -33,6 +41,7 @@ public class FileDialog {
                 "FileDialogKey",
                 "Save file as",
                 fileTypes,
+                startPath(),
                 fileName,
                 null,
                 250,
@@ -53,5 +62,10 @@ public class FileDialog {
             }
             ImGuiFileDialog.close();
         }
+    }
+
+    private static String startPath() {
+        boolean startDirectoryExists = Files.isDirectory(startDirectory);
+        return startDirectoryExists ? startDirectory.toString() : "";
     }
 }

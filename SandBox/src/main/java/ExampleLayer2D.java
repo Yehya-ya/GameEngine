@@ -27,8 +27,8 @@ public class ExampleLayer2D extends Layer {
 
     @Override
     public void onAttach() {
-        bricks = Texture.create("assets/textures/bricks.png");
-        dirt = Texture.create("assets/textures/dirt.png");
+        bricks = Texture.createFromResource("/textures/bricks.png");
+        dirt = Texture.createFromResource("/textures/dirt.png");
         Renderer2D.init();
         lastRenderTime = glfwGetTime();
     }

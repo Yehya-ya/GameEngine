@@ -3,6 +3,7 @@ import static GameEngine.Engine.Utils.KeyCodes.*;
 import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Input;
 import GameEngine.Engine.Core.Layer;
+import GameEngine.Engine.Core.Project;
 import GameEngine.Engine.ECS.Scene;
 import GameEngine.Engine.ECS.SceneSerializer;
 import GameEngine.Engine.Events.Event;
@@ -36,9 +37,8 @@ public class EditorLayer extends Layer {
     public static final String ViewportWindowName = "Viewport";
     public static final String StatsWindowName = "Stats";
     public static final String ToolbarWindowName = "##toolbar";
+    private final Project project;
     private double average;
-    private Texture bricks;
-    private Texture dirt;
     private Vector2f viewportSize;
     private int sceneCount;
     private Scene activeScene;
@@ -51,11 +51,12 @@ public class EditorLayer extends Layer {
     private SceneState sceneState;
     private boolean isLayoutResetRequested;
 
-    public EditorLayer() {
+    public EditorLayer(Project project) {
         super("Example Layer 2D");
 
-        iconPlay = Texture.create("resources/Icons/PlayButton.png");
-        iconStop = Texture.create("resources/Icons/StopButton.png");
+        this.project = project;
+        iconPlay = Texture.createFromResource("/Icons/PlayButton.png");
+        iconStop = Texture.createFromResource("/Icons/StopButton.png");
         toolbarWindowClass = new ImGuiWindowClass();
         toolbarWindowClass.setDockNodeFlagsOverrideSet(DockLayout.ToolbarNodeFlags);
     }
@@ -64,15 +65,14 @@ public class EditorLayer extends Layer {
     public void onAttach() {
         sceneCount = 0;
         scenesToDeleteNextFrame = new ArrayList<>();
-        bricks = Texture.create("assets/textures/bricks.png");
-        dirt = Texture.create("assets/textures/dirt.png");
         BatchRenderer2D.init();
         average = 0;
 
         viewportSize = new Vector2f(0);
 
+        FileDialog.setStartDirectory(project.getAssetDirectory());
         sceneHierarchyPanel = new SceneHierarchyPanel();
-        contentBrowserPanel = new ContentBrowserPanel();
+        contentBrowserPanel = new ContentBrowserPanel(project.getAssetDirectory());
         sceneState = SceneState.Edit;
     }
 
@@ -249,8 +249,6 @@ public class EditorLayer extends Layer {
         }
         TextureLibrary.clear();
         BatchRenderer2D.shutdown();
-        bricks.delete();
-        dirt.delete();
     }
 
     @Override
@@ -325,14 +323,14 @@ public class EditorLayer extends Layer {
     }
 
     public void openActivity(String file) {
-        Scene scene = SceneSerializer.deserialize(file);
+        Scene scene = SceneSerializer.deserialize(file, project);
         if (scene != null) {
             setActiveScene(scene);
         }
     }
 
     public void saveActivity(String directory) {
-        SceneSerializer.serialize(activeScene, directory);
+        SceneSerializer.serialize(activeScene, directory, project);
     }
 
     private void setActiveScene(Scene scene) {

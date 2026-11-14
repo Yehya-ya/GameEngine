@@ -5,43 +5,32 @@ import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 
 import GameEngine.Engine.Renderer.ShaderProgram;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
-import org.joml.Math;
 
 public class OpenGLShaderProgram extends ShaderProgram {
     public static String TOKEN = "#type";
     private int programID;
 
-    public OpenGLShaderProgram(@NotNull String path) {
-        YH_LOG_TRACE("Creating OpenGLShaderProgram with one file \"{}\".", path);
+    public OpenGLShaderProgram(String name, @NotNull String source) {
+        YH_LOG_TRACE("Creating OpenGLShaderProgram \"{}\".", name);
 
-        String source = ReadFile(path);
         Map<Integer, String> sourceMap = preProcess(source);
         compile(sourceMap);
 
-        int lastSlash = Math.max(path.lastIndexOf('/'), 0);
-        int lastBackSlash = Math.max(path.lastIndexOf('\\'), 0);
-        int lastDot = path.lastIndexOf('.');
-        this.name = path.substring(Math.max(lastBackSlash, lastSlash), lastDot);
+        this.name = name;
     }
 
-    public OpenGLShaderProgram(String name, String vertexShader, String fragmentShader) {
-        YH_LOG_TRACE(
-                "Creating OpenGLShaderProgram with two files vertex shader: \"{}\" and fragment shader: \"{}\".",
-                vertexShader,
-                fragmentShader);
+    public OpenGLShaderProgram(String name, String vertexSource, String fragmentSource) {
+        YH_LOG_TRACE("Creating OpenGLShaderProgram \"{}\" from separate vertex and fragment shaders.", name);
 
         Map<Integer, String> sourceMap = new HashMap<>();
-        sourceMap.put(GL_VERTEX_SHADER, ReadFile(vertexShader));
-        sourceMap.put(GL_FRAGMENT_SHADER, ReadFile(fragmentShader));
+        sourceMap.put(GL_VERTEX_SHADER, vertexSource);
+        sourceMap.put(GL_FRAGMENT_SHADER, fragmentSource);
         compile(sourceMap);
 
         this.name = name;
@@ -185,17 +174,5 @@ public class OpenGLShaderProgram extends ShaderProgram {
         }
         YH_ASSERT(false, "Unknown shader type!");
         return 0;
-    }
-
-    private String ReadFile(String path) {
-        String source = "";
-        try {
-            source = Files.readString(Path.of(path));
-        } catch (IOException e) {
-            YH_LOG_ERROR("Could not open the shader file: '{}'", path);
-            e.printStackTrace();
-        }
-
-        return source;
     }
 }

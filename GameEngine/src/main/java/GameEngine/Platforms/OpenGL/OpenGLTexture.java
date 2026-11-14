@@ -36,17 +36,20 @@ public class OpenGLTexture extends Texture {
         glTextureParameteri(textureId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
-    public OpenGLTexture(String path) {
+    public OpenGLTexture(String path, byte @NotNull [] encodedImage) {
         super(path);
-        YH_LOG_TRACE("Creating OpenGLTexture from file path: \"{}\".", path);
+        YH_LOG_TRACE("Creating OpenGLTexture from \"{}\".", path);
 
         IntBuffer width = BufferUtils.createIntBuffer(1);
         IntBuffer height = BufferUtils.createIntBuffer(1);
         IntBuffer channels = BufferUtils.createIntBuffer(1);
+        ByteBuffer encodedImageBuffer = BufferUtils.createByteBuffer(encodedImage.length)
+                .put(encodedImage)
+                .flip();
         stbi_set_flip_vertically_on_load(true);
-        ByteBuffer image = stbi_load(path, width, height, channels, 0);
+        ByteBuffer image = stbi_load_from_memory(encodedImageBuffer, width, height, channels, 0);
 
-        YH_ASSERT(image != null, "Failed to load image!");
+        YH_ASSERT(image != null, "Failed to load the image \"" + path + "\": " + stbi_failure_reason());
 
         this.width = width.get(0);
         this.height = height.get(0);

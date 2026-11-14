@@ -53,6 +53,15 @@ From a terminal in the project root:
 .\gradlew.bat :SandBox:run
 ```
 
-Both run from `Editor/src/main`, because assets load by relative path. In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Main.java` with the working directory set to `Editor/src/main`; the sandbox runs the same way, from the same working directory.
+The editor opens a project folder, given as its first argument; `:Editor:run` opens `SampleProject`. Textures, scenes and the content browser all live in the project's `assets` folder, and scenes store texture paths relative to the project, so a project can be moved or shared. Without an argument the editor uses the current folder as the project.
 
-On first launch the editor docks its panels into a default layout. Your changes to the layout are saved to `imgui.ini` in the working directory, and **Window > Reset Layout** restores the default.
+In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Main.java` with `SampleProject` as the program argument. Run `SandBox/src/main/java/Main.java` as it is. The engine's shaders, the editor's icons and the sandbox's textures are packed into each module's jar, so neither app needs a particular working directory.
+
+## Project layout
+
+- `GameEngine/src/main/resources/engine/`: shaders the renderer needs.
+- `Editor/src/main/resources/Icons/`: editor icons.
+- `SandBox/src/main/resources/`: the sandbox's textures and shaders.
+- `SampleProject/assets/`: the sample project's textures. Scenes you save go in `assets/scenes`, which git ignores.
+
+On first launch the editor docks its panels into a default layout, and **Window > Reset Layout** restores it. The layout is saved to `imgui.ini` in the folder the editor starts from.

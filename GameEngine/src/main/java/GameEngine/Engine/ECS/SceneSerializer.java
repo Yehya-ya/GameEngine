@@ -3,6 +3,7 @@ package GameEngine.Engine.ECS;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 
+import GameEngine.Engine.Core.Project;
 import GameEngine.Engine.ECS.Components.*;
 import GameEngine.Engine.Renderer.Camera.Camera;
 import GameEngine.Engine.Renderer.Camera.CameraType;
@@ -11,6 +12,7 @@ import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
 import GameEngine.Engine.Renderer.TextureLibrary;
 import com.artemis.utils.IntBag;
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,14 +33,14 @@ public class SceneSerializer {
 
     private SceneSerializer() {}
 
-    public static void serialize(@NotNull Scene scene, String path) {
+    public static void serialize(@NotNull Scene scene, String path, @NotNull Project project) {
         scene.setUri(path);
         SceneData sceneData = new SceneData();
         sceneData.title = scene.getTitle();
         IntBag intBag = scene.getEntitiesIds(TagComponent.class);
         for (int i = 0; i < intBag.size(); i++) {
             Entity entity = scene.getEntity(intBag.get(i));
-            sceneData.entities.add(new EntityData(entity));
+            sceneData.entities.add(new EntityData(entity, project));
         }
 
         Representer representer = new SceneDataRepresenter();
@@ -53,7 +55,7 @@ public class SceneSerializer {
         YH_LOG_TRACE("Successfully serialized the scene.");
     }
 
-    public static @Nullable Scene deserialize(String path) {
+    public static @Nullable Scene deserialize(String path, @NotNull Project project) {
         SceneData sceneData;
         try (InputStream targetStream = new FileInputStream(path)) {
             sceneData = new Yaml(new SceneDataConstructor()).load(targetStream);
@@ -117,8 +119,9 @@ public class SceneSerializer {
                     if (spriteComponentData.texturePath == null) {
                         entity.addComponent(new SpriteComponent(spriteComponentData.color));
                     } else {
-                        entity.addComponent(new SpriteComponent(
-                                TextureLibrary.get(spriteComponentData.texturePath), spriteComponentData.tilingFactor));
+                        Path textureFile = project.resolve(spriteComponentData.texturePath);
+                        entity.addComponent(
+                                new SpriteComponent(TextureLibrary.get(textureFile), spriteComponentData.tilingFactor));
                     }
                 }
             }
@@ -144,7 +147,7 @@ public class SceneSerializer {
             components = new ArrayList<>();
         }
 
-        public EntityData(@NotNull Entity entity) {
+        public EntityData(@NotNull Entity entity, @NotNull Project project) {
             this.entity = entity.getId();
             components = new ArrayList<>();
             IdComponent idComponent = entity.getComponent(IdComponent.class);
@@ -169,7 +172,7 @@ public class SceneSerializer {
 
             SpriteComponent spriteComponent = entity.getComponent(SpriteComponent.class);
             if (spriteComponent != null) {
-                components.add(new SpriteComponentData(spriteComponent));
+                components.add(new SpriteComponentData(spriteComponent, project));
             }
         }
     }
@@ -235,10 +238,12 @@ public class SceneSerializer {
 
         public SpriteComponentData() {}
 
-        public SpriteComponentData(@NotNull SpriteComponent spriteComponent) {
+        public SpriteComponentData(@NotNull SpriteComponent spriteComponent, @NotNull Project project) {
             this.color = spriteComponent.color;
             this.tilingFactor = spriteComponent.tilingFactor;
-            this.texturePath = (spriteComponent.texture == null) ? null : spriteComponent.texture.getPath();
+            this.texturePath = (spriteComponent.texture == null)
+                    ? null
+                    : project.toProjectPath(Path.of(spriteComponent.texture.getPath()));
         }
     }
 

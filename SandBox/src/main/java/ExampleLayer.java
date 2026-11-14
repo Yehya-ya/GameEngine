@@ -62,10 +62,12 @@ public class ExampleLayer extends Layer {
         rectangle.setIndexBuffer(rectangleIB);
 
         // shaderProgram = ShaderProgram.create("vertex/vertexShader.glsl", "fragment/fragmentShader.glsl");
-        soldColorShader = shaderLibrary.load("assets/shaders/shader.glsl");
-        textureShader = shaderLibrary.load("assets/shaders/textureShader.glsl");
+        soldColorShader = ShaderProgram.createFromResource("/shaders/shader.glsl");
+        shaderLibrary.add(soldColorShader);
+        textureShader = ShaderProgram.createFromResource("/shaders/textureShader.glsl");
+        shaderLibrary.add(textureShader);
 
-        texture = Texture.create("assets/textures/bricks.png");
+        texture = Texture.createFromResource("/textures/bricks.png");
         texture.bind(0);
     }
 
