@@ -9,6 +9,7 @@ import GameEngine.Engine.Events.EventDispatcher;
 import GameEngine.Engine.Events.EventType;
 import GameEngine.Engine.Events.KeyEvent;
 import GameEngine.Engine.Events.MouseEvents;
+import GameEngine.Engine.Renderer.BatchRenderer2D;
 import GameEngine.Engine.Renderer.Buffer.FrameBuffer;
 import GameEngine.Engine.Renderer.Camera.EditorCamera;
 import GameEngine.Engine.Renderer.RendererCommandAPI;
@@ -34,6 +35,7 @@ public class Viewport {
     private static final Vector4f clearColor = new Vector4f(0.1f, 0.1f, 0.1f, 1);
 
     private final Selection selection;
+    private final BatchRenderer2D renderer;
     private final FrameBuffer frameBuffer;
     private final Vector2f boundsMin = new Vector2f();
     private final Vector2f boundsMax = new Vector2f();
@@ -43,7 +45,8 @@ public class Viewport {
     private boolean isHovered;
     private boolean isPlaying;
 
-    public Viewport(Selection selection) {
+    public Viewport(Selection selection, BatchRenderer2D renderer) {
+        this.renderer = renderer;
         this.selection = selection;
         this.editorCamera = new EditorCamera();
         this.gizmoOperation = noGizmo;
@@ -98,10 +101,10 @@ public class Viewport {
         frameBuffer.clearAttachment(entityIdAttachment, noEntity);
 
         if (isPlaying) {
-            scene.onUpdateRuntime(timeStep);
+            scene.onUpdateRuntime(timeStep, renderer);
         } else {
             editorCamera.onUpdate(timeStep);
-            scene.onUpdateEditor(timeStep, editorCamera);
+            scene.onUpdateEditor(timeStep, editorCamera, renderer);
         }
 
         frameBuffer.unbind();

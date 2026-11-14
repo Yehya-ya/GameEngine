@@ -14,6 +14,7 @@ import org.joml.Vector4f;
 
 public class Renderer2D {
     public static Renderer2DStorage storage;
+    private static final RendererStatistics statistics = new RendererStatistics();
 
     public static void init() {
         YH_LOG_TRACE("Creating Renderer2D.");
@@ -46,6 +47,10 @@ public class Renderer2D {
         storage.shader.UploadUniformInt("uTexture", 0);
     }
 
+    public static RendererStatistics getStatistics() {
+        return statistics;
+    }
+
     public static void shutdown() {
         storage.shader.delete();
         storage.whiteTexture.delete();
@@ -73,8 +78,8 @@ public class Renderer2D {
         storage.whiteTexture.bind(0);
         storage.vertexArray.bind();
         RendererCommandAPI.drawIndexed(storage.vertexArray);
-        RendererStatistics.getInstance().addOneToQuadsCount();
-        RendererStatistics.getInstance().addOneToDrawCallsCount();
+        statistics.addOneToQuadsCount();
+        statistics.addOneToDrawCallsCount();
     }
 
     public static void drawQuad(Vector2f pos, Vector2f size, Texture texture) {
@@ -98,8 +103,8 @@ public class Renderer2D {
         texture.bind(0);
         storage.vertexArray.bind();
         RendererCommandAPI.drawIndexed(storage.vertexArray);
-        RendererStatistics.getInstance().addOneToQuadsCount();
-        RendererStatistics.getInstance().addOneToDrawCallsCount();
+        statistics.addOneToQuadsCount();
+        statistics.addOneToDrawCallsCount();
     }
 
     public static void drawRotatedQuad(Vector2f pos, Vector2f size, float rotationAngle, Vector4f color) {
@@ -118,8 +123,8 @@ public class Renderer2D {
         storage.whiteTexture.bind(0);
         storage.vertexArray.bind();
         RendererCommandAPI.drawIndexed(storage.vertexArray);
-        RendererStatistics.getInstance().addOneToQuadsCount();
-        RendererStatistics.getInstance().addOneToDrawCallsCount();
+        statistics.addOneToQuadsCount();
+        statistics.addOneToDrawCallsCount();
     }
 
     public static void drawRotatedQuad(Vector2f pos, Vector2f size, float rotationAngle, Texture texture) {
@@ -148,8 +153,8 @@ public class Renderer2D {
         texture.bind(0);
         storage.vertexArray.bind();
         RendererCommandAPI.drawIndexed(storage.vertexArray);
-        RendererStatistics.getInstance().addOneToQuadsCount();
-        RendererStatistics.getInstance().addOneToDrawCallsCount();
+        statistics.addOneToQuadsCount();
+        statistics.addOneToDrawCallsCount();
     }
 
     public static class Renderer2DStorage {

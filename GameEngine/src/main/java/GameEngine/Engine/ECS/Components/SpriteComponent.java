@@ -1,6 +1,5 @@
 package GameEngine.Engine.ECS.Components;
 
-import GameEngine.Engine.Renderer.BatchRenderer2D;
 import GameEngine.Engine.Renderer.Texture;
 import org.joml.Vector4f;
 
@@ -35,9 +34,9 @@ public class SpriteComponent extends com.artemis.Component {
         this.tilingFactor = 1.0f;
     }
 
-    public void setToTexture() {
+    public void setToTexture(Texture texture) {
         this.color = null;
-        this.texture = BatchRenderer2D.storage.textures[0];
+        this.texture = texture;
         this.tilingFactor = 1.0f;
     }
 }

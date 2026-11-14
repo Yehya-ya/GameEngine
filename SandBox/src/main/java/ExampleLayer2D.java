@@ -38,7 +38,7 @@ public class ExampleLayer2D extends Layer {
         RendererCommandAPI.setClearColor(new Vector4f(0.1f, 0.1f, 0.1f, 1));
         RendererCommandAPI.clear();
 
-        RendererStatistics.getInstance().reset();
+        Renderer2D.getStatistics().reset();
         cameraController.onUpdate(timeStep);
         Renderer2D.begin(cameraController.getCamera());
 
@@ -63,7 +63,7 @@ public class ExampleLayer2D extends Layer {
     @Override
     public void onImgRender() {
         super.onImgRender();
-        RendererStatistics stats = RendererStatistics.getInstance();
+        RendererStatistics stats = Renderer2D.getStatistics();
         ImGui.begin("Stats");
         ImGui.text("Renderer2D Stats:");
         ImGui.text("Draw Calls: " + stats.getDrawCallsCount());

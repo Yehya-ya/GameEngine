@@ -9,6 +9,7 @@ import GameEngine.Engine.ECS.Scene;
 import GameEngine.Engine.Renderer.Camera.CameraType;
 import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
 import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
+import GameEngine.Engine.Renderer.Texture;
 import GameEngine.Engine.Renderer.TextureLibrary;
 import Utils.FileDialog;
 import com.artemis.Component;
@@ -31,9 +32,11 @@ public class SceneHierarchyPanel {
     public static final String HierarchyWindowName = "Scene Hierarchy";
     public static final String PropertiesWindowName = "Properties";
     private final Selection selection;
+    private final Texture blankTexture;
     private Scene scene;
 
-    public SceneHierarchyPanel(Selection selection) {
+    public SceneHierarchyPanel(Selection selection, Texture blankTexture) {
+        this.blankTexture = blankTexture;
         this.selection = selection;
     }
 
@@ -197,7 +200,7 @@ public class SceneHierarchyPanel {
                 if (imInt.get() == 0) {
                     spriteComponent.setToColor();
                 } else if (imInt.get() == 1) {
-                    spriteComponent.setToTexture();
+                    spriteComponent.setToTexture(blankTexture);
                 }
             }
 

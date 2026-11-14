@@ -47,6 +47,7 @@ public class EditorLayer extends Layer {
     private Scene runtimeScene;
     private Scene activeScene;
     private List<Scene> scenesToDeleteNextFrame;
+    private BatchRenderer2D renderer;
     private Selection selection;
     private Viewport viewport;
     private SceneHierarchyPanel sceneHierarchyPanel;
@@ -71,15 +72,15 @@ public class EditorLayer extends Layer {
     public void onAttach() {
         sceneCount = 0;
         scenesToDeleteNextFrame = new ArrayList<>();
-        BatchRenderer2D.init();
+        renderer = Application.get().getRenderer2D();
         average = 0;
 
         viewportSize = new Vector2f(0);
 
         FileDialog.setStartDirectory(project.getAssetDirectory());
         selection = new Selection();
-        viewport = new Viewport(selection);
-        sceneHierarchyPanel = new SceneHierarchyPanel(selection);
+        viewport = new Viewport(selection, renderer);
+        sceneHierarchyPanel = new SceneHierarchyPanel(selection, renderer.getWhiteTexture());
         contentBrowserPanel = new ContentBrowserPanel(project.getAssetDirectory());
         sceneState = SceneState.Edit;
     }
@@ -92,7 +93,7 @@ public class EditorLayer extends Layer {
         }
 
         // render
-        RendererStatistics.getInstance().reset();
+        renderer.getStatistics().reset();
 
         // scene
         if (activeScene != null) {
@@ -208,7 +209,7 @@ public class EditorLayer extends Layer {
         contentBrowserPanel.onImGuiRender();
 
         ImGui.begin(StatsWindowName);
-        RendererStatistics stats = RendererStatistics.getInstance();
+        RendererStatistics stats = renderer.getStatistics();
         ImGui.text("Renderer2D Stats:");
         ImGui.text("Draw Calls: " + stats.getDrawCallsCount());
         ImGui.text("Quads: " + stats.getQuadsCount());
@@ -272,7 +273,6 @@ public class EditorLayer extends Layer {
         activeScene = null;
         viewport.delete();
         TextureLibrary.clear();
-        BatchRenderer2D.shutdown();
     }
 
     @Override

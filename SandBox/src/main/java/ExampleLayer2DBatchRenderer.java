@@ -1,5 +1,6 @@
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
+import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Events.Event;
 import GameEngine.Engine.Renderer.BatchRenderer2D;
@@ -15,6 +16,7 @@ import org.joml.Vector4f;
 
 public class ExampleLayer2DBatchRenderer extends Layer {
     private final OrthographicCameraController cameraController;
+    private BatchRenderer2D renderer;
     private double lastRenderTime, average, count;
     private Texture bricks;
     private Texture dirt;
@@ -28,7 +30,7 @@ public class ExampleLayer2DBatchRenderer extends Layer {
     public void onAttach() {
         bricks = Texture.createFromResource("/textures/bricks.png");
         dirt = Texture.createFromResource("/textures/dirt.png");
-        BatchRenderer2D.init();
+        renderer = Application.get().getRenderer2D();
         lastRenderTime = glfwGetTime();
         average = 0;
         count = 0;
@@ -36,27 +38,32 @@ public class ExampleLayer2DBatchRenderer extends Layer {
 
     @Override
     public void onUpdate(TimeStep timeStep) {
-        RendererStatistics.getInstance().reset();
+        renderer.getStatistics().reset();
         cameraController.onUpdate(timeStep);
 
         RendererCommandAPI.setClearColor(new Vector4f(0.1f, 0.1f, 0.1f, 1));
         RendererCommandAPI.clear();
-        BatchRenderer2D.begin(cameraController.getCamera());
+        renderer.begin(cameraController.getCamera());
 
-        // BatchRenderer2D.drawQuad(new Vector2f(-0.6f, 0.6f), new Vector2f(.2f, 0.3f), new Vector4f(0.0f, 1.0f, 0.0f,
-        // 1.0f));
-        // BatchRenderer2D.drawQuad(new Vector2f(-0.4f, -0.4f), new Vector2f(.3f, 0.3f), new Vector4f(1.0f, 0.0f, 0.0f,
-        // 1.0f));
-        // BatchRenderer2D.drawQuad(new Vector2f(0.4f, 0.2f), new Vector2f(.2f, 0.2f), new
-        // Vector4f(0.0f,0.0f,1.0f,1.0f));
-        // BatchRenderer2D.drawQuad(new Vector2f(0.0f, 0.0f), new Vector2f(4.0f, 4.0f), bricks, 20.0f);
-        // BatchRenderer2D.drawRotatedQuad(new Vector2f(2.0f, 2.0f), new Vector2f(1.0f, 1.0f), (float) (count), dirt,
-        // 3.0f);
-        // BatchRenderer2D.drawQuad(new Vector2f(-1.0f, 2.0f), new Vector2f(1.0f, 1.0f), dirt);
+        // renderer.drawQuad(
+        //         new Vector2f(-0.6f, 0.6f), new Vector3f(.2f, 0.3f, 1.0f), new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
+        // renderer.drawQuad(
+        //         new Vector2f(-0.4f, -0.4f), new Vector3f(.3f, 0.3f, 1.0f), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
+        // renderer.drawQuad(
+        //         new Vector2f(0.4f, 0.2f), new Vector3f(.2f, 0.2f, 1.0f), new Vector4f(0.0f, 0.0f, 1.0f, 1.0f));
+        // renderer.drawQuad(new Vector2f(0.0f, 0.0f), new Vector3f(4.0f, 4.0f, 1.0f), bricks, 20.0f, -1);
+        // renderer.drawRotatedQuad(
+        //         new Vector2f(2.0f, 2.0f),
+        //         new Vector3f(1.0f, 1.0f, 1.0f),
+        //         new Vector3f(0.0f, 0.0f, (float) count),
+        //         dirt,
+        //         3.0f,
+        //         -1);
+        // renderer.drawQuad(new Vector2f(-1.0f, 2.0f), new Vector3f(1.0f, 1.0f, 1.0f), dirt, -1);
         double time = glfwGetTime();
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
-                BatchRenderer2D.drawQuad(
+                renderer.drawQuad(
                         new Vector2f(-2.0f + (i * 0.05f), -2.0f + (j * 0.05f)),
                         new Vector3f(0.04f, 0.04f, 1.0f),
                         new Vector4f((float) i / 50, 0.4f, (float) j / 50, 0.5f));
@@ -73,13 +80,13 @@ public class ExampleLayer2DBatchRenderer extends Layer {
         }
 
         lastRenderTime = time;
-        BatchRenderer2D.end();
+        renderer.end();
     }
 
     @Override
     public void onImgRender() {
         super.onImgRender();
-        RendererStatistics stats = RendererStatistics.getInstance();
+        RendererStatistics stats = renderer.getStatistics();
         ImGui.begin("Stats");
         ImGui.text("Renderer2D Stats:");
         ImGui.text("Draw Calls: " + stats.getDrawCallsCount());
@@ -90,7 +97,6 @@ public class ExampleLayer2DBatchRenderer extends Layer {
 
     @Override
     public void onDetach() {
-        BatchRenderer2D.shutdown();
         bricks.delete();
         dirt.delete();
     }

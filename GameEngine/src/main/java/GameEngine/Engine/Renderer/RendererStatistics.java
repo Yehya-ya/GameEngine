@@ -1,15 +1,8 @@
 package GameEngine.Engine.Renderer;
 
 public class RendererStatistics {
-    private static final RendererStatistics instance = new RendererStatistics();
     private int drawCallsCount = 0;
     private int QuadsCount = 0;
-
-    private RendererStatistics() {}
-
-    public static RendererStatistics getInstance() {
-        return instance;
-    }
 
     public int getDrawCallsCount() {
         return drawCallsCount;

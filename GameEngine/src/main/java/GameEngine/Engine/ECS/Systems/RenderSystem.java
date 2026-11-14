@@ -23,7 +23,7 @@ public class RenderSystem extends EntityProcessingSystem {
     @Override
     protected void begin() {
         if (scene.getRenderCamera() != null) {
-            BatchRenderer2D.begin(scene.getRenderCamera());
+            scene.getRenderer().begin(scene.getRenderCamera());
         }
     }
 
@@ -32,9 +32,10 @@ public class RenderSystem extends EntityProcessingSystem {
         if (scene.getRenderCamera() != null) {
             TransformComponent transform = transformComponentsMapper.get(e);
             SpriteComponent spriteComponent = spriteComponentsMapper.get(e);
+            BatchRenderer2D renderer = scene.getRenderer();
 
             if (spriteComponent.texture != null) {
-                BatchRenderer2D.drawRotatedQuad(
+                renderer.drawRotatedQuad(
                         transform.translate,
                         transform.size,
                         transform.rotation,
@@ -42,7 +43,7 @@ public class RenderSystem extends EntityProcessingSystem {
                         spriteComponent.tilingFactor,
                         e.getId());
             } else {
-                BatchRenderer2D.drawRotatedQuad(
+                renderer.drawRotatedQuad(
                         transform.translate, transform.size, transform.rotation, spriteComponent.color, e.getId());
             }
         }
@@ -51,7 +52,7 @@ public class RenderSystem extends EntityProcessingSystem {
     @Override
     protected void end() {
         if (scene.getRenderCamera() != null) {
-            BatchRenderer2D.end();
+            scene.getRenderer().end();
         }
     }
 }

@@ -7,6 +7,7 @@ import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 import GameEngine.Engine.Events.*;
 import GameEngine.Engine.ImGui.ImGuiLayer;
+import GameEngine.Engine.Renderer.BatchRenderer2D;
 import GameEngine.Engine.Renderer.RendererCommandAPI;
 import GameEngine.Engine.Utils.TimeStep;
 import GameEngine.Platforms.Windows.WindowsWindow;
@@ -17,6 +18,7 @@ public class Application {
     private final WindowsWindow window;
     private final LayerStack layersStack;
     private final ImGuiLayer imGuiLayer;
+    private final BatchRenderer2D renderer2D;
     private boolean isRunning;
     private boolean isMinimized;
     private double lastFrameTime;
@@ -32,6 +34,7 @@ public class Application {
         isMinimized = false;
 
         RendererCommandAPI.init();
+        renderer2D = new BatchRenderer2D();
 
         layersStack = new LayerStack();
         imGuiLayer = new ImGuiLayer();
@@ -44,6 +47,10 @@ public class Application {
 
     public WindowsWindow getWindow() {
         return window;
+    }
+
+    public BatchRenderer2D getRenderer2D() {
+        return renderer2D;
     }
 
     public void shutdown() {}
@@ -138,6 +145,7 @@ public class Application {
         layersStack.delete();
         imGuiLayer.delete();
         this.shutdown();
+        renderer2D.delete();
         window.delete();
         instance = null;
         YH_LOG_TRACE("Deleting the application.");

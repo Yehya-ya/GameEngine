@@ -3,6 +3,7 @@ package GameEngine.Engine.ECS;
 import GameEngine.Engine.ECS.Components.*;
 import GameEngine.Engine.ECS.Systems.CameraSystem;
 import GameEngine.Engine.ECS.Systems.RenderSystem;
+import GameEngine.Engine.Renderer.BatchRenderer2D;
 import GameEngine.Engine.Renderer.Camera.Camera;
 import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
 import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
@@ -20,6 +21,7 @@ public class Scene {
     private String uri;
     private Camera editorCamera;
     private Camera primaryCamera;
+    private BatchRenderer2D renderer;
     private boolean isRunning;
 
     public Scene() {
@@ -58,6 +60,10 @@ public class Scene {
 
     public boolean isRunning() {
         return isRunning;
+    }
+
+    public BatchRenderer2D getRenderer() {
+        return renderer;
     }
 
     public Camera getRenderCamera() {
@@ -99,13 +105,15 @@ public class Scene {
         engine.delete(entity.getId());
     }
 
-    public void onUpdateEditor(@NotNull TimeStep timeStep, Camera editorCamera) {
+    public void onUpdateEditor(@NotNull TimeStep timeStep, Camera editorCamera, @NotNull BatchRenderer2D renderer) {
+        this.renderer = renderer;
         this.editorCamera = editorCamera;
         isRunning = false;
         process(timeStep);
     }
 
-    public void onUpdateRuntime(@NotNull TimeStep timeStep) {
+    public void onUpdateRuntime(@NotNull TimeStep timeStep, @NotNull BatchRenderer2D renderer) {
+        this.renderer = renderer;
         isRunning = true;
         process(timeStep);
     }
