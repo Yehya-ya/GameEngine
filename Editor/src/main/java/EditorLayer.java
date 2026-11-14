@@ -181,6 +181,8 @@ public class EditorLayer extends Layer {
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
         ImGui.begin("Viewport");
+        // Mouse events reach the scene (picking, scroll zoom) only while the mouse is over the viewport.
+        Application.get().getImGuiLayer().setBlockingEvents(!ImGui.isWindowHovered());
         //        ImGui.beginTabBar("Tabs");
         //        for (Scene scene : scenes) {
         //            int tabFlags = ImGuiTabItemFlags.Trailing;
