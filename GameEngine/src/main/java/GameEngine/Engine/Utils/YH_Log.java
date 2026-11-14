@@ -27,7 +27,15 @@ public class YH_Log {
         error_logger.error(message, args);
     }
 
+    /**
+     * Logs the message and throws {@link AssertionError} when {@code check} is false.
+     *
+     * <p>This doesn't use Java's {@code assert}, which does nothing unless the JVM runs with {@code -ea}.
+     */
     public static void YH_ASSERT(boolean check, String message) {
-        assert (check) : message;
+        if (!check) {
+            error_logger.error("Assertion failed: {}", message);
+            throw new AssertionError(message);
+        }
     }
 }
