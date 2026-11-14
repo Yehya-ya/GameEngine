@@ -239,11 +239,13 @@ public class SceneSerializer {
         public SpriteComponentData() {}
 
         public SpriteComponentData(@NotNull SpriteComponent spriteComponent, @NotNull Project project) {
-            this.color = spriteComponent.color;
+            boolean hasTexture = spriteComponent.texture != null;
+            boolean hasTextureFile = hasTexture && spriteComponent.texture.getPath() != null;
+            boolean isBlankTexture = hasTexture && !hasTextureFile;
+            this.color = isBlankTexture ? new Vector4f(1.0f) : spriteComponent.color;
             this.tilingFactor = spriteComponent.tilingFactor;
-            this.texturePath = (spriteComponent.texture == null)
-                    ? null
-                    : project.toProjectPath(Path.of(spriteComponent.texture.getPath()));
+            this.texturePath =
+                    hasTextureFile ? project.toProjectPath(Path.of(spriteComponent.texture.getPath())) : null;
         }
     }
 
