@@ -38,7 +38,7 @@ The screenshots show a demo level; scene files aren't kept in the repo.
 
 - `GameEngine`: the engine.
 - `Editor`: the level editor.
-- `SandBox`: a test app that draws a 50×50 grid of coloured quads with the batch renderer.
+- `SandBox`: a test app with one example layer per experiment. By default it draws a 50×50 grid of coloured quads with the batch renderer; pick another layer in `Sandbox.java`, such as the textured cube (`ExampleLayer3D`), the shader art (`ExampleLayerFragmentShader`) or the original batch shader (`ExampleLayerBatchShader`).
 
 ## Running it
 

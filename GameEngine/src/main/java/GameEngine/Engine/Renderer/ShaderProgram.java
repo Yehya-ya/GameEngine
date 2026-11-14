@@ -25,9 +25,18 @@ public abstract class ShaderProgram {
     }
 
     public static @NotNull ShaderProgram create(String name, String vertexPath, String fragmentPath) {
+        return fromSources(name, readFile(vertexPath), readFile(fragmentPath));
+    }
+
+    public static @NotNull ShaderProgram createFromResources(
+            String name, String vertexResourceName, String fragmentResourceName) {
+        return fromSources(name, Resources.readText(vertexResourceName), Resources.readText(fragmentResourceName));
+    }
+
+    private static @NotNull ShaderProgram fromSources(String name, String vertexSource, String fragmentSource) {
         switch (RendererCommandAPI.getApi()) {
             case OpenGL -> {
-                return new OpenGLShaderProgram(name, readFile(vertexPath), readFile(fragmentPath));
+                return new OpenGLShaderProgram(name, vertexSource, fragmentSource);
             }
         }
 

@@ -61,7 +61,8 @@ public class ExampleLayer extends Layer {
         IndexBuffer rectangleIB = IndexBuffer.create(rectangleIndices);
         rectangle.setIndexBuffer(rectangleIB);
 
-        // shaderProgram = ShaderProgram.create("vertex/vertexShader.glsl", "fragment/fragmentShader.glsl");
+        // soldColorShader = ShaderProgram.createFromResources(
+        //         "plainColor", "/shaders/vertex/vertexShader.glsl", "/shaders/fragment/fragmentShader.glsl");
         soldColorShader = ShaderProgram.createFromResource("/shaders/shader.glsl");
         shaderLibrary.add(soldColorShader);
         textureShader = ShaderProgram.createFromResource("/shaders/textureShader.glsl");
