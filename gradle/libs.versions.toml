@@ -1,0 +1,27 @@
+[versions]
+lwjgl = "3.3.6"
+imgui = "1.86.10"
+joml = "1.10.5"
+artemis = "2.3.0"
+snakeyaml = "2.0"
+log4j = "2.20.0"
+jetbrains-annotations = "24.0.1"
+spotless = "8.9.0"
+palantir-java-format = "2.103.0"
+
+[libraries]
+lwjgl-bom = { module = "org.lwjgl:lwjgl-bom", version.ref = "lwjgl" }
+lwjgl-core = { module = "org.lwjgl:lwjgl" }
+lwjgl-glfw = { module = "org.lwjgl:lwjgl-glfw" }
+lwjgl-opengl = { module = "org.lwjgl:lwjgl-opengl" }
+lwjgl-stb = { module = "org.lwjgl:lwjgl-stb" }
+imgui-binding = { module = "io.github.spair:imgui-java-binding", version.ref = "imgui" }
+imgui-lwjgl3 = { module = "io.github.spair:imgui-java-lwjgl3", version.ref = "imgui" }
+joml = { module = "org.joml:joml", version.ref = "joml" }
+artemis = { module = "net.onedaybeard.artemis:artemis-odb", version.ref = "artemis" }
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "log4j" }
+jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
+
+[plugins]
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

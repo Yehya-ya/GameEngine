@@ -1,15 +1,11 @@
 plugins {
-    id 'com.diffplug.spotless' version '8.9.0'
-}
-
-repositories {
-    mavenCentral()
+    alias(libs.plugins.spotless)
 }
 
 spotless {
     java {
         target '*/src/**/*.java'
-        palantirJavaFormat('2.103.0')
+        palantirJavaFormat(libs.versions.palantir.java.format.get())
     }
 }
 
