@@ -10,15 +10,6 @@
         <Console name="console" target="SYSTEM_OUT">
             <PatternLayout pattern="${pattern}"/>
         </Console>
-
-        <RollingFile name="file" filePattern="logs/%d{yyyy-MM-dd}.log">
-            <PatternLayout>
-                <pattern>${pattern}</pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy modulate="true"/>
-            </Policies>
-        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="error_logger" level="error" additivity="false">

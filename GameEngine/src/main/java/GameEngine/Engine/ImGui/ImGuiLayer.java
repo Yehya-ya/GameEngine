@@ -8,6 +8,7 @@ import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Events.Event;
 import GameEngine.Engine.Events.EventCategory;
+import GameEngine.Engine.Utils.SettingsDirectory;
 import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImGuiIO;
@@ -42,6 +43,7 @@ public class ImGuiLayer extends Layer {
         YH_LOG_TRACE("Attach ImGui Layer");
         YH_LOG_TRACE("   ImGui Version: {}", ImGui.getVersion());
         ImGuiIO io = ImGui.getIO();
+        io.setIniFilename(SettingsDirectory.file("imgui.ini").toString());
         io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard); // Enable Keyboard Controls
         // io.addConfigFlags(ImGuiConfigFlags.NavEnableGamepad); // Enable Gamepad Controls
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable); // Enable Docking
