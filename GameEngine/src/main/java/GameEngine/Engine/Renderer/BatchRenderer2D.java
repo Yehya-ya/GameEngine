@@ -140,11 +140,11 @@ public class BatchRenderer2D {
     }
 
     public void drawQuad(Vector2f pos, Vector3f size, Vector4f color) {
-        drawQuad(new Vector3f(pos, 1.0f), size, color, -1);
+        drawQuad(new Vector3f(pos, 0.0f), size, color, -1);
     }
 
     public void drawQuad(Vector2f pos, Vector3f size, Vector4f color, int entityId) {
-        drawQuad(new Vector3f(pos, 1.0f), size, color, entityId);
+        drawQuad(new Vector3f(pos, 0.0f), size, color, entityId);
     }
 
     public void drawQuad(Vector3f pos, @NotNull Vector3f size, Vector4f color, int entityId) {
@@ -154,7 +154,7 @@ public class BatchRenderer2D {
     }
 
     public void drawQuad(Vector2f pos, Vector3f size, Texture texture, int entityId) {
-        drawQuad(new Vector3f(pos, 1.0f), size, texture, 1.0f, entityId);
+        drawQuad(new Vector3f(pos, 0.0f), size, texture, 1.0f, entityId);
     }
 
     public void drawQuad(Vector3f pos, Vector3f size, Texture texture, int entityId) {
@@ -162,7 +162,7 @@ public class BatchRenderer2D {
     }
 
     public void drawQuad(Vector2f pos, Vector3f size, Texture texture, float tilingFactor, int entityId) {
-        drawQuad(new Vector3f(pos, 1.0f), size, texture, tilingFactor, entityId);
+        drawQuad(new Vector3f(pos, 0.0f), size, texture, tilingFactor, entityId);
     }
 
     public void drawQuad(Vector3f pos, @NotNull Vector3f size, Texture texture, float tilingFactor, int entityId) {
@@ -172,7 +172,7 @@ public class BatchRenderer2D {
     }
 
     public void drawRotatedQuad(Vector2f pos, Vector3f size, Vector3f rotation, Vector4f color, int entityId) {
-        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, color, entityId);
+        drawRotatedQuad(new Vector3f(pos, 0.0f), size, rotation, color, entityId);
     }
 
     public void drawRotatedQuad(
@@ -186,7 +186,7 @@ public class BatchRenderer2D {
     }
 
     public void drawRotatedQuad(Vector2f pos, Vector3f size, Vector3f rotation, Texture texture, int entityId) {
-        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, texture, 1.0f, entityId);
+        drawRotatedQuad(new Vector3f(pos, 0.0f), size, rotation, texture, 1.0f, entityId);
     }
 
     public void drawRotatedQuad(Vector3f pos, Vector3f size, Vector3f rotation, Texture texture, int entityId) {
@@ -195,7 +195,7 @@ public class BatchRenderer2D {
 
     public void drawRotatedQuad(
             Vector2f pos, Vector3f size, Vector3f rotation, Texture texture, float tilingFactor, int entityId) {
-        drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, texture, tilingFactor, entityId);
+        drawRotatedQuad(new Vector3f(pos, 0.0f), size, rotation, texture, tilingFactor, entityId);
     }
 
     public void drawRotatedQuad(
