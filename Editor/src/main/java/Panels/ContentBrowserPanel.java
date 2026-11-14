@@ -8,6 +8,7 @@ import imgui.flag.ImGuiMouseButton;
 import java.io.File;
 
 public class ContentBrowserPanel {
+    public static final String WindowName = "Content Browser";
     private static final File assetDirectory = new File("assets");
     private static final float padding = 16.0f;
     private static final float thumbnailSize = 128.0f;
@@ -39,7 +40,7 @@ public class ContentBrowserPanel {
     }
 
     public void onImGuiRender() {
-        ImGui.begin("Content Browser");
+        ImGui.begin(WindowName);
 
         if (!currentDirectory.equals(assetDirectory)) {
             if (ImGui.button("<-")) {

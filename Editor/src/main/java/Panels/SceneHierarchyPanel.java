@@ -27,6 +27,8 @@ import org.joml.Vector3f;
 
 public class SceneHierarchyPanel {
     public static final long OpenTextureFileDialogId = 201;
+    public static final String HierarchyWindowName = "Scene Hierarchy";
+    public static final String PropertiesWindowName = "Properties";
     private Scene scene;
 
     public SceneHierarchyPanel() {}
@@ -40,7 +42,7 @@ public class SceneHierarchyPanel {
     }
 
     public void onImGuiRender() {
-        ImGui.begin("Scene Hierarchy");
+        ImGui.begin(HierarchyWindowName);
 
         if (scene != null) {
             IntBag entitiesIds = scene.getEntitiesIds(TagComponent.class);
@@ -63,7 +65,7 @@ public class SceneHierarchyPanel {
 
         ImGui.end();
 
-        ImGui.begin("Properties");
+        ImGui.begin(PropertiesWindowName);
 
         Entity selectedEntity = scene != null ? scene.getSelectedEntity() : null;
         if (selectedEntity != null) {

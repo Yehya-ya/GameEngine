@@ -55,4 +55,4 @@ From a terminal in the project root:
 
 Both run from `Editor/src/main`, because assets load by relative path. In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Main.java` with the working directory set to `Editor/src/main`; the sandbox runs the same way, from the same working directory.
 
-On a fresh clone the editor's panels open floating; drag them into the window to dock them.
+On first launch the editor docks its panels into a default layout. Your changes to the layout are saved to `imgui.ini` in the working directory, and **Window > Reset Layout** restores the default.

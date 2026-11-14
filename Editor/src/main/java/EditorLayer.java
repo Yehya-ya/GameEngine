@@ -20,6 +20,7 @@ import Utils.FileDialog;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImGuiViewport;
+import imgui.ImGuiWindowClass;
 import imgui.ImVec2;
 import imgui.extension.imguifiledialog.ImGuiFileDialog;
 import imgui.flag.*;
@@ -32,6 +33,9 @@ import org.joml.Vector2f;
 public class EditorLayer extends Layer {
     public static final long OpenFileDialogId = 101;
     public static final long SaveFileDialogId = 102;
+    public static final String ViewportWindowName = "Viewport";
+    public static final String StatsWindowName = "Stats";
+    public static final String ToolbarWindowName = "##toolbar";
     private double average;
     private Texture bricks;
     private Texture dirt;
@@ -43,13 +47,17 @@ public class EditorLayer extends Layer {
     private ContentBrowserPanel contentBrowserPanel;
     private final Texture iconPlay;
     private final Texture iconStop;
+    private final ImGuiWindowClass toolbarWindowClass;
     private SceneState sceneState;
+    private boolean isLayoutResetRequested;
 
     public EditorLayer() {
         super("Example Layer 2D");
 
         iconPlay = Texture.create("resources/Icons/PlayButton.png");
         iconStop = Texture.create("resources/Icons/StopButton.png");
+        toolbarWindowClass = new ImGuiWindowClass();
+        toolbarWindowClass.setDockNodeFlagsOverrideSet(DockLayout.ToolbarNodeFlags);
     }
 
     @Override
@@ -141,6 +149,10 @@ public class EditorLayer extends Layer {
         ImGuiIO io = ImGui.getIO();
         if ((io.getConfigFlags() & ImGuiConfigFlags.DockingEnable) != 0) {
             int dockspace_id = ImGui.getID("MyDockSpace");
+            if (isLayoutResetRequested || !DockLayout.exists(dockspace_id)) {
+                DockLayout.applyDefault(dockspace_id, ImGui.getContentRegionAvail());
+                isLayoutResetRequested = false;
+            }
             ImGui.dockSpace(dockspace_id, 0.0f, 0.0f, dockspace_flags);
         }
 
@@ -163,6 +175,12 @@ public class EditorLayer extends Layer {
                 }
                 ImGui.endMenu();
             }
+            if (ImGui.beginMenu("Window")) {
+                if (ImGui.menuItem("Reset Layout")) {
+                    isLayoutResetRequested = true;
+                }
+                ImGui.endMenu();
+            }
 
             ImGui.endMenuBar();
         }
@@ -171,7 +189,7 @@ public class EditorLayer extends Layer {
         sceneHierarchyPanel.onImGuiRender();
         contentBrowserPanel.onImGuiRender();
 
-        ImGui.begin("Stats");
+        ImGui.begin(StatsWindowName);
         RendererStatistics stats = RendererStatistics.getInstance();
         ImGui.text("Renderer2D Stats:");
         ImGui.text("Draw Calls: " + stats.getDrawCallsCount());
@@ -180,7 +198,7 @@ public class EditorLayer extends Layer {
         ImGui.end();
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
-        ImGui.begin("Viewport");
+        ImGui.begin(ViewportWindowName);
         boolean isViewportHovered = ImGui.isWindowHovered();
         Application.get().getImGuiLayer().setBlockingEvents(!isViewportHovered);
         //        ImGui.beginTabBar("Tabs");
@@ -343,8 +361,9 @@ public class EditorLayer extends Layer {
         float[] buttonActive = colors[ImGuiCol.ButtonActive];
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, buttonActive[0], buttonActive[1], buttonActive[2], 0.5f);
 
+        ImGui.setNextWindowClass(toolbarWindowClass);
         ImGui.begin(
-                "##toolbar",
+                ToolbarWindowName,
                 new ImBoolean(false),
                 ImGuiWindowFlags.NoDecoration
                         | ImGuiWindowFlags.NoScrollbar
