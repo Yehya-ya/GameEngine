@@ -1,15 +1,11 @@
-// Settings shared by every module (GameEngine, Editor, SandBox).
-
 plugins {
     id 'com.diffplug.spotless' version '8.9.0'
 }
 
-// Spotless downloads the formatter from here.
 repositories {
     mavenCentral()
 }
 
-// `gradlew spotlessApply` formats the Java code; `gradlew spotlessCheck` fails if any file isn't formatted.
 spotless {
     java {
         target '*/src/**/*.java'
@@ -20,8 +16,6 @@ spotless {
 subprojects {
     plugins.withId('java') {
         java {
-            // Compile and run with JDK 21, whichever JDK runs Gradle.
-            // A missing JDK is downloaded by the foojay plugin in settings.gradle.
             toolchain {
                 languageVersion = JavaLanguageVersion.of(21)
             }

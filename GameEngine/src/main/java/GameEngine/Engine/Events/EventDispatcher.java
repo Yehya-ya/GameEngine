@@ -9,7 +9,6 @@ public class EventDispatcher {
 
     public boolean dispatch(EventType eventType, Handler handler) {
         if (event.getEventType().equals(eventType)) {
-            // |= so a handler returning false can't un-handle an event an earlier handler took.
             event.handled |= handler.handle(event);
             return true;
         }

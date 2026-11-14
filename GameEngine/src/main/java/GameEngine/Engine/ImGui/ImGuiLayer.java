@@ -66,12 +66,10 @@ public class ImGuiLayer extends Layer {
     @Override
     public void onEvent(Event event) {
         ImGuiIO io = ImGui.getIO();
-        // Keys typed into an ImGui text field never reach the layers below, so typing a name
-        // doesn't trigger shortcuts.
-        event.handled |= io.getWantTextInput() && event.isInCategory(EventCategory.Keyboard);
-        // While blocking, mouse events over ImGui windows stop here. The editor blocks whenever
-        // the mouse isn't over its viewport, so scrolling a panel doesn't zoom the scene.
-        event.handled |= isBlockingEvents && io.getWantCaptureMouse() && event.isInCategory(EventCategory.Mouse);
+        boolean isTypingInTextField = io.getWantTextInput() && event.isInCategory(EventCategory.Keyboard);
+        boolean isMouseUsedByImGui =
+                isBlockingEvents && io.getWantCaptureMouse() && event.isInCategory(EventCategory.Mouse);
+        event.handled |= isTypingInTextField || isMouseUsedByImGui;
     }
 
     @Override
