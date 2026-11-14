@@ -84,8 +84,6 @@ public class WindowsWindow extends Window {
                 windowID,
                 (window, xpos, ypos) -> prop.eventCallBack.invoke(new MouseEvents.MouseMovedEvent(xpos, ypos)));
 
-        // JoystickListener.poll_controllers();
-
         graphicsContext = new OpenGLContext(windowID);
         graphicsContext.init();
         setVSync(false);

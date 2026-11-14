@@ -3,7 +3,6 @@ import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Events.Event;
 import GameEngine.Engine.Renderer.BatchRenderer2D;
-import GameEngine.Engine.Renderer.Buffer.FrameBuffer;
 import GameEngine.Engine.Renderer.RendererCommandAPI;
 import GameEngine.Engine.Renderer.RendererStatistics;
 import GameEngine.Engine.Renderer.Texture;
@@ -33,10 +32,6 @@ public class ExampleLayer2DBatchRenderer extends Layer {
         lastRenderTime = glfwGetTime();
         average = 0;
         count = 0;
-
-        FrameBuffer.FrameBufferSpecification specification = new FrameBuffer.FrameBufferSpecification();
-        specification.width = 1280;
-        specification.height = 720;
     }
 
     @Override
