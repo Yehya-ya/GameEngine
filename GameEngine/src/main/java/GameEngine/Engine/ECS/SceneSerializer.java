@@ -23,6 +23,7 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
@@ -42,29 +43,34 @@ public class SceneSerializer {
 
         Representer representer = new SceneDataRepresenter();
         Yaml yaml = new Yaml(representer);
-        try {
-            FileWriter myWriter = new FileWriter(path);
-            yaml.dump(sceneData, myWriter);
-            myWriter.close();
-            YH_LOG_TRACE("Successfully serialized the scene.");
+        try (FileWriter writer = new FileWriter(path)) {
+            yaml.dump(sceneData, writer);
         } catch (IOException e) {
             YH_LOG_ERROR("failed to serialize the scene.\n{}", e.getMessage());
             e.printStackTrace();
+            return;
         }
+        YH_LOG_TRACE("Successfully serialized the scene.");
     }
 
     public static @Nullable Scene deserialize(String path) {
-        InputStream targetStream;
-        try {
-            targetStream = new FileInputStream(path);
+        SceneData sceneData;
+        try (InputStream targetStream = new FileInputStream(path)) {
+            sceneData = new Yaml(new SceneDataConstructor()).load(targetStream);
         } catch (FileNotFoundException | NullPointerException e) {
             YH_LOG_ERROR("failed to deserialize the scene.The file `{}` not found.", path);
             YH_LOG_ERROR("{}", e.getMessage());
             return null;
+        } catch (IOException | YAMLException e) {
+            YH_LOG_ERROR("failed to deserialize the scene. The file `{}` is not a valid scene.", path);
+            YH_LOG_ERROR("{}", e.getMessage());
+            return null;
         }
 
-        Yaml yaml = new Yaml(new SceneDataConstructor());
-        SceneData sceneData = yaml.load(targetStream);
+        if (sceneData == null) {
+            YH_LOG_ERROR("failed to deserialize the scene. The file `{}` is empty.", path);
+            return null;
+        }
 
         Scene scene = new Scene(sceneData.title, path);
         for (EntityData entityData : sceneData.entities) {
