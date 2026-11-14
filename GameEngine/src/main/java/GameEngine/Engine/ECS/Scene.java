@@ -146,6 +146,11 @@ public class Scene {
         return entity;
     }
 
+    public void delete() {
+        frameBuffer.delete();
+        engine.dispose();
+    }
+
     public void deleteEntity(@NotNull Entity entity) {
         if (entity == selectedEntity) {
             selectedEntity = null;

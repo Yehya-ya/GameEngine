@@ -9,7 +9,7 @@ import GameEngine.Engine.ECS.Scene;
 import GameEngine.Engine.Renderer.Camera.CameraType;
 import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
 import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
-import GameEngine.Engine.Renderer.Texture;
+import GameEngine.Engine.Renderer.TextureLibrary;
 import Utils.FileDialog;
 import com.artemis.Component;
 import com.artemis.utils.IntBag;
@@ -206,12 +206,12 @@ public class SceneHierarchyPanel {
                 }
 
                 if (ImGui.imageButton(spriteComponent.texture.getRendererId(), 50, 50)) {
-                    FileDialog.openFile(OpenTextureFileDialogId, "JPEG (*.JPG; *.JPEG; *.JPE){.jpg,.jpeg,jpe}PNG (.PNG){.png}", () -> spriteComponent.texture = Texture.create(ImGuiFileDialog.getFilePathName()));
+                    FileDialog.openFile(OpenTextureFileDialogId, "JPEG (*.JPG; *.JPEG; *.JPE){.jpg,.jpeg,jpe}PNG (.PNG){.png}", () -> spriteComponent.texture = TextureLibrary.get(ImGuiFileDialog.getFilePathName()));
                 }
                 if (ImGui.beginDragDropTarget()) {
                     Object file = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
                     if (file instanceof File) {
-                        spriteComponent.texture = Texture.create(((File) file).getPath());
+                        spriteComponent.texture = TextureLibrary.get(((File) file).getPath());
                     }
                     ImGui.endDragDropTarget();
                 }

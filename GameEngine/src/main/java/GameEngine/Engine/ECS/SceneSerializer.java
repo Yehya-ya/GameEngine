@@ -5,7 +5,7 @@ import GameEngine.Engine.Renderer.Camera.Camera;
 import GameEngine.Engine.Renderer.Camera.CameraType;
 import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
 import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
-import GameEngine.Engine.Renderer.Texture;
+import GameEngine.Engine.Renderer.TextureLibrary;
 import com.artemis.utils.IntBag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -94,7 +94,7 @@ public class SceneSerializer {
                     if (spriteComponentData.texturePath == null) {
                         entity.addComponent(new SpriteComponent(spriteComponentData.color));
                     } else {
-                        entity.addComponent(new SpriteComponent(Texture.create(spriteComponentData.texturePath), spriteComponentData.tilingFactor));
+                        entity.addComponent(new SpriteComponent(TextureLibrary.get(spriteComponentData.texturePath), spriteComponentData.tilingFactor));
                     }
                 }
             }

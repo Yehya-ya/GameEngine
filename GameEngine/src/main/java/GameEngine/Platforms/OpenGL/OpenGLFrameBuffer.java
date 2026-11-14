@@ -19,6 +19,7 @@ public class OpenGLFrameBuffer extends FrameBuffer {
     private final FrameBufferSpecification specification;
     private FramebufferTextureSpecification depthAttachmentSpecification = new FramebufferTextureSpecification();
     private int[] colorAttachments;
+    private int depthAttachment;
     private int rendererId;
 
     public OpenGLFrameBuffer(FrameBufferSpecification specification) {
@@ -47,6 +48,13 @@ public class OpenGLFrameBuffer extends FrameBuffer {
     public void delete() {
         glDeleteFramebuffers(rendererId);
         glDeleteTextures(colorAttachments);
+        if (depthAttachment != 0) {
+            glDeleteTextures(depthAttachment);
+        }
+
+        rendererId = 0;
+        colorAttachments = new int[0];
+        depthAttachment = 0;
     }
 
     @Override
@@ -91,11 +99,8 @@ public class OpenGLFrameBuffer extends FrameBuffer {
     }
 
     public void invalidate() {
-        int depthAttachment;
         if (rendererId != 0) {
             delete();
-
-            colorAttachments = new int[0];
         }
 
         rendererId = glCreateFramebuffers();

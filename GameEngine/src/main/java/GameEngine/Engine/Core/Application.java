@@ -19,13 +19,13 @@ public class Application {
     private final ImGuiLayer imGuiLayer;
     private boolean isRunning;
     private boolean isMinimized;
-    private float lastFrameTime;
+    private double lastFrameTime;
 
     protected Application() {
         YH_LOG_TRACE("Creating the application.");
         YH_ASSERT(instance == null, "Application already exists!");
         instance = this;
-        lastFrameTime = (float) glfwGetTime();
+        lastFrameTime = glfwGetTime();
         window = new WindowsWindow(new Window.WindowProp());
         window.setEventCallback(this::onEvent);
         isRunning = true;
@@ -52,8 +52,8 @@ public class Application {
     public void run() {
         YH_LOG_TRACE("The application starts running.");
         while (isRunning) {
-            float time = (float) glfwGetTime();
-            TimeStep timeStep = new TimeStep(time - lastFrameTime);
+            double time = glfwGetTime();
+            TimeStep timeStep = new TimeStep((float) (time - lastFrameTime));
             lastFrameTime = time;
 
             if (!isMinimized) {

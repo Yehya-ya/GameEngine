@@ -59,10 +59,10 @@ public class BatchRenderer2D {
         storage.circleVertexArray.addVertexBuffer(storage.circleVertexBuffer);
         storage.circleVertexArray.setIndexBuffer(IndexBuffer.create(indices)); // Use quad IB
 
-        Texture whiteTexture = Texture.create("assets/textures/white.png");
+        storage.whiteTexture = Texture.create("assets/textures/white.png");
 
         storage.quadShader = ShaderProgram.create("assets/shaders/quadShader.glsl");
-        storage.textures[0] = whiteTexture;
+        storage.textures[0] = storage.whiteTexture;
         storage.circleShader = ShaderProgram.create("assets/shaders/circleShader.glsl");
 
         storage.baseVertices[0] = new Vector3f(-0.5f, -0.5f, 0.0f);
@@ -85,11 +85,8 @@ public class BatchRenderer2D {
         storage.circleVertexArray.delete();
         storage.quadShader.delete();
         storage.circleShader.delete();
-        for (Texture texture: storage.textures) {
-            if (texture != null) {
-                texture.delete();
-            }
-        }
+        storage.cameraUniformBuffer.delete();
+        storage.whiteTexture.delete();
 
         YH_LOG_TRACE("Deleting BatchRenderer2D.");
     }
@@ -219,15 +216,15 @@ public class BatchRenderer2D {
 
         Vector4f color = new Vector4f(1.0f);
 
-        float textureIndex = 0.0f;
+        int textureIndex = -1;
         for (int i = 0; i < storage.texturesIndex; i++) {
             if (texture.equals(storage.textures[i])) {
-                textureIndex = (float) i;
+                textureIndex = i;
                 break;
             }
         }
 
-        if (textureIndex == 0.0f) {
+        if (textureIndex == -1) {
             if (storage.texturesIndex >= Renderer2DStorage.MaxTextures) {
                 nextBatch();
             }
@@ -272,6 +269,7 @@ public class BatchRenderer2D {
         public ShaderProgram circleShader;
         public QuadVertices quadVertices;
         public CircleVertices circleVertices;
+        public Texture whiteTexture;
         public Texture[] textures = new Texture[MaxTextures];
         public int texturesIndex = 1;
         public Vector3f[] baseVertices = new Vector3f[4];

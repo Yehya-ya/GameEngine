@@ -10,6 +10,7 @@ import GameEngine.Engine.Events.KeyEvent;
 import GameEngine.Engine.Renderer.BatchRenderer2D;
 import GameEngine.Engine.Renderer.RendererStatistics;
 import GameEngine.Engine.Renderer.Texture;
+import GameEngine.Engine.Renderer.TextureLibrary;
 import GameEngine.Engine.Utils.TimeStep;
 import Panels.ContentBrowserPanel;
 import Panels.SceneHierarchyPanel;
@@ -36,8 +37,9 @@ public class EditorLayer extends Layer {
     private Texture bricks;
     private Texture dirt;
     private Vector2f viewportSize;
-    private List<Scene> scenes;
+    private int sceneCount;
     private Scene activeScene;
+    private List<Scene> scenesToDeleteNextFrame;
     private SceneHierarchyPanel sceneHierarchyPanel;
     private ContentBrowserPanel contentBrowserPanel;
     private final Texture iconPlay;
@@ -53,7 +55,8 @@ public class EditorLayer extends Layer {
 
     @Override
     public void onAttach() {
-        scenes = new ArrayList<>();
+        sceneCount = 0;
+        scenesToDeleteNextFrame = new ArrayList<>();
         bricks = Texture.create("assets/textures/bricks.png");
         dirt = Texture.create("assets/textures/dirt.png");
         BatchRenderer2D.init();
@@ -95,6 +98,7 @@ public class EditorLayer extends Layer {
     @Override
     public void onImgRender() {
         super.onImgRender();
+        deleteScenesFromPreviousFrame();
 
         ImBoolean dockspaceOpen = new ImBoolean(true);
         boolean opt_fullscreen_persistant = true;
@@ -215,6 +219,12 @@ public class EditorLayer extends Layer {
 
     @Override
     public void onDetach() {
+        deleteScenesFromPreviousFrame();
+        if (activeScene != null) {
+            activeScene.delete();
+            activeScene = null;
+        }
+        TextureLibrary.clear();
         BatchRenderer2D.shutdown();
         bricks.delete();
         dirt.delete();
@@ -287,15 +297,15 @@ public class EditorLayer extends Layer {
     }
 
     public void newSceneActivity() {
-        Scene scene = new Scene("Scene" + scenes.size(), null);
-        scenes.add(scene);
+        Scene scene = new Scene("Scene" + sceneCount++, null);
         setActiveScene(scene);
     }
 
     public void openActivity(String file) {
         Scene scene = SceneSerializer.deserialize(file);
-        scenes.add(scene);
-        setActiveScene(scene);
+        if (scene != null) {
+            setActiveScene(scene);
+        }
     }
 
 
@@ -304,8 +314,18 @@ public class EditorLayer extends Layer {
     }
 
     private void setActiveScene(Scene scene) {
+        if (activeScene != null && activeScene != scene) {
+            scenesToDeleteNextFrame.add(activeScene);
+        }
         activeScene = scene;
         sceneHierarchyPanel.setScene(scene);
+    }
+
+    private void deleteScenesFromPreviousFrame() {
+        for (Scene scene : scenesToDeleteNextFrame) {
+            scene.delete();
+        }
+        scenesToDeleteNextFrame.clear();
     }
 
     // UI Panels
