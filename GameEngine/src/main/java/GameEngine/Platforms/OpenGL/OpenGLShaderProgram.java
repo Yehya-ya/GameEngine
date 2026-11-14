@@ -58,11 +58,11 @@ public class OpenGLShaderProgram extends ShaderProgram {
             // print compile errors if any
             int success = glGetShaderi(id, GL_COMPILE_STATUS);
             if (success == GL_FALSE) {
-                glDeleteShader(id);
-
+                // Read the log before deleting the shader; a deleted shader has no log.
                 int len = glGetShaderi(id, GL_INFO_LOG_LENGTH);
                 YH_LOG_ERROR("Failed to compile the shader.");
                 YH_LOG_ERROR("  {}", glGetShaderInfoLog(id, len));
+                glDeleteShader(id);
                 YH_ASSERT(false, "Failed to compile the shader.");
                 break;
             }
@@ -77,10 +77,11 @@ public class OpenGLShaderProgram extends ShaderProgram {
         // print linking errors if any
         int success = glGetProgrami(programID, GL_LINK_STATUS);
         if (success == GL_FALSE) {
-            glDeleteProgram(programID);
+            // Read the log before deleting the program; a deleted program has no log.
             int len = glGetProgrami(programID, GL_INFO_LOG_LENGTH);
             YH_LOG_ERROR("Shader program failed to link shaders.");
             YH_LOG_ERROR("  {}", glGetProgramInfoLog(programID, len));
+            glDeleteProgram(programID);
             YH_ASSERT(false, "Shader program failed to link shaders.");
         }
 
@@ -165,7 +166,9 @@ public class OpenGLShaderProgram extends ShaderProgram {
         int begin = 0;
         for (int i = 1; i < splitString.length; i++) {
             begin = source.indexOf(TOKEN, begin);
-            int end = source.indexOf("\r\n", begin);
+            // Find the end of the `#type` line. Searching for '\n' works with both LF and CRLF
+            // line endings; trim() removes the '\r'.
+            int end = source.indexOf('\n', begin);
             YH_ASSERT(end != -1, "Syntax error");
             String stringType = source.substring(begin + TOKEN.length(), end).trim();
             int type = shaderTypeFromString(stringType);
