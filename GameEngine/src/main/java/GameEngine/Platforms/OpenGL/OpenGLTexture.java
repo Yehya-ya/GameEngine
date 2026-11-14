@@ -30,10 +30,10 @@ public class OpenGLTexture extends Texture {
 
         // Set texture parameters
         // Repeat image in both directions
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTextureParameteri(textureId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(textureId, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTextureParameteri(textureId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(textureId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
     public OpenGLTexture(String path) {
@@ -72,10 +72,10 @@ public class OpenGLTexture extends Texture {
 
         // Set texture parameters
         // Repeat image in both directions
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTextureParameteri(textureId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(textureId, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTextureParameteri(textureId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(textureId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         glTextureSubImage2D(textureId, 0, 0, 0, this.width, this.height, dataFormat, GL_UNSIGNED_BYTE, image);
 
