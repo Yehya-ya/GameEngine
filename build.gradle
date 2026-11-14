@@ -1,0 +1,13 @@
+// Settings shared by every module (GameEngine, Editor, SandBox).
+
+subprojects {
+    plugins.withId('java') {
+        java {
+            // Compile and run with JDK 21, whichever JDK runs Gradle.
+            // A missing JDK is downloaded by the foojay plugin in settings.gradle.
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(21)
+            }
+        }
+    }
+}
