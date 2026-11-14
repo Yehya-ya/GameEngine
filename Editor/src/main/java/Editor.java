@@ -6,6 +6,7 @@ public class Editor extends Application {
     private final Layer exampleLayer;
 
     public Editor(Project project) {
+        super("Editor");
         exampleLayer = new EditorLayer(project);
         pushLayer(exampleLayer);
     }

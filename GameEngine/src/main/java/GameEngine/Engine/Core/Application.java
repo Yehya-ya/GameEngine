@@ -9,6 +9,7 @@ import GameEngine.Engine.Events.*;
 import GameEngine.Engine.ImGui.ImGuiLayer;
 import GameEngine.Engine.Renderer.BatchRenderer2D;
 import GameEngine.Engine.Renderer.RendererCommandAPI;
+import GameEngine.Engine.Utils.SettingsDirectory;
 import GameEngine.Engine.Utils.TimeStep;
 import GameEngine.Platforms.Windows.WindowsWindow;
 
@@ -23,12 +24,12 @@ public class Application {
     private boolean isMinimized;
     private double lastFrameTime;
 
-    protected Application() {
+    protected Application(String name) {
         YH_LOG_TRACE("Creating the application.");
         YH_ASSERT(instance == null, "Application already exists!");
         instance = this;
         lastFrameTime = glfwGetTime();
-        window = new WindowsWindow(new Window.WindowProp());
+        window = new WindowsWindow(new Window.WindowProp(name));
         window.setEventCallback(this::onEvent);
         isRunning = true;
         isMinimized = false;
@@ -37,7 +38,7 @@ public class Application {
         renderer2D = new BatchRenderer2D();
 
         layersStack = new LayerStack();
-        imGuiLayer = new ImGuiLayer();
+        imGuiLayer = new ImGuiLayer(SettingsDirectory.file(name, "imgui.ini"));
         pushOverlay(imGuiLayer);
     }
 

@@ -65,4 +65,4 @@ In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Ma
 - `SandBox/src/main/resources/`: the sandbox's textures and shaders.
 - `SampleProject/assets/`: the sample project's textures. Scenes you save go in `assets/scenes`, which git ignores.
 
-On first launch the editor docks its panels into a default layout, and **Window > Reset Layout** restores it. The layout is saved per user, to `%APPDATA%\GameEngine\imgui.ini` on Windows and `~/.config/GameEngine/imgui.ini` elsewhere.
+On first launch the editor docks its panels into a default layout, and **Window > Reset Layout** restores it. Each app saves its layout per user in its own folder, to `%APPDATA%\GameEngine\Editor\imgui.ini` on Windows and `~/.config/GameEngine/Editor/imgui.ini` elsewhere (`SandBox` for the sandbox).

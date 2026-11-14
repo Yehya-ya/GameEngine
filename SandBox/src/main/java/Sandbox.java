@@ -5,6 +5,7 @@ public class Sandbox extends Application {
     private final Layer exampleLayer;
 
     public Sandbox() {
+        super("SandBox");
         exampleLayer = new ExampleLayer2DBatchRenderer();
         pushLayer(exampleLayer);
     }

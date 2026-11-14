@@ -8,7 +8,6 @@ import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Events.Event;
 import GameEngine.Engine.Events.EventCategory;
-import GameEngine.Engine.Utils.SettingsDirectory;
 import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImGuiIO;
@@ -18,14 +17,17 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import java.nio.file.Path;
 
 public class ImGuiLayer extends Layer {
     private final ImGuiImplGlfw imGuiImplGlfw;
     private final ImGuiImplGl3 imGuiImplGl3;
+    private final Path layoutFile;
     private boolean isBlockingEvents;
 
-    public ImGuiLayer() {
+    public ImGuiLayer(Path layoutFile) {
         super("ImGuiLayer");
+        this.layoutFile = layoutFile;
         ImGui.createContext();
         imGuiImplGlfw = new ImGuiImplGlfw();
         imGuiImplGl3 = new ImGuiImplGl3();
@@ -43,7 +45,7 @@ public class ImGuiLayer extends Layer {
         YH_LOG_TRACE("Attach ImGui Layer");
         YH_LOG_TRACE("   ImGui Version: {}", ImGui.getVersion());
         ImGuiIO io = ImGui.getIO();
-        io.setIniFilename(SettingsDirectory.file("imgui.ini").toString());
+        io.setIniFilename(layoutFile.toString());
         io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard); // Enable Keyboard Controls
         // io.addConfigFlags(ImGuiConfigFlags.NavEnableGamepad); // Enable Gamepad Controls
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable); // Enable Docking

@@ -12,8 +12,8 @@ public final class SettingsDirectory {
 
     private SettingsDirectory() {}
 
-    public static @NotNull Path file(@NotNull String fileName) {
-        Path directory = location();
+    public static @NotNull Path file(@NotNull String applicationName, @NotNull String fileName) {
+        Path directory = location().resolve(applicationName);
         try {
             Files.createDirectories(directory);
         } catch (IOException e) {
