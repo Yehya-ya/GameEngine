@@ -264,10 +264,10 @@ public class BatchRenderer2D {
         RendererStatistics.getInstance().addOneToQuadsCount();
     }
 
-    void drawCircle(Matrix4f transformation, Vector4f color, float thickness, float fade, int entityId) {
-        // TODO: implement for circles
-        // if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
-        // 	NextBatch();
+    public static void drawCircle(Matrix4f transformation, Vector4f color, float thickness, float fade, int entityId) {
+        if (storage.circleVertices.indexCount >= Renderer2DStorage.MaxIndices) {
+            nextBatch();
+        }
 
         for (int i = 0; i < storage.baseVertices.length; i++) {
             storage.circleVertices.add(
