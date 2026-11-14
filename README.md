@@ -44,8 +44,15 @@ The screenshots show a demo level; scene files aren't kept in the repo.
 
 You need a GPU with OpenGL 4.5 and Windows x64 (the LWJGL and ImGui natives are set to Windows).
 
-The project builds and runs on JDK 21. The build sets this with a Gradle toolchain, so Gradle uses an installed JDK 21 or downloads one. Gradle itself starts on any installed JDK up to 24; JDK 25 needs Gradle 9.1 or newer.
+The project builds and runs on JDK 21. The build sets this with a Gradle toolchain, so Gradle uses an installed JDK 21 or downloads one. Gradle itself needs JDK 17 or newer to start.
 
-Open the project in IntelliJ IDEA, set the project SDK to JDK 21, and run `Editor/src/main/java/Main.java` with the working directory set to `Editor/src/main`, because assets load by relative path. The sandbox runs the same way, from the same working directory.
+From a terminal in the project root:
+
+```
+.\gradlew.bat :Editor:run
+.\gradlew.bat :SandBox:run
+```
+
+Both run from `Editor/src/main`, because assets load by relative path. In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Main.java` with the working directory set to `Editor/src/main`; the sandbox runs the same way, from the same working directory.
 
 On a fresh clone the editor's panels open floating; drag them into the window to dock them.
