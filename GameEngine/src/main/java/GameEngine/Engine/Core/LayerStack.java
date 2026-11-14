@@ -1,11 +1,10 @@
 package GameEngine.Engine.Core;
 
-import org.jetbrains.annotations.NotNull;
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
+import org.jetbrains.annotations.NotNull;
 
 public class LayerStack implements Iterable<Layer> {
 

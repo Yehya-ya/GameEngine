@@ -1,3 +1,6 @@
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_INFO;
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
+
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Events.Event;
 import GameEngine.Engine.Renderer.Renderer2D;
@@ -10,9 +13,6 @@ import imgui.ImGui;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_INFO;
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 public class ExampleLayer2D extends Layer {
     private final OrthographicCameraController cameraController;
@@ -49,7 +49,10 @@ public class ExampleLayer2D extends Layer {
         double time = glfwGetTime();
         for (int i = 0; i < 117; i++) {
             for (int j = 0; j < 117; j++) {
-                Renderer2D.drawQuad(new Vector3f(-2.0f + (i * 0.01f), -2.0f + (j * 0.01f), 0.3f), new Vector2f(0.009f, 0.009f), new Vector4f((float) i / 114, 0.4f, (float) j / 114, 0.5f));
+                Renderer2D.drawQuad(
+                        new Vector3f(-2.0f + (i * 0.01f), -2.0f + (j * 0.01f), 0.3f),
+                        new Vector2f(0.009f, 0.009f),
+                        new Vector4f((float) i / 114, 0.4f, (float) j / 114, 0.5f));
             }
         }
         YH_LOG_INFO("time : {}", new TimeStep((float) (glfwGetTime() - lastRenderTime)).getMilliseconds());

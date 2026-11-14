@@ -1,5 +1,7 @@
 package GameEngine.Engine.Renderer;
 
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
+
 import GameEngine.Engine.Renderer.Buffer.BufferLayout;
 import GameEngine.Engine.Renderer.Buffer.IndexBuffer;
 import GameEngine.Engine.Renderer.Buffer.VertexBuffer;
@@ -9,10 +11,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-
-import java.util.stream.IntStream;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 
 public class BatchRenderer2D {
     public static Renderer2DStorage storage;
@@ -34,12 +32,12 @@ public class BatchRenderer2D {
         }
         storage.quadVertexArray = VertexArray.create();
         storage.quadVertexBuffer = VertexBuffer.create(QuadVertices.MaxFloats * Float.BYTES);
-        storage.quadVertexBuffer.setLayout(new BufferLayout()//
-                .addBufferElement(BufferLayout.ShaderDataType.Float3, "a_Position", false)//
-                .addBufferElement(BufferLayout.ShaderDataType.Float4, "a_Color", false)//
-                .addBufferElement(BufferLayout.ShaderDataType.Float2, "a_TexCoord", false)//
-                .addBufferElement(BufferLayout.ShaderDataType.Float, "a_TexIndex", false)//
-                .addBufferElement(BufferLayout.ShaderDataType.Float, "a_TilingFactor", false)//
+        storage.quadVertexBuffer.setLayout(new BufferLayout()
+                .addBufferElement(BufferLayout.ShaderDataType.Float3, "a_Position", false)
+                .addBufferElement(BufferLayout.ShaderDataType.Float4, "a_Color", false)
+                .addBufferElement(BufferLayout.ShaderDataType.Float2, "a_TexCoord", false)
+                .addBufferElement(BufferLayout.ShaderDataType.Float, "a_TexIndex", false)
+                .addBufferElement(BufferLayout.ShaderDataType.Float, "a_TilingFactor", false)
                 .addBufferElement(BufferLayout.ShaderDataType.Float, "a_EntityID", false));
         storage.quadVertexArray.addVertexBuffer(storage.quadVertexBuffer);
         storage.quadVertexArray.setIndexBuffer(IndexBuffer.create(indices));
@@ -48,14 +46,13 @@ public class BatchRenderer2D {
         storage.circleVertexArray = VertexArray.create();
 
         storage.circleVertexBuffer = VertexBuffer.create(CircleVertices.MaxFloats * Float.BYTES);
-        storage.circleVertexBuffer.setLayout(new BufferLayout()//
+        storage.circleVertexBuffer.setLayout(new BufferLayout()
                 .addBufferElement(BufferLayout.ShaderDataType.Float3, "a_WorldPosition", false)
                 .addBufferElement(BufferLayout.ShaderDataType.Float3, "a_LocalPosition", false)
                 .addBufferElement(BufferLayout.ShaderDataType.Float4, "a_Color", false)
                 .addBufferElement(BufferLayout.ShaderDataType.Float, "a_Thickness", false)
                 .addBufferElement(BufferLayout.ShaderDataType.Float, "a_Fade", false)
-                .addBufferElement(BufferLayout.ShaderDataType.Float, "a_EntityID", false)
-        );
+                .addBufferElement(BufferLayout.ShaderDataType.Float, "a_EntityID", false));
         storage.circleVertexArray.addVertexBuffer(storage.circleVertexBuffer);
         storage.circleVertexArray.setIndexBuffer(IndexBuffer.create(indices)); // Use quad IB
 
@@ -161,7 +158,8 @@ public class BatchRenderer2D {
         drawQuad(new Vector3f(pos, 1.0f), size, texture, tilingFactor, entityId);
     }
 
-    public static void drawQuad(Vector3f pos, @NotNull Vector3f size, Texture texture, float tilingFactor, int entityId) {
+    public static void drawQuad(
+            Vector3f pos, @NotNull Vector3f size, Texture texture, float tilingFactor, int entityId) {
         Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, size.z);
 
         drawWithTexture(transformation, texture, tilingFactor, entityId);
@@ -171,8 +169,12 @@ public class BatchRenderer2D {
         drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, color, entityId);
     }
 
-    public static void drawRotatedQuad(Vector3f pos, @NotNull Vector3f size, @NotNull Vector3f rotation, Vector4f color, int entityId) {
-        Matrix4f transformation = new Matrix4f().translate(pos).rotateAffineXYZ(rotation.x, rotation.y, rotation.z).scale(size.x, size.y, size.z);
+    public static void drawRotatedQuad(
+            Vector3f pos, @NotNull Vector3f size, @NotNull Vector3f rotation, Vector4f color, int entityId) {
+        Matrix4f transformation = new Matrix4f()
+                .translate(pos)
+                .rotateAffineXYZ(rotation.x, rotation.y, rotation.z)
+                .scale(size.x, size.y, size.z);
 
         drawWithColor(transformation, color, entityId);
     }
@@ -185,12 +187,22 @@ public class BatchRenderer2D {
         drawRotatedQuad(pos, size, rotation, texture, 1.0f, entityId);
     }
 
-    public static void drawRotatedQuad(Vector2f pos, Vector3f size, Vector3f rotation, Texture texture, float tilingFactor, int entityId) {
+    public static void drawRotatedQuad(
+            Vector2f pos, Vector3f size, Vector3f rotation, Texture texture, float tilingFactor, int entityId) {
         drawRotatedQuad(new Vector3f(pos, 1.0f), size, rotation, texture, tilingFactor, entityId);
     }
 
-    public static void drawRotatedQuad(Vector3f pos, @NotNull Vector3f size, @NotNull Vector3f rotation, Texture texture, float tilingFactor, int entityId) {
-        Matrix4f transformation = new Matrix4f().translate(pos).rotateAffineXYZ(rotation.x, rotation.y, rotation.z).scale(size.x, size.y, size.z);
+    public static void drawRotatedQuad(
+            Vector3f pos,
+            @NotNull Vector3f size,
+            @NotNull Vector3f rotation,
+            Texture texture,
+            float tilingFactor,
+            int entityId) {
+        Matrix4f transformation = new Matrix4f()
+                .translate(pos)
+                .rotateAffineXYZ(rotation.x, rotation.y, rotation.z)
+                .scale(size.x, size.y, size.z);
 
         drawWithTexture(transformation, texture, tilingFactor, entityId);
     }
@@ -201,13 +213,18 @@ public class BatchRenderer2D {
         }
 
         for (int i = 0; i < storage.baseVertices.length; i++) {
-            storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[i])), color, storage.baseCoords[i], 1.0f, 0.0f, entityId);
+            storage.quadVertices.add(
+                    transformation.transformPosition(new Vector3f(storage.baseVertices[i])),
+                    color,
+                    storage.baseCoords[i],
+                    1.0f,
+                    0.0f,
+                    entityId);
         }
         storage.quadVertices.indexCount += 6;
 
         RendererStatistics.getInstance().addOneToQuadsCount();
     }
-
 
     private static void drawWithTexture(Matrix4f transformation, Texture texture, float tilingFactor, int entityId) {
         if (storage.quadVertices.indexCount >= Renderer2DStorage.MaxIndices) {
@@ -234,7 +251,13 @@ public class BatchRenderer2D {
         }
 
         for (int i = 0; i < storage.baseVertices.length; i++) {
-            storage.quadVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[i])), color, storage.baseCoords[i], tilingFactor, textureIndex, entityId);
+            storage.quadVertices.add(
+                    transformation.transformPosition(new Vector3f(storage.baseVertices[i])),
+                    color,
+                    storage.baseCoords[i],
+                    tilingFactor,
+                    textureIndex,
+                    entityId);
         }
         storage.quadVertices.indexCount += 6;
 
@@ -247,7 +270,13 @@ public class BatchRenderer2D {
         // 	NextBatch();
 
         for (int i = 0; i < storage.baseVertices.length; i++) {
-            storage.circleVertices.add(transformation.transformPosition(new Vector3f(storage.baseVertices[i])), new Vector3f(storage.baseVertices[i]).mul(2.0f), color, thickness, fade, entityId);
+            storage.circleVertices.add(
+                    transformation.transformPosition(new Vector3f(storage.baseVertices[i])),
+                    new Vector3f(storage.baseVertices[i]).mul(2.0f),
+                    color,
+                    thickness,
+                    fade,
+                    entityId);
         }
 
         storage.circleVertices.indexCount += 6;
@@ -291,7 +320,13 @@ public class BatchRenderer2D {
             verticesCount = 0;
         }
 
-        public void add(@NotNull Vector3f position, @NotNull Vector4f color, @NotNull Vector2f texCoord, float TilingFactor, float TextureIndex, int entityId) {
+        public void add(
+                @NotNull Vector3f position,
+                @NotNull Vector4f color,
+                @NotNull Vector2f texCoord,
+                float TilingFactor,
+                float TextureIndex,
+                int entityId) {
             vertices[verticesCount] = position.x;
             vertices[verticesCount + 1] = position.y;
             vertices[verticesCount + 2] = position.z;
@@ -329,7 +364,13 @@ public class BatchRenderer2D {
             verticesCount = 0;
         }
 
-        public void add(@NotNull Vector3f wordPosition, @NotNull Vector3f localPosition, @NotNull Vector4f color, float thickness, float fade, int entityId) {
+        public void add(
+                @NotNull Vector3f wordPosition,
+                @NotNull Vector3f localPosition,
+                @NotNull Vector4f color,
+                float thickness,
+                float fade,
+                int entityId) {
             vertices[verticesCount] = wordPosition.x;
             vertices[verticesCount + 1] = wordPosition.y;
             vertices[verticesCount + 2] = wordPosition.z;

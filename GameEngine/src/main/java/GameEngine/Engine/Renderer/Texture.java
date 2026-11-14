@@ -1,12 +1,11 @@
 package GameEngine.Engine.Renderer;
 
-import GameEngine.Platforms.OpenGL.OpenGLTexture;
-import org.jetbrains.annotations.NotNull;
-
-import java.nio.ByteBuffer;
-
 import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
+
+import GameEngine.Platforms.OpenGL.OpenGLTexture;
+import java.nio.ByteBuffer;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class Texture {
     protected final String path;

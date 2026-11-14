@@ -6,8 +6,7 @@ import org.joml.Vector4f;
 public class RendererCommandAPI {
     private static final RendererCommand rendererCommand = new OpenGLRendererCommand();
 
-    private RendererCommandAPI() {
-    }
+    private RendererCommandAPI() {}
 
     public static void init() {
         rendererCommand.init();

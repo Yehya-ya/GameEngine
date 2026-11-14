@@ -1,9 +1,9 @@
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Events.Event;
+import GameEngine.Engine.Renderer.*;
 import GameEngine.Engine.Renderer.Buffer.BufferLayout;
 import GameEngine.Engine.Renderer.Buffer.IndexBuffer;
 import GameEngine.Engine.Renderer.Buffer.VertexBuffer;
-import GameEngine.Engine.Renderer.*;
 import GameEngine.Engine.Utils.OrthographicCameraController;
 import GameEngine.Engine.Utils.TimeStep;
 import imgui.ImGui;
@@ -27,14 +27,16 @@ public class ExampleLayer extends Layer {
         super("Example");
         col = new float[4];
         col[3] = 1.0f;
-        transformation = new Matrix4f().translate(new Vector3f(0.2f, 0.2f, 1.0f)).scale(0.1f);
+        transformation =
+                new Matrix4f().translate(new Vector3f(0.2f, 0.2f, 1.0f)).scale(0.1f);
         cameraController = new OrthographicCameraController(1280f / 720f);
         shaderLibrary = new ShaderLibrary();
 
         triangle = VertexArray.create();
         float[] vertices = {-0.5f, -0.5f, 0.5f, -0.5f, 0.0f, 0.5f};
         VertexBuffer vertexBuffer = VertexBuffer.create(vertices);
-        BufferLayout bufferLayout = new BufferLayout().addBufferElement(BufferLayout.ShaderDataType.Float2, "aPos", false);
+        BufferLayout bufferLayout =
+                new BufferLayout().addBufferElement(BufferLayout.ShaderDataType.Float2, "aPos", false);
         vertexBuffer.setLayout(bufferLayout);
         triangle.addVertexBuffer(vertexBuffer);
 
@@ -43,14 +45,19 @@ public class ExampleLayer extends Layer {
         triangle.setIndexBuffer(indexBuffer);
 
         rectangle = VertexArray.create();
-        float[] rectangleVertices = {1.f, 1.f, 1.f, 1.f, -1.f, 1.f, .0f, 1.f, -1.f, -1.f, .0f, .0f, 1.f, -1.f, 1.f, .0f,};
+        float[] rectangleVertices = {
+            1.f, 1.f, 1.f, 1.f, -1.f, 1.f, .0f, 1.f, -1.f, -1.f, .0f, .0f, 1.f, -1.f, 1.f, .0f,
+        };
         VertexBuffer rectangleVB = VertexBuffer.create(rectangleVertices);
-        BufferLayout rectangleBL = new BufferLayout().addBufferElement(BufferLayout.ShaderDataType.Float2, "aPos", false).addBufferElement(BufferLayout.ShaderDataType.Float2, "aTexCoord", false);
+        BufferLayout rectangleBL = new BufferLayout()
+                .addBufferElement(BufferLayout.ShaderDataType.Float2, "aPos", false)
+                .addBufferElement(BufferLayout.ShaderDataType.Float2, "aTexCoord", false);
         rectangleVB.setLayout(rectangleBL);
         rectangle.addVertexBuffer(rectangleVB);
 
-
-        int[] rectangleIndices = {0, 1, 2, 0, 2, 3,};
+        int[] rectangleIndices = {
+            0, 1, 2, 0, 2, 3,
+        };
         IndexBuffer rectangleIB = IndexBuffer.create(rectangleIndices);
         rectangle.setIndexBuffer(rectangleIB);
 

@@ -24,7 +24,8 @@ public class OrthographicCamera extends Camera {
         updateProjectionMatrix();
     }
 
-    public OrthographicCamera(Vector3f position, Vector3f rotation, float aspectRatio, float near, float far, float zoomLevel) {
+    public OrthographicCamera(
+            Vector3f position, Vector3f rotation, float aspectRatio, float near, float far, float zoomLevel) {
         super(position, rotation, aspectRatio, near, far);
         this.zoomLevel = zoomLevel;
         updateViewMatrix();
@@ -54,6 +55,13 @@ public class OrthographicCamera extends Camera {
 
     @Override
     protected void updateProjectionMatrix() {
-        projectionMatrix = new Matrix4f().ortho(aspectRatio * zoomLevel * -0.5f, aspectRatio * zoomLevel * 0.5f, zoomLevel * -0.5f, zoomLevel * 0.5f, near, far);
+        projectionMatrix = new Matrix4f()
+                .ortho(
+                        aspectRatio * zoomLevel * -0.5f,
+                        aspectRatio * zoomLevel * 0.5f,
+                        zoomLevel * -0.5f,
+                        zoomLevel * 0.5f,
+                        near,
+                        far);
     }
 }

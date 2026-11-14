@@ -8,8 +8,8 @@ import GameEngine.Engine.Events.MouseEvents;
 import GameEngine.Engine.Utils.KeyCodes;
 import GameEngine.Engine.Utils.MouseCodes;
 import GameEngine.Engine.Utils.TimeStep;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 public class EditorCamera extends Camera {
     private final float fov;

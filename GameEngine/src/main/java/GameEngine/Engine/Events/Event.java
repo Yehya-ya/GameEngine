@@ -12,7 +12,6 @@ public abstract class Event {
 
     public abstract EventType getEventType();
 
-
     public boolean isInCategory(@NotNull EventCategory category) {
         return (this.category.value & category.value) != 0;
     }
@@ -22,4 +21,3 @@ public abstract class Event {
         return getEventType().name() + ": handled=" + handled;
     }
 }
-

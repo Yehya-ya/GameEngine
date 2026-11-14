@@ -11,11 +11,10 @@ public class Renderer {
         sceneData.viewProjectionMatrix = camera.getViewProjectionMatrix();
     }
 
-    public static void endScene() {
+    public static void endScene() {}
 
-    }
-
-    public static void submit(@NotNull ShaderProgram shaderProgram, @NotNull VertexArray vertexArray, Matrix4f transformation) {
+    public static void submit(
+            @NotNull ShaderProgram shaderProgram, @NotNull VertexArray vertexArray, Matrix4f transformation) {
         shaderProgram.bind();
         shaderProgram.UploadUniformMat4("uViewProjection", sceneData.viewProjectionMatrix);
         shaderProgram.UploadUniformMat4("uTransformation", transformation);

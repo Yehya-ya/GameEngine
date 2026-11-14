@@ -1,14 +1,5 @@
 package GameEngine.Platforms.OpenGL;
 
-import GameEngine.Engine.Renderer.Buffer.BufferLayout;
-import GameEngine.Engine.Renderer.Buffer.IndexBuffer;
-import GameEngine.Engine.Renderer.Buffer.VertexBuffer;
-import GameEngine.Engine.Renderer.VertexArray;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Vector;
-
 import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -18,6 +9,13 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL45.glCreateVertexArrays;
 
+import GameEngine.Engine.Renderer.Buffer.BufferLayout;
+import GameEngine.Engine.Renderer.Buffer.IndexBuffer;
+import GameEngine.Engine.Renderer.Buffer.VertexBuffer;
+import GameEngine.Engine.Renderer.VertexArray;
+import java.util.Vector;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 public class OpenGLVertexArray extends VertexArray {
     private final int rendererId;
@@ -61,7 +59,13 @@ public class OpenGLVertexArray extends VertexArray {
 
         for (BufferLayout.BufferElement element : vertexBuffer.getLayout().getBufferElements()) {
             glEnableVertexAttribArray(vertexBufferIndex);
-            glVertexAttribPointer(vertexBufferIndex, element.GetComponentCount(), getOpenGLNativeType(element.type), element.normalized, vertexBuffer.getLayout().getOffset(), element.offset);
+            glVertexAttribPointer(
+                    vertexBufferIndex,
+                    element.GetComponentCount(),
+                    getOpenGLNativeType(element.type),
+                    element.normalized,
+                    vertexBuffer.getLayout().getOffset(),
+                    element.offset);
             vertexBufferIndex++;
         }
 

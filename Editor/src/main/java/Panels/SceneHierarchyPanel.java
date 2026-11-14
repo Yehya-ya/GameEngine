@@ -20,19 +20,16 @@ import imgui.flag.*;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import imgui.type.ImString;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
-
 import java.io.File;
 import java.util.function.Function;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 public class SceneHierarchyPanel {
     public static final long OpenTextureFileDialogId = 201;
     private Scene scene;
 
-    public SceneHierarchyPanel() {
-
-    }
+    public SceneHierarchyPanel() {}
 
     public SceneHierarchyPanel(Scene scene) {
         setScene(scene);
@@ -101,7 +98,8 @@ public class SceneHierarchyPanel {
 
     private void drawEntityNode(@NotNull Entity e) {
         String tag = e.getComponent(TagComponent.class).name;
-        int flags = ImGuiTreeNodeFlags.OpenOnArrow | (e.equals(scene.getSelectedEntity()) ? ImGuiTreeNodeFlags.Selected : 0);
+        int flags = ImGuiTreeNodeFlags.OpenOnArrow
+                | (e.equals(scene.getSelectedEntity()) ? ImGuiTreeNodeFlags.Selected : 0);
         boolean opened = ImGui.treeNodeEx(e.getId(), flags, tag);
         if (ImGui.isItemClicked()) {
             scene.setSelectedEntity(e);
@@ -143,34 +141,42 @@ public class SceneHierarchyPanel {
             ImGui.checkbox("Primary Camera", imBoolean);
             cameraComponent.primary = imBoolean.get();
 
-            float[] far = new float[]{cameraComponent.camera.getFar()};
+            float[] far = new float[] {cameraComponent.camera.getFar()};
             if (ImGui.dragFloat("Far", far, 0.01f)) {
                 cameraComponent.camera.setFar(far[0]);
             }
 
-            float[] near = new float[]{cameraComponent.camera.getNear()};
+            float[] near = new float[] {cameraComponent.camera.getNear()};
             if (ImGui.dragFloat("Near", near, 0.01f)) {
                 cameraComponent.camera.setNear(near[0]);
             }
 
             ImInt imInt = new ImInt(cameraComponent.cameraType.ordinal());
-            ImGui.listBox("Type", imInt, new String[]{CameraType.Orthographic.name(), CameraType.Perspective.name()});
+            ImGui.listBox("Type", imInt, new String[] {CameraType.Orthographic.name(), CameraType.Perspective.name()});
             if (cameraComponent.cameraType != CameraType.getInstanceFromIndex(imInt.get())) {
                 cameraComponent.cameraType = CameraType.getInstanceFromIndex(imInt.get());
                 if (cameraComponent.cameraType == CameraType.Perspective) {
-                    cameraComponent.camera = new PerspectiveCamera(cameraComponent.camera.getAspectRatio(), ((OrthographicCamera) cameraComponent.camera).getZoomLevel() * 9.0f, cameraComponent.camera.getNear(), cameraComponent.camera.getFar());
+                    cameraComponent.camera = new PerspectiveCamera(
+                            cameraComponent.camera.getAspectRatio(),
+                            ((OrthographicCamera) cameraComponent.camera).getZoomLevel() * 9.0f,
+                            cameraComponent.camera.getNear(),
+                            cameraComponent.camera.getFar());
                 } else if (cameraComponent.cameraType == CameraType.Orthographic) {
-                    cameraComponent.camera = new OrthographicCamera(cameraComponent.camera.getAspectRatio(), ((PerspectiveCamera) cameraComponent.camera).getFov() / 9.0f, cameraComponent.camera.getNear(), cameraComponent.camera.getFar());
+                    cameraComponent.camera = new OrthographicCamera(
+                            cameraComponent.camera.getAspectRatio(),
+                            ((PerspectiveCamera) cameraComponent.camera).getFov() / 9.0f,
+                            cameraComponent.camera.getNear(),
+                            cameraComponent.camera.getFar());
                 }
             }
 
             if (cameraComponent.camera instanceof OrthographicCamera orthographicCamera) {
-                float[] zoom = new float[]{orthographicCamera.getZoomLevel()};
+                float[] zoom = new float[] {orthographicCamera.getZoomLevel()};
                 if (ImGui.dragFloat("Zoom", zoom, 0.01f)) {
                     orthographicCamera.setZoomLevel(zoom[0]);
                 }
             } else if (cameraComponent.camera instanceof PerspectiveCamera perspectiveCamera) {
-                float[] fov = new float[]{perspectiveCamera.getFov()};
+                float[] fov = new float[] {perspectiveCamera.getFov()};
                 if (ImGui.dragFloat("Fov", fov, 0.1f)) {
                     perspectiveCamera.setFov(fov[0]);
                 }
@@ -182,7 +188,7 @@ public class SceneHierarchyPanel {
         drawEntityComponentProperties("Sprite", e, SpriteComponent.class, spriteComponent -> {
             int type = spriteComponent.texture == null ? 0 : 1;
             ImInt imInt = new ImInt(type);
-            ImGui.listBox("Type", imInt, new String[]{"color", "texture"});
+            ImGui.listBox("Type", imInt, new String[] {"color", "texture"});
             if (type != imInt.get()) {
                 if (imInt.get() == 0) {
                     spriteComponent.setToColor();
@@ -192,7 +198,9 @@ public class SceneHierarchyPanel {
             }
 
             if (spriteComponent.texture == null) {
-                float[] color = new float[]{spriteComponent.color.x, spriteComponent.color.y, spriteComponent.color.z, spriteComponent.color.w};
+                float[] color = new float[] {
+                    spriteComponent.color.x, spriteComponent.color.y, spriteComponent.color.z, spriteComponent.color.w
+                };
                 if (ImGui.colorEdit4("Color" + e.getId(), color)) {
                     spriteComponent.color.x = color[0];
                     spriteComponent.color.y = color[1];
@@ -200,13 +208,16 @@ public class SceneHierarchyPanel {
                     spriteComponent.color.w = color[3];
                 }
             } else {
-                float[] tilingFactor = new float[]{spriteComponent.tilingFactor};
+                float[] tilingFactor = new float[] {spriteComponent.tilingFactor};
                 if (ImGui.dragFloat("Tiling Factor", tilingFactor, 0.1f)) {
                     spriteComponent.tilingFactor = tilingFactor[0];
                 }
 
                 if (ImGui.imageButton(spriteComponent.texture.getRendererId(), 50, 50)) {
-                    FileDialog.openFile(OpenTextureFileDialogId, "JPEG (*.JPG; *.JPEG; *.JPE){.jpg,.jpeg,jpe}PNG (.PNG){.png}", () -> spriteComponent.texture = TextureLibrary.get(ImGuiFileDialog.getFilePathName()));
+                    FileDialog.openFile(
+                            OpenTextureFileDialogId,
+                            "JPEG (*.JPG; *.JPEG; *.JPE){.jpg,.jpeg,jpe}PNG (.PNG){.png}",
+                            () -> spriteComponent.texture = TextureLibrary.get(ImGuiFileDialog.getFilePathName()));
                 }
                 if (ImGui.beginDragDropTarget()) {
                     Object file = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -220,7 +231,8 @@ public class SceneHierarchyPanel {
         });
     }
 
-    private <T extends Component> void drawEntityComponentProperties(String label, @NotNull Entity entity, Class<T> componentType, Function<T, Void> function) {
+    private <T extends Component> void drawEntityComponentProperties(
+            String label, @NotNull Entity entity, Class<T> componentType, Function<T, Void> function) {
         int flags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.DefaultOpen;
 
         T component = entity.getComponent(componentType);
@@ -251,17 +263,17 @@ public class SceneHierarchyPanel {
         float lineHeight = ImGui.getFontSize() + ImGui.getStyle().getFramePadding().y * 2.0f;
         ImVec2 buttonSize = new ImVec2(lineHeight + 3.0f, lineHeight);
 
-        float[] valueX = new float[]{vector.x};
+        float[] valueX = new float[] {vector.x};
         if (drawVectorXEditor(valueX, resetValue, multiItemsWidth, buttonSize.x, buttonSize.y)) {
             vector.x = valueX[0];
         }
 
-        float[] valueY = new float[]{vector.y};
+        float[] valueY = new float[] {vector.y};
         if (drawVectorYEditor(valueY, resetValue, multiItemsWidth, buttonSize.x, buttonSize.y)) {
             vector.y = valueY[0];
         }
 
-        float[] valueZ = new float[]{vector.z};
+        float[] valueZ = new float[] {vector.z};
         if (drawVectorZEditor(valueZ, resetValue, multiItemsWidth, buttonSize.x, buttonSize.y)) {
             vector.z = valueZ[0];
         }
@@ -271,7 +283,8 @@ public class SceneHierarchyPanel {
         ImGui.popID();
     }
 
-    private boolean drawVectorXEditor(float[] value, float resetValue, float width, float buttonWidth, float buttonHeight) {
+    private boolean drawVectorXEditor(
+            float[] value, float resetValue, float width, float buttonWidth, float buttonHeight) {
         boolean isChanged = false;
         ImGui.pushItemWidth(width);
 
@@ -285,7 +298,7 @@ public class SceneHierarchyPanel {
         ImGui.popStyleColor(3);
 
         ImGui.sameLine();
-        float[] valueX = new float[]{value[0]};
+        float[] valueX = new float[] {value[0]};
         if (ImGui.dragFloat("##X", valueX, 0.1f, 0.0f, 0.0f, "%.2f")) {
             value[0] = valueX[0];
             isChanged = true;
@@ -294,7 +307,8 @@ public class SceneHierarchyPanel {
         return isChanged;
     }
 
-    private boolean drawVectorYEditor(float[] value, float resetValue, float width, float buttonWidth, float buttonHeight) {
+    private boolean drawVectorYEditor(
+            float[] value, float resetValue, float width, float buttonWidth, float buttonHeight) {
         boolean isChanged = false;
         ImGui.pushItemWidth(width);
         ImGui.sameLine();
@@ -309,7 +323,7 @@ public class SceneHierarchyPanel {
         ImGui.popStyleColor(3);
 
         ImGui.sameLine();
-        float[] valueY = new float[]{value[0]};
+        float[] valueY = new float[] {value[0]};
         if (ImGui.dragFloat("##Y", valueY, 0.1f, 0.0f, 0.0f, "%.2f")) {
             value[0] = valueY[0];
             isChanged = true;
@@ -318,7 +332,8 @@ public class SceneHierarchyPanel {
         return isChanged;
     }
 
-    private boolean drawVectorZEditor(float[] value, float resetValue, float width, float buttonWidth, float buttonHeight) {
+    private boolean drawVectorZEditor(
+            float[] value, float resetValue, float width, float buttonWidth, float buttonHeight) {
         boolean isChanged = false;
         ImGui.pushItemWidth(width);
         ImGui.sameLine();
@@ -333,7 +348,7 @@ public class SceneHierarchyPanel {
         ImGui.popStyleColor(3);
 
         ImGui.sameLine();
-        float[] valueZ = new float[]{value[0]};
+        float[] valueZ = new float[] {value[0]};
         if (ImGui.dragFloat("##Z", valueZ, 0.1f, 0.0f, 0.0f, "%.2f")) {
             value[0] = valueZ[0];
             isChanged = true;

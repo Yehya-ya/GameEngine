@@ -1,16 +1,15 @@
 package GameEngine.Platforms.OpenGL;
 
-import GameEngine.Engine.Renderer.Texture;
-import org.jetbrains.annotations.NotNull;
-import org.lwjgl.BufferUtils;
-
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
 import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.opengl.GL45.*;
 import static org.lwjgl.stb.STBImage.*;
+
+import GameEngine.Engine.Renderer.Texture;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import org.jetbrains.annotations.NotNull;
+import org.lwjgl.BufferUtils;
 
 public class OpenGLTexture extends Texture {
     private final int textureId;
@@ -61,7 +60,9 @@ public class OpenGLTexture extends Texture {
             dataFormat = GL_RGBA;
         }
 
-        YH_ASSERT((internalFormat & dataFormat) != 0, "Error: (Texture) Unknown number of channels '" + channels.get(0) + "'");
+        YH_ASSERT(
+                (internalFormat & dataFormat) != 0,
+                "Error: (Texture) Unknown number of channels '" + channels.get(0) + "'");
 
         this.internalFormat = internalFormat;
         this.dataFormat = dataFormat;

@@ -1,5 +1,9 @@
 package GameEngine.Engine.ImGui;
 
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
+import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+
 import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Events.Event;
@@ -13,10 +17,6 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
-import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 
 public class ImGuiLayer extends Layer {
     private final ImGuiImplGlfw imGuiImplGlfw;
@@ -50,7 +50,8 @@ public class ImGuiLayer extends Layer {
         // Setup Dear ImGui style
         ImGui.styleColorsDark();
 
-        // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+        // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular
+        // ones.
         ImGuiStyle style = ImGui.getStyle();
         if (io.hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
             style.setWindowRounding(0.0f);
@@ -109,34 +110,34 @@ public class ImGuiLayer extends Layer {
 
     public void setDarkThemeColors() {
         float[][] colors = ImGui.getStyle().getColors();
-        colors[ImGuiCol.WindowBg] = new float[]{0.1f, 0.105f, 0.11f, 1.0f};
+        colors[ImGuiCol.WindowBg] = new float[] {0.1f, 0.105f, 0.11f, 1.0f};
 
         // Headers
-        colors[ImGuiCol.Header] = new float[]{0.2f, 0.205f, 0.21f, 1.0f};
-        colors[ImGuiCol.HeaderHovered] = new float[]{0.3f, 0.305f, 0.31f, 1.0f};
-        colors[ImGuiCol.HeaderActive] = new float[]{0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol.Header] = new float[] {0.2f, 0.205f, 0.21f, 1.0f};
+        colors[ImGuiCol.HeaderHovered] = new float[] {0.3f, 0.305f, 0.31f, 1.0f};
+        colors[ImGuiCol.HeaderActive] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
 
         // Buttons
-        colors[ImGuiCol.Button] = new float[]{0.2f, 0.205f, 0.21f, 1.0f};
-        colors[ImGuiCol.ButtonHovered] = new float[]{0.3f, 0.305f, 0.31f, 1.0f};
-        colors[ImGuiCol.ButtonActive] = new float[]{0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol.Button] = new float[] {0.2f, 0.205f, 0.21f, 1.0f};
+        colors[ImGuiCol.ButtonHovered] = new float[] {0.3f, 0.305f, 0.31f, 1.0f};
+        colors[ImGuiCol.ButtonActive] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
 
         // Frame BG
-        colors[ImGuiCol.FrameBg] = new float[]{0.2f, 0.205f, 0.21f, 1.0f};
-        colors[ImGuiCol.FrameBgHovered] = new float[]{0.3f, 0.305f, 0.31f, 1.0f};
-        colors[ImGuiCol.FrameBgActive] = new float[]{0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol.FrameBg] = new float[] {0.2f, 0.205f, 0.21f, 1.0f};
+        colors[ImGuiCol.FrameBgHovered] = new float[] {0.3f, 0.305f, 0.31f, 1.0f};
+        colors[ImGuiCol.FrameBgActive] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
 
         // Tabs
-        colors[ImGuiCol.Tab] = new float[]{0.15f, 0.1505f, 0.151f, 1.0f};
-        colors[ImGuiCol.TabHovered] = new float[]{0.38f, 0.3805f, 0.381f, 1.0f};
-        colors[ImGuiCol.TabActive] = new float[]{0.28f, 0.2805f, 0.281f, 1.0f};
-        colors[ImGuiCol.TabUnfocused] = new float[]{0.15f, 0.1505f, 0.151f, 1.0f};
-        colors[ImGuiCol.TabUnfocusedActive] = new float[]{0.2f, 0.205f, 0.21f, 1.0f};
+        colors[ImGuiCol.Tab] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol.TabHovered] = new float[] {0.38f, 0.3805f, 0.381f, 1.0f};
+        colors[ImGuiCol.TabActive] = new float[] {0.28f, 0.2805f, 0.281f, 1.0f};
+        colors[ImGuiCol.TabUnfocused] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol.TabUnfocusedActive] = new float[] {0.2f, 0.205f, 0.21f, 1.0f};
 
         // Title
-        colors[ImGuiCol.TitleBg] = new float[]{0.15f, 0.1505f, 0.151f, 1.0f};
-        colors[ImGuiCol.TitleBgActive] = new float[]{0.15f, 0.1505f, 0.151f, 1.0f};
-        colors[ImGuiCol.TitleBgCollapsed] = new float[]{0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol.TitleBg] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol.TitleBgActive] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol.TitleBgCollapsed] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
 
         ImGui.getStyle().setColors(colors);
     }

@@ -1,13 +1,12 @@
 package GameEngine.Engine.Renderer;
 
-import GameEngine.Platforms.OpenGL.OpenGLShaderProgram;
-import org.jetbrains.annotations.NotNull;
-import org.joml.*;
-
-import java.util.Map;
-
 import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
+
+import GameEngine.Platforms.OpenGL.OpenGLShaderProgram;
+import java.util.Map;
+import org.jetbrains.annotations.NotNull;
+import org.joml.*;
 
 public abstract class ShaderProgram {
     protected String name;
@@ -49,6 +48,7 @@ public abstract class ShaderProgram {
     public abstract void unbind();
 
     public abstract void UploadUniformInt(String name, int value);
+
     public abstract void UploadUniformIntArray(String name, int[] value);
 
     public abstract void UploadUniformFloat(String name, float value);

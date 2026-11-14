@@ -1,14 +1,12 @@
 package GameEngine.Engine.Renderer;
 
+import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 
 import GameEngine.Engine.Renderer.Buffer.IndexBuffer;
 import GameEngine.Engine.Renderer.Buffer.VertexBuffer;
 import GameEngine.Platforms.OpenGL.OpenGLVertexArray;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class VertexArray {
     public static @NotNull VertexArray create() {

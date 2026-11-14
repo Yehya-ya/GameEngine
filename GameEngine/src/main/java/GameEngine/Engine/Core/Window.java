@@ -1,9 +1,9 @@
 package GameEngine.Engine.Core;
 
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
+
 import GameEngine.Engine.Events.Event;
 import org.jetbrains.annotations.NotNull;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 
 public abstract class Window {
     protected final WindowProp prop;

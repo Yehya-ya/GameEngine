@@ -1,6 +1,5 @@
 package GameEngine.Engine.Utils;
 
-
 public class TimeStep {
     private final float time;
 

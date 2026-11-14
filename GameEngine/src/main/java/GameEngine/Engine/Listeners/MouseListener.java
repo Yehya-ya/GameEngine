@@ -66,27 +66,27 @@ public class MouseListener {
         MouseListener.get().lastY = MouseListener.get().posY;
     }
 
-    static public double getDX() {
+    public static double getDX() {
         return MouseListener.get().lastX - MouseListener.get().posX;
     }
 
-    static public double getDY() {
+    public static double getDY() {
         return MouseListener.get().lastY - MouseListener.get().posY;
     }
 
-    static public double getPosX() {
+    public static double getPosX() {
         return MouseListener.get().posX;
     }
 
-    static public double getPosY() {
+    public static double getPosY() {
         return MouseListener.get().posY;
     }
 
-    static public double getScrollX() {
+    public static double getScrollX() {
         return MouseListener.get().scrollX;
     }
 
-    static public double getScrollY() {
+    public static double getScrollY() {
         return MouseListener.get().scrollY;
     }
 }

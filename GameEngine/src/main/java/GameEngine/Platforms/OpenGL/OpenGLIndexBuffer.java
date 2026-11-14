@@ -1,11 +1,11 @@
 package GameEngine.Platforms.OpenGL;
 
-import GameEngine.Engine.Renderer.Buffer.IndexBuffer;
-import org.jetbrains.annotations.NotNull;
-
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL45.glCreateBuffers;
+
+import GameEngine.Engine.Renderer.Buffer.IndexBuffer;
+import org.jetbrains.annotations.NotNull;
 
 public class OpenGLIndexBuffer extends IndexBuffer {
     private final int rendererId;

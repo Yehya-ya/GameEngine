@@ -1,19 +1,17 @@
 package GameEngine.Engine.Renderer;
 
-import org.jetbrains.annotations.NotNull;
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
+import org.jetbrains.annotations.NotNull;
 
 public final class TextureLibrary {
     private static final Map<String, Texture> texturesByPath = new HashMap<>();
 
-    private TextureLibrary() {
-    }
+    private TextureLibrary() {}
 
     public static @NotNull Texture get(@NotNull String path) {
         return texturesByPath.computeIfAbsent(normalizedPath(path), key -> Texture.create(path));

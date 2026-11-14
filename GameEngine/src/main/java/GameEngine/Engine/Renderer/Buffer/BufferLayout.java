@@ -1,11 +1,10 @@
 package GameEngine.Engine.Renderer.Buffer;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 
 import java.util.Vector;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 public class BufferLayout {
     private final Vector<BufferElement> bufferElements;
@@ -31,7 +30,18 @@ public class BufferLayout {
     }
 
     public enum ShaderDataType {
-        None, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool;
+        None,
+        Float,
+        Float2,
+        Float3,
+        Float4,
+        Mat3,
+        Mat4,
+        Int,
+        Int2,
+        Int3,
+        Int4,
+        Bool;
 
         public int getSize() {
             switch (this) {

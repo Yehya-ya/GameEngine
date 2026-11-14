@@ -16,6 +16,7 @@ public abstract class RendererCommand {
     public abstract API getApi();
 
     public enum API {
-        None, OpenGL
+        None,
+        OpenGL
     }
 }

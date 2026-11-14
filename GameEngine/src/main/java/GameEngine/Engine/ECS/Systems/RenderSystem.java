@@ -10,7 +10,6 @@ import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
 import org.jetbrains.annotations.NotNull;
 
-
 @All({TransformComponent.class, SpriteComponent.class})
 public class RenderSystem extends EntityProcessingSystem {
     private final Scene scene;
@@ -35,9 +34,16 @@ public class RenderSystem extends EntityProcessingSystem {
             SpriteComponent spriteComponent = spriteComponentsMapper.get(e);
 
             if (spriteComponent.texture != null) {
-                BatchRenderer2D.drawRotatedQuad(transform.translate, transform.size, transform.rotation, spriteComponent.texture, spriteComponent.tilingFactor, e.getId());
+                BatchRenderer2D.drawRotatedQuad(
+                        transform.translate,
+                        transform.size,
+                        transform.rotation,
+                        spriteComponent.texture,
+                        spriteComponent.tilingFactor,
+                        e.getId());
             } else {
-                BatchRenderer2D.drawRotatedQuad(transform.translate, transform.size, transform.rotation, spriteComponent.color, e.getId());
+                BatchRenderer2D.drawRotatedQuad(
+                        transform.translate, transform.size, transform.rotation, spriteComponent.color, e.getId());
             }
         }
     }

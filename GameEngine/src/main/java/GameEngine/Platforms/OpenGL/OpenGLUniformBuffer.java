@@ -1,8 +1,8 @@
 package GameEngine.Platforms.OpenGL;
 
-import GameEngine.Engine.Renderer.UniformBuffer;
-
 import static org.lwjgl.opengl.GL45.*;
+
+import GameEngine.Engine.Renderer.UniformBuffer;
 
 public class OpenGLUniformBuffer extends UniformBuffer {
     private final int rendererId;

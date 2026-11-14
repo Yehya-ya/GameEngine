@@ -5,8 +5,7 @@ public class RendererStatistics {
     private int drawCallsCount = 0;
     private int QuadsCount = 0;
 
-    private RendererStatistics() {
-    }
+    private RendererStatistics() {}
 
     public static RendererStatistics getInstance() {
         return instance;

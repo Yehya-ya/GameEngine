@@ -27,10 +27,12 @@ public class TransformComponent extends com.artemis.Component {
     }
 
     public Vector3f getRotationInDegrees() {
-        return new Vector3f((float) Math.toDegrees(rotation.x), (float) Math.toDegrees(rotation.y), (float) Math.toDegrees(rotation.z));
+        return new Vector3f((float) Math.toDegrees(rotation.x), (float) Math.toDegrees(rotation.y), (float)
+                Math.toDegrees(rotation.z));
     }
 
     public void setRotationInDegrees(Vector3f rotation) {
-        this.rotation = new Vector3f(Math.toRadians(rotation.x), Math.toRadians(rotation.y), Math.toRadians(rotation.z));
+        this.rotation =
+                new Vector3f(Math.toRadians(rotation.x), Math.toRadians(rotation.y), Math.toRadians(rotation.z));
     }
 }

@@ -5,7 +5,6 @@ import GameEngine.Engine.Renderer.Texture;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiMouseButton;
-
 import java.io.File;
 
 public class ContentBrowserPanel {

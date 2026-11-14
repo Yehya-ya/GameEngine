@@ -1,3 +1,5 @@
+import static GameEngine.Engine.Utils.KeyCodes.*;
+
 import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Input;
 import GameEngine.Engine.Core.Layer;
@@ -22,13 +24,10 @@ import imgui.ImVec2;
 import imgui.extension.imguifiledialog.ImGuiFileDialog;
 import imgui.flag.*;
 import imgui.type.ImBoolean;
-import org.joml.Vector2f;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import static GameEngine.Engine.Utils.KeyCodes.*;
+import org.joml.Vector2f;
 
 public class EditorLayer extends Layer {
     public static final long OpenFileDialogId = 101;
@@ -115,11 +114,15 @@ public class EditorLayer extends Layer {
             ImGui.setNextWindowViewport(viewport.getID());
             ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
             ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
-            window_flags |= ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove;
+            window_flags |= ImGuiWindowFlags.NoTitleBar
+                    | ImGuiWindowFlags.NoCollapse
+                    | ImGuiWindowFlags.NoResize
+                    | ImGuiWindowFlags.NoMove;
             window_flags |= ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus;
         }
 
-        // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin() to not render a background.
+        // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background and handle the
+        // pass-thru hole, so we ask Begin() to not render a background.
         if ((dockspace_flags & ImGuiDockNodeFlags.PassthruCentralNode) != 0)
             window_flags |= ImGuiWindowFlags.NoBackground;
 
@@ -178,18 +181,18 @@ public class EditorLayer extends Layer {
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
         ImGui.begin("Viewport");
-//        ImGui.beginTabBar("Tabs");
-//        for (Scene scene : scenes) {
-//            int tabFlags = ImGuiTabItemFlags.Trailing;
-//
-//            if (ImGui.beginTabItem(scene.getTitle(), tabFlags)) {
-//                if (!scene.equals(activeScene)) {
-//                    setActiveScene(scene);
-//                }
-//                ImGui.endTabItem();
-//            }
-//        }
-//        ImGui.endTabBar();
+        //        ImGui.beginTabBar("Tabs");
+        //        for (Scene scene : scenes) {
+        //            int tabFlags = ImGuiTabItemFlags.Trailing;
+        //
+        //            if (ImGui.beginTabItem(scene.getTitle(), tabFlags)) {
+        //                if (!scene.equals(activeScene)) {
+        //                    setActiveScene(scene);
+        //                }
+        //                ImGui.endTabItem();
+        //            }
+        //        }
+        //        ImGui.endTabBar();
 
         ImVec2 size = ImGui.getContentRegionAvail();
         viewportSize = new Vector2f(size.x, size.y);
@@ -308,7 +311,6 @@ public class EditorLayer extends Layer {
         }
     }
 
-
     public void saveActivity(String directory) {
         SceneSerializer.serialize(activeScene, directory);
     }
@@ -339,7 +341,13 @@ public class EditorLayer extends Layer {
         float[] buttonActive = colors[ImGuiCol.ButtonActive];
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, buttonActive[0], buttonActive[1], buttonActive[2], 0.5f);
 
-        ImGui.begin("##toolbar", new ImBoolean(false), ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoNav);
+        ImGui.begin(
+                "##toolbar",
+                new ImBoolean(false),
+                ImGuiWindowFlags.NoDecoration
+                        | ImGuiWindowFlags.NoScrollbar
+                        | ImGuiWindowFlags.NoScrollWithMouse
+                        | ImGuiWindowFlags.NoNav);
 
         float size = ImGui.getWindowHeight() - 4.0f;
         Texture icon = sceneState == SceneState.Edit ? iconPlay : iconStop;
@@ -354,6 +362,7 @@ public class EditorLayer extends Layer {
     }
 
     public enum SceneState {
-        Edit, Play
+        Edit,
+        Play
     }
 }

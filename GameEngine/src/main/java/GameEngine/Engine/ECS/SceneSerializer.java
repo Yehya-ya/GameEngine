@@ -1,5 +1,8 @@
 package GameEngine.Engine.ECS;
 
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
+
 import GameEngine.Engine.ECS.Components.*;
 import GameEngine.Engine.Renderer.Camera.Camera;
 import GameEngine.Engine.Renderer.Camera.CameraType;
@@ -7,6 +10,10 @@ import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
 import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
 import GameEngine.Engine.Renderer.TextureLibrary;
 import com.artemis.utils.IntBag;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -19,18 +26,9 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
-
 public class SceneSerializer {
 
-    private SceneSerializer() {
-    }
+    private SceneSerializer() {}
 
     public static void serialize(@NotNull Scene scene, String path) {
         scene.setUri(path);
@@ -81,20 +79,40 @@ public class SceneSerializer {
                 }
 
                 if (componentData instanceof TransformComponentData transformComponentData) {
-                    entity.addComponent(new TransformComponent(transformComponentData.translate, transformComponentData.size, transformComponentData.rotation));
+                    entity.addComponent(new TransformComponent(
+                            transformComponentData.translate,
+                            transformComponentData.size,
+                            transformComponentData.rotation));
                 }
                 if (componentData instanceof CameraComponentData cameraComponentData) {
                     if (cameraComponentData.cameraData instanceof OrthographicCameraData orthographicCameraData) {
-                        entity.addComponent(new CameraComponent(new OrthographicCamera(orthographicCameraData.position, orthographicCameraData.rotation, orthographicCameraData.aspectRatio, orthographicCameraData.near, orthographicCameraData.far, orthographicCameraData.zoomLevel), cameraComponentData.primary));
+                        entity.addComponent(new CameraComponent(
+                                new OrthographicCamera(
+                                        orthographicCameraData.position,
+                                        orthographicCameraData.rotation,
+                                        orthographicCameraData.aspectRatio,
+                                        orthographicCameraData.near,
+                                        orthographicCameraData.far,
+                                        orthographicCameraData.zoomLevel),
+                                cameraComponentData.primary));
                     } else if (cameraComponentData.cameraData instanceof PerspectiveCameraData perspectiveCameraData) {
-                        entity.addComponent(new CameraComponent(new PerspectiveCamera(perspectiveCameraData.position, perspectiveCameraData.rotation, perspectiveCameraData.aspectRatio, perspectiveCameraData.near, perspectiveCameraData.far, perspectiveCameraData.fov), cameraComponentData.primary));
+                        entity.addComponent(new CameraComponent(
+                                new PerspectiveCamera(
+                                        perspectiveCameraData.position,
+                                        perspectiveCameraData.rotation,
+                                        perspectiveCameraData.aspectRatio,
+                                        perspectiveCameraData.near,
+                                        perspectiveCameraData.far,
+                                        perspectiveCameraData.fov),
+                                cameraComponentData.primary));
                     }
                 }
                 if (componentData instanceof SpriteComponentData spriteComponentData) {
                     if (spriteComponentData.texturePath == null) {
                         entity.addComponent(new SpriteComponent(spriteComponentData.color));
                     } else {
-                        entity.addComponent(new SpriteComponent(TextureLibrary.get(spriteComponentData.texturePath), spriteComponentData.tilingFactor));
+                        entity.addComponent(new SpriteComponent(
+                                TextureLibrary.get(spriteComponentData.texturePath), spriteComponentData.tilingFactor));
                     }
                 }
             }
@@ -150,15 +168,12 @@ public class SceneSerializer {
         }
     }
 
-    private static abstract class ComponentData {
-
-    }
+    private abstract static class ComponentData {}
 
     private static class IdComponentData extends ComponentData {
         public UUID id;
 
-        public IdComponentData() {
-        }
+        public IdComponentData() {}
 
         public IdComponentData(@NotNull IdComponent idComponent) {
             this.id = idComponent.id;
@@ -168,8 +183,7 @@ public class SceneSerializer {
     private static class TagComponentData extends ComponentData {
         public String name;
 
-        public TagComponentData() {
-        }
+        public TagComponentData() {}
 
         public TagComponentData(@NotNull TagComponent tagComponent) {
             this.name = tagComponent.name;
@@ -181,8 +195,7 @@ public class SceneSerializer {
         public Vector3f size;
         public Vector3f rotation;
 
-        public TransformComponentData() {
-        }
+        public TransformComponentData() {}
 
         public TransformComponentData(@NotNull TransformComponent transformComponent) {
             this.translate = transformComponent.translate;
@@ -196,8 +209,7 @@ public class SceneSerializer {
         public CameraType cameraType;
         public CameraData cameraData;
 
-        public CameraComponentData() {
-        }
+        public CameraComponentData() {}
 
         public CameraComponentData(@NotNull CameraComponent cameraComponent) {
             this.primary = cameraComponent.primary;
@@ -215,8 +227,7 @@ public class SceneSerializer {
         public float tilingFactor;
         public String texturePath;
 
-        public SpriteComponentData() {
-        }
+        public SpriteComponentData() {}
 
         public SpriteComponentData(@NotNull SpriteComponent spriteComponent) {
             this.color = spriteComponent.color;
@@ -232,8 +243,7 @@ public class SceneSerializer {
         public float aspectRatio;
         public float far, near;
 
-        public CameraData() {
-        }
+        public CameraData() {}
 
         public CameraData(@NotNull Camera camera) {
             this.position = camera.getPosition();

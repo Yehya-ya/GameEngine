@@ -1,12 +1,13 @@
 package GameEngine.Engine.Renderer.Camera;
 
+import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
-
 public enum CameraType {
-    Orthographic, Perspective;
+    Orthographic,
+    Perspective;
 
     @Contract(pure = true)
     public static @NotNull CameraType getInstanceFromIndex(int index) {

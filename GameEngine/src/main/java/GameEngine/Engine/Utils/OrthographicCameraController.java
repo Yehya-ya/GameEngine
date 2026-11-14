@@ -23,9 +23,7 @@ public class OrthographicCameraController {
         return camera;
     }
 
-    public void onUpdate(TimeStep ts) {
-
-    }
+    public void onUpdate(TimeStep ts) {}
 
     public void onEvent(Event event) {
         new EventDispatcher(event).dispatch(EventType.MouseScrolled, this::onMouseScrolled);

@@ -1,11 +1,11 @@
 package GameEngine.Engine.Renderer.Buffer;
 
+import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
+
 import GameEngine.Engine.Renderer.RendererCommandAPI;
 import GameEngine.Platforms.OpenGL.OpenGLVertexBuffer;
 import org.jetbrains.annotations.NotNull;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
 
 public abstract class VertexBuffer {
     protected BufferLayout bufferLayout;

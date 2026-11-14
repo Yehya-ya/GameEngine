@@ -1,5 +1,7 @@
 package GameEngine.Engine.ECS;
 
+import static GameEngine.Engine.Utils.KeyCodes.*;
+
 import GameEngine.Engine.Core.Input;
 import GameEngine.Engine.ECS.Components.*;
 import GameEngine.Engine.ECS.Systems.CameraSystem;
@@ -20,15 +22,12 @@ import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
+import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-
-import java.util.UUID;
-
-import static GameEngine.Engine.Utils.KeyCodes.*;
 
 public class Scene {
     private final World engine;
@@ -46,17 +45,14 @@ public class Scene {
     private Vector2f viewportSize;
     private Vector2f mousePos;
 
-
     public Scene() {
         this("Scene", null);
     }
 
     public Scene(String title, String uri) {
-        WorldConfiguration configuration = new WorldConfigurationBuilder() //
-                .with(//
-                        new CameraSystem(this), //
-                        new RenderSystem(this) //
-                ).build();
+        WorldConfiguration configuration = new WorldConfigurationBuilder()
+                .with(new CameraSystem(this), new RenderSystem(this))
+                .build();
         engine = new World(configuration);
         selectedEntity = null;
         this.title = title;
@@ -64,15 +60,18 @@ public class Scene {
         this.editorCamera = new EditorCamera();
         this.isRuntime = false;
         this.imguizmoType = -1;
-        this.viewportBounds = new Vector2f[]{new Vector2f(), new Vector2f()};
+        this.viewportBounds = new Vector2f[] {new Vector2f(), new Vector2f()};
 
         FrameBuffer.FrameBufferSpecification specification = new FrameBuffer.FrameBufferSpecification();
         specification.width = 1280;
         specification.height = 720;
         specification.attachments = new FrameBuffer.FramebufferAttachmentSpecification();
-        specification.attachments.addAttachments(new FrameBuffer.FramebufferTextureSpecification(FrameBuffer.FramebufferTextureFormat.RGBA8));
-        specification.attachments.addAttachments(new FrameBuffer.FramebufferTextureSpecification(FrameBuffer.FramebufferTextureFormat.RED_INTEGER));
-        specification.attachments.addAttachments(new FrameBuffer.FramebufferTextureSpecification(FrameBuffer.FramebufferTextureFormat.Depth));
+        specification.attachments.addAttachments(
+                new FrameBuffer.FramebufferTextureSpecification(FrameBuffer.FramebufferTextureFormat.RGBA8));
+        specification.attachments.addAttachments(
+                new FrameBuffer.FramebufferTextureSpecification(FrameBuffer.FramebufferTextureFormat.RED_INTEGER));
+        specification.attachments.addAttachments(
+                new FrameBuffer.FramebufferTextureSpecification(FrameBuffer.FramebufferTextureFormat.Depth));
         this.frameBuffer = FrameBuffer.create(specification);
 
         viewportSize = new Vector2f();
@@ -214,8 +213,7 @@ public class Scene {
                 }
             }
             case YH_KEY_D -> {
-                if (control)
-                    duplicateEntity(this.selectedEntity);
+                if (control) duplicateEntity(this.selectedEntity);
             }
         }
         return true;
@@ -267,13 +265,12 @@ public class Scene {
             if (cameraComponent.camera instanceof OrthographicCamera orthographicCamera) {
                 return new CameraComponent(
                         new OrthographicCamera(
-                            new Vector3f(orthographicCamera.getPosition()),
-                            new Vector3f(orthographicCamera.getRotation()),
-                            orthographicCamera.getAspectRatio(),
-                            orthographicCamera.getNear(),
-                            orthographicCamera.getFar(),
-                            orthographicCamera.getZoomLevel()
-                        ),
+                                new Vector3f(orthographicCamera.getPosition()),
+                                new Vector3f(orthographicCamera.getRotation()),
+                                orthographicCamera.getAspectRatio(),
+                                orthographicCamera.getNear(),
+                                orthographicCamera.getFar(),
+                                orthographicCamera.getZoomLevel()),
                         cameraComponent.primary);
             } else if (cameraComponent.camera instanceof PerspectiveCamera perspectiveCamera) {
                 return new CameraComponent(
@@ -283,8 +280,8 @@ public class Scene {
                                 perspectiveCamera.getAspectRatio(),
                                 perspectiveCamera.getNear(),
                                 perspectiveCamera.getFar(),
-                                perspectiveCamera.getFov()
-                        ), cameraComponent.primary);
+                                perspectiveCamera.getFov()),
+                        cameraComponent.primary);
             }
         }
 
@@ -322,13 +319,19 @@ public class Scene {
         ImVec2 viewportMinRegion = ImGui.getWindowContentRegionMin();
         ImVec2 viewportMaxRegion = ImGui.getWindowContentRegionMax();
         ImVec2 viewportOffset = ImGui.getWindowPos();
-        viewportBounds[0] = new Vector2f(viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y);
-        viewportBounds[1] = new Vector2f(viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y);
+        viewportBounds[0] =
+                new Vector2f(viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y);
+        viewportBounds[1] =
+                new Vector2f(viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y);
 
         if (selectedEntity != null && imguizmoType != -1) {
             ImGuizmo.setOrthographic(false);
             ImGuizmo.setDrawList();
-            ImGuizmo.setRect(viewportBounds[0].x, viewportBounds[0].y, viewportBounds[1].x - viewportBounds[0].x, viewportBounds[1].y - viewportBounds[0].y);
+            ImGuizmo.setRect(
+                    viewportBounds[0].x,
+                    viewportBounds[0].y,
+                    viewportBounds[1].x - viewportBounds[0].x,
+                    viewportBounds[1].y - viewportBounds[0].y);
 
             Camera mainCamera = getCamera();
             float[] projection = new float[16];
@@ -337,7 +340,17 @@ public class Scene {
             mainCamera.getViewMatrix().get(view);
             TransformComponent transformComponent = selectedEntity.getComponent(TransformComponent.class);
             float[] transformation = new float[16];
-            ImGuizmo.recomposeMatrixFromComponents(transformation, new float[]{transformComponent.translate.x, transformComponent.translate.y, transformComponent.translate.z}, new float[]{(float) Math.toDegrees(transformComponent.rotation.x), (float) Math.toDegrees(transformComponent.rotation.y), (float) Math.toDegrees(transformComponent.rotation.z)}, new float[]{transformComponent.size.x, transformComponent.size.y, transformComponent.size.z});
+            ImGuizmo.recomposeMatrixFromComponents(
+                    transformation,
+                    new float[] {
+                        transformComponent.translate.x, transformComponent.translate.y, transformComponent.translate.z
+                    },
+                    new float[] {
+                        (float) Math.toDegrees(transformComponent.rotation.x),
+                        (float) Math.toDegrees(transformComponent.rotation.y),
+                        (float) Math.toDegrees(transformComponent.rotation.z)
+                    },
+                    new float[] {transformComponent.size.x, transformComponent.size.y, transformComponent.size.z});
 
             boolean snap = Input.isKeyPressed(YH_KEY_LEFT_CONTROL) || Input.isKeyPressed(YH_KEY_RIGHT_CONTROL);
             float snapValue = 0.5f;
@@ -357,7 +370,8 @@ public class Scene {
                 float[] scale = new float[3];
                 ImGuizmo.decomposeMatrixToComponents(transformation, translate, rotation, scale);
                 transformComponent.translate.set(translate);
-                transformComponent.rotation.set(Math.toRadians(rotation[0]), Math.toRadians(rotation[1]), Math.toRadians(rotation[2]));
+                transformComponent.rotation.set(
+                        Math.toRadians(rotation[0]), Math.toRadians(rotation[1]), Math.toRadians(rotation[2]));
                 transformComponent.size.set(scale);
             }
         }
@@ -372,8 +386,7 @@ public class Scene {
         if (!isRuntime) {
             editorCamera.setViewportSize(viewportSize);
         } else {
-            if (getCamera() != null)
-                getCamera().setAspectRatio(viewportSize.x / viewportSize.y);
+            if (getCamera() != null) getCamera().setAspectRatio(viewportSize.x / viewportSize.y);
         }
     }
 }

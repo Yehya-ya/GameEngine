@@ -1,9 +1,9 @@
 package GameEngine.Engine.Core;
 
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
+
 import GameEngine.Engine.Events.Event;
 import GameEngine.Engine.Utils.TimeStep;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 
 public abstract class Layer {
 
@@ -22,18 +22,13 @@ public abstract class Layer {
         return name;
     }
 
-    public void onUpdate(TimeStep timeStep) {
-    }
+    public void onUpdate(TimeStep timeStep) {}
 
-    public void onAttach() {
-    }
+    public void onAttach() {}
 
-    public void onDetach() {
-    }
+    public void onDetach() {}
 
-    public void onEvent(Event event) {
-    }
+    public void onEvent(Event event) {}
 
-    public void onImgRender() {
-    }
+    public void onImgRender() {}
 }

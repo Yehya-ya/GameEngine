@@ -10,7 +10,7 @@ public class SpriteComponent extends com.artemis.Component {
     public float tilingFactor;
 
     public SpriteComponent() {
-        this(new Vector4f(0.8f,0.8f,0.8f,1.0f));
+        this(new Vector4f(0.8f, 0.8f, 0.8f, 1.0f));
     }
 
     public SpriteComponent(Vector4f color) {
@@ -30,7 +30,7 @@ public class SpriteComponent extends com.artemis.Component {
     }
 
     public void setToColor() {
-        this.color = new Vector4f(0.8f,0.8f,0.8f,1.0f);
+        this.color = new Vector4f(0.8f, 0.8f, 0.8f, 1.0f);
         this.texture = null;
         this.tilingFactor = 1.0f;
     }

@@ -1,10 +1,10 @@
 package GameEngine.Platforms.OpenGL;
 
-import GameEngine.Engine.Renderer.Buffer.VertexBuffer;
-import org.jetbrains.annotations.NotNull;
-
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.opengl.GL45.*;
+
+import GameEngine.Engine.Renderer.Buffer.VertexBuffer;
+import org.jetbrains.annotations.NotNull;
 
 public class OpenGLVertexBuffer extends VertexBuffer {
     private final int rendererId;

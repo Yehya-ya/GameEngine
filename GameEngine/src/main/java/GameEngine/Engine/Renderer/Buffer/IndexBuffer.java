@@ -1,10 +1,10 @@
 package GameEngine.Engine.Renderer.Buffer;
 
-import GameEngine.Engine.Renderer.RendererCommandAPI;
-import GameEngine.Platforms.OpenGL.OpenGLIndexBuffer;
-
 import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
+
+import GameEngine.Engine.Renderer.RendererCommandAPI;
+import GameEngine.Platforms.OpenGL.OpenGLIndexBuffer;
 
 public abstract class IndexBuffer {
     public static IndexBuffer create(int[] indices) {

@@ -24,7 +24,8 @@ public class PerspectiveCamera extends Camera {
         updateProjectionMatrix();
     }
 
-    public PerspectiveCamera(Vector3f position, Vector3f rotation, float aspectRatio, float near, float far, float fov) {
+    public PerspectiveCamera(
+            Vector3f position, Vector3f rotation, float aspectRatio, float near, float far, float fov) {
         super(position, rotation, aspectRatio, near, far);
         this.fov = fov;
         updateViewMatrix();
@@ -42,7 +43,10 @@ public class PerspectiveCamera extends Camera {
 
     @Override
     protected void updateViewMatrix() {
-        viewMatrix = new Matrix4f().translate(position).rotateAffineXYZ(rotation.x, rotation.y, rotation.z).invert();
+        viewMatrix = new Matrix4f()
+                .translate(position)
+                .rotateAffineXYZ(rotation.x, rotation.y, rotation.z)
+                .invert();
     }
 
     @Override

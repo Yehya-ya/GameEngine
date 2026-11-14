@@ -1,13 +1,13 @@
 package GameEngine.Platforms.OpenGL;
 
-import GameEngine.Engine.Renderer.GraphicsContext;
-import org.lwjgl.opengl.GL;
-
 import static GameEngine.Engine.Utils.YH_Log.*;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL45.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
+
+import GameEngine.Engine.Renderer.GraphicsContext;
+import org.lwjgl.opengl.GL;
 
 public class OpenGLContext extends GraphicsContext {
     private final long windowID;

@@ -1,16 +1,15 @@
 package GameEngine.Engine.Renderer.Buffer;
 
+import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
+
 import GameEngine.Engine.Renderer.RendererCommand;
 import GameEngine.Engine.Renderer.RendererCommandAPI;
 import GameEngine.Platforms.OpenGL.OpenGLFrameBuffer;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class FrameBuffer {
     public static @NotNull FrameBuffer create(FrameBufferSpecification specification) {
@@ -44,7 +43,11 @@ public abstract class FrameBuffer {
     public abstract void clearAttachment(int attachmentIndex, int value);
 
     public enum FramebufferTextureFormat {
-        None(0), RGBA8(1), RED_INTEGER(2), DEPTH24STENCIL8(3), Depth(DEPTH24STENCIL8.value);
+        None(0),
+        RGBA8(1),
+        RED_INTEGER(2),
+        DEPTH24STENCIL8(3),
+        Depth(DEPTH24STENCIL8.value);
 
         public final int value;
 

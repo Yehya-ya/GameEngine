@@ -3,7 +3,6 @@ package GameEngine.Engine.ECS;
 import GameEngine.Engine.ECS.Components.IdComponent;
 import com.artemis.Component;
 import com.artemis.utils.Bag;
-
 import java.util.UUID;
 
 public class Entity {

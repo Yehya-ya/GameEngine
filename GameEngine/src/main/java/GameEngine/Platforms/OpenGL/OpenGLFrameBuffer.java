@@ -1,17 +1,16 @@
 package GameEngine.Platforms.OpenGL;
 
-import GameEngine.Engine.Renderer.Buffer.FrameBuffer;
-import GameEngine.Engine.Renderer.RendererCommandAPI;
-
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_WARN;
 import static org.lwjgl.opengl.GL42.glTexStorage2D;
 import static org.lwjgl.opengl.GL45.*;
+
+import GameEngine.Engine.Renderer.Buffer.FrameBuffer;
+import GameEngine.Engine.Renderer.RendererCommandAPI;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class OpenGLFrameBuffer extends FrameBuffer {
     public static final int MaxFramebufferSize = 8192;
@@ -94,8 +93,13 @@ public class OpenGLFrameBuffer extends FrameBuffer {
         YH_ASSERT(attachmentIndex < colorAttachments.length, "index out of bounds for color attachments array");
 
         FramebufferTextureSpecification spec = colorAttachmentSpecifications.get(attachmentIndex);
-        int[] valuesBuffer = new int[]{value};
-        glClearTexImage(colorAttachments[attachmentIndex], 0, Utils.FBTextureFormatToGL(spec.textureFormat), GL_INT, valuesBuffer);
+        int[] valuesBuffer = new int[] {value};
+        glClearTexImage(
+                colorAttachments[attachmentIndex],
+                0,
+                Utils.FBTextureFormatToGL(spec.textureFormat),
+                GL_INT,
+                valuesBuffer);
     }
 
     public void invalidate() {
@@ -115,8 +119,24 @@ public class OpenGLFrameBuffer extends FrameBuffer {
             for (int i = 0; i < colorAttachments.length; i++) {
                 Utils.bindTexture(multisample, colorAttachments[i]);
                 switch (colorAttachmentSpecifications.get(i).textureFormat) {
-                    case RGBA8 -> Utils.attachColorTexture(colorAttachments[i], specification.samples, GL_RGBA8, GL_RGBA, specification.width, specification.height, i);
-                    case RED_INTEGER -> Utils.attachColorTexture(colorAttachments[i], specification.samples, GL_R32I, GL_RED_INTEGER, specification.width, specification.height, i);
+                    case RGBA8 ->
+                        Utils.attachColorTexture(
+                                colorAttachments[i],
+                                specification.samples,
+                                GL_RGBA8,
+                                GL_RGBA,
+                                specification.width,
+                                specification.height,
+                                i);
+                    case RED_INTEGER ->
+                        Utils.attachColorTexture(
+                                colorAttachments[i],
+                                specification.samples,
+                                GL_R32I,
+                                GL_RED_INTEGER,
+                                specification.width,
+                                specification.height,
+                                i);
                 }
             }
         }
@@ -124,8 +144,15 @@ public class OpenGLFrameBuffer extends FrameBuffer {
         if (depthAttachmentSpecification.textureFormat != FramebufferTextureFormat.None) {
             depthAttachment = Utils.createTextures(multisample, 1)[0];
             Utils.bindTexture(multisample, depthAttachment);
-            if (Objects.requireNonNull(depthAttachmentSpecification.textureFormat) == FramebufferTextureFormat.DEPTH24STENCIL8) {
-                Utils.attachDepthTexture(depthAttachment, specification.samples, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, specification.width, specification.height);
+            if (Objects.requireNonNull(depthAttachmentSpecification.textureFormat)
+                    == FramebufferTextureFormat.DEPTH24STENCIL8) {
+                Utils.attachDepthTexture(
+                        depthAttachment,
+                        specification.samples,
+                        GL_DEPTH24_STENCIL8,
+                        GL_DEPTH_STENCIL_ATTACHMENT,
+                        specification.width,
+                        specification.height);
             }
         }
 
@@ -158,12 +185,14 @@ public class OpenGLFrameBuffer extends FrameBuffer {
             glBindTexture(TextureTarget(multisampling), id);
         }
 
-        static void attachColorTexture(int id, int samples, int internalFormat, int format, int width, int height, int index) {
+        static void attachColorTexture(
+                int id, int samples, int internalFormat, int format, int width, int height, int index) {
             boolean multisampling = samples > 1;
             if (multisampling) {
                 glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, false);
             } else {
-                glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, (ByteBuffer) null);
+                glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, (ByteBuffer)
+                        null);
 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

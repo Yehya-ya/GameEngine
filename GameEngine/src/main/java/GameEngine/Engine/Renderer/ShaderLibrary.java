@@ -1,11 +1,10 @@
 package GameEngine.Engine.Renderer;
 
-import org.jetbrains.annotations.NotNull;
+import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
+import org.jetbrains.annotations.NotNull;
 
 public class ShaderLibrary {
     Map<String, ShaderProgram> shaders;
@@ -13,7 +12,6 @@ public class ShaderLibrary {
     public ShaderLibrary() {
         shaders = new HashMap<>();
     }
-
 
     public void add(String name, ShaderProgram shaderProgram) {
         YH_ASSERT(!exist(name), "Shader'" + name + "' already exists!");
@@ -45,7 +43,6 @@ public class ShaderLibrary {
         add(shaderProgram.getName(), shaderProgram);
         return shaderProgram;
     }
-
 
     public boolean exist(String name) {
         return shaders.containsKey(name);

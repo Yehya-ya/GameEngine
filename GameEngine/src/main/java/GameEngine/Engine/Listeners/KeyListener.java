@@ -7,9 +7,7 @@ public class KeyListener {
     private final boolean[] keyPressed = new boolean[GLFW_KEY_LAST];
     private final boolean[] keyBeingPressed = new boolean[GLFW_KEY_LAST];
 
-    private KeyListener() {
-
-    }
+    private KeyListener() {}
 
     public static KeyListener get() {
         if (KeyListener.keyListener == null) {

@@ -1,10 +1,10 @@
 package GameEngine.Platforms.OpenGL;
 
-import GameEngine.Engine.Renderer.ShaderProgram;
-import org.jetbrains.annotations.NotNull;
-import org.joml.*;
-import org.joml.Math;
+import static GameEngine.Engine.Utils.YH_Log.*;
+import static org.lwjgl.opengl.GL11.GL_FALSE;
+import static org.lwjgl.opengl.GL20.*;
 
+import GameEngine.Engine.Renderer.ShaderProgram;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,10 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static GameEngine.Engine.Utils.YH_Log.*;
-import static org.lwjgl.opengl.GL11.GL_FALSE;
-import static org.lwjgl.opengl.GL20.*;
+import org.jetbrains.annotations.NotNull;
+import org.joml.*;
+import org.joml.Math;
 
 public class OpenGLShaderProgram extends ShaderProgram {
     public static String TOKEN = "#type";
@@ -35,7 +34,10 @@ public class OpenGLShaderProgram extends ShaderProgram {
     }
 
     public OpenGLShaderProgram(String name, String vertexShader, String fragmentShader) {
-        YH_LOG_TRACE("Creating OpenGLShaderProgram with two files vertex shader: \"{}\" and fragment shader: \"{}\".", vertexShader, fragmentShader);
+        YH_LOG_TRACE(
+                "Creating OpenGLShaderProgram with two files vertex shader: \"{}\" and fragment shader: \"{}\".",
+                vertexShader,
+                fragmentShader);
 
         Map<Integer, String> sourceMap = new HashMap<>();
         sourceMap.put(GL_VERTEX_SHADER, ReadFile(vertexShader));
@@ -68,8 +70,7 @@ public class OpenGLShaderProgram extends ShaderProgram {
         }
 
         programID = glCreateProgram();
-        for (Integer id : ids)
-            glAttachShader(programID, id);
+        for (Integer id : ids) glAttachShader(programID, id);
 
         glLinkProgram(programID);
 

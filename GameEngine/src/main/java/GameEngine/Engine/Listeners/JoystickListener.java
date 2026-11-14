@@ -6,7 +6,6 @@ public class JoystickListener {
     private static JoystickListener joystickListener = null;
     private Joystick joystick;
 
-
     private JoystickListener() {
         this.joystick = null;
     }
@@ -19,10 +18,10 @@ public class JoystickListener {
         return joystickListener;
     }
 
-    public static void poll_controllers(){
+    public static void poll_controllers() {
         for (int i = 0; i < GLFW_JOYSTICK_LAST; i++) {
             int event = glfwJoystickPresent(i) ? GLFW_CONNECTED : GLFW_DISCONNECTED;
-            joystick_callback(i ,event);
+            joystick_callback(i, event);
         }
     }
 
@@ -41,7 +40,7 @@ public class JoystickListener {
         }
     }
 
-    public static void update(){
+    public static void update() {
         if (get().joystick != null) {
             get().joystick.update();
         }

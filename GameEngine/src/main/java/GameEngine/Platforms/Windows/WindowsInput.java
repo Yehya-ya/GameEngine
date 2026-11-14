@@ -1,18 +1,16 @@
 package GameEngine.Platforms.Windows;
 
-import GameEngine.Engine.Core.Application;
-import GameEngine.Engine.Core.Input;
-import org.joml.Vector2d;
-import org.lwjgl.BufferUtils;
-
-import java.nio.DoubleBuffer;
-
 import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 import static org.lwjgl.glfw.GLFW.*;
 
+import GameEngine.Engine.Core.Application;
+import GameEngine.Engine.Core.Input;
+import java.nio.DoubleBuffer;
+import org.joml.Vector2d;
+import org.lwjgl.BufferUtils;
+
 public class WindowsInput extends Input {
-    private WindowsInput() {
-    }
+    private WindowsInput() {}
 
     public static void create() {
         YH_ASSERT(instance == null, "Input instance has already created.");

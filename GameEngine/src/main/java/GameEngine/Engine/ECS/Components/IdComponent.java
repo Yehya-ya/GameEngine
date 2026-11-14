@@ -1,7 +1,6 @@
 package GameEngine.Engine.ECS.Components;
 
 import com.artemis.Component;
-
 import java.util.UUID;
 
 public class IdComponent extends Component {

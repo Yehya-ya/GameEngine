@@ -1,15 +1,15 @@
 package GameEngine.Engine.Core;
 
+import static GameEngine.Engine.Utils.KeyCodes.YH_KEY_F11;
+import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
+
 import GameEngine.Engine.Events.*;
 import GameEngine.Engine.ImGui.ImGuiLayer;
 import GameEngine.Engine.Renderer.RendererCommandAPI;
 import GameEngine.Engine.Utils.TimeStep;
 import GameEngine.Platforms.Windows.WindowsWindow;
-
-import static GameEngine.Engine.Utils.KeyCodes.YH_KEY_F11;
-import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
-import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 public class Application {
     private static Application instance;
@@ -46,8 +46,7 @@ public class Application {
         return window;
     }
 
-    public void shutdown() {
-    }
+    public void shutdown() {}
 
     public void run() {
         YH_LOG_TRACE("The application starts running.");

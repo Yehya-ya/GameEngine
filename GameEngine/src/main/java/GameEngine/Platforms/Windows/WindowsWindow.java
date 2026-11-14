@@ -1,5 +1,10 @@
 package GameEngine.Platforms.Windows;
 
+import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
+
 import GameEngine.Engine.Core.Window;
 import GameEngine.Engine.Events.KeyEvent;
 import GameEngine.Engine.Events.MouseEvents;
@@ -8,11 +13,6 @@ import GameEngine.Engine.Renderer.GraphicsContext;
 import GameEngine.Platforms.OpenGL.OpenGLContext;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
-
-import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
-import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class WindowsWindow extends Window {
     private boolean GLFWInitialized;
@@ -46,7 +46,6 @@ public class WindowsWindow extends Window {
         // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-
         // Create the window
         windowID = glfwCreateWindow(prop.width, prop.height, prop.title, NULL, NULL);
         YH_ASSERT(windowID != NULL, "Failed to create the GLFW window");
@@ -54,7 +53,10 @@ public class WindowsWindow extends Window {
         monitorID = glfwGetPrimaryMonitor();
 
         // set input callback handlers
-        glfwSetWindowSizeCallback(windowID, (window, width, height) -> prop.eventCallBack.invoke(new WindowEvents.WindowResizeEvent(width, height)));
+        glfwSetWindowSizeCallback(
+                windowID,
+                (window, width, height) ->
+                        prop.eventCallBack.invoke(new WindowEvents.WindowResizeEvent(width, height)));
         glfwSetWindowCloseCallback(windowID, window -> prop.eventCallBack.invoke(new WindowEvents.WindowCloseEvent()));
 
         // key events
@@ -65,7 +67,8 @@ public class WindowsWindow extends Window {
                 case GLFW_REPEAT -> prop.eventCallBack.invoke(new KeyEvent.KeyPressedEvent(key, 1));
             }
         });
-        glfwSetCharCallback(windowID, (window, codepoint) -> prop.eventCallBack.invoke(new KeyEvent.KeyTypedEvent(codepoint)));
+        glfwSetCharCallback(
+                windowID, (window, codepoint) -> prop.eventCallBack.invoke(new KeyEvent.KeyTypedEvent(codepoint)));
         // mouse events
         glfwSetMouseButtonCallback(windowID, (window, button, action, mods) -> {
             switch (action) {
@@ -73,10 +76,15 @@ public class WindowsWindow extends Window {
                 case GLFW_RELEASE -> prop.eventCallBack.invoke(new MouseEvents.MouseButtonReleasedEvent(button));
             }
         });
-        glfwSetScrollCallback(windowID, (window, xoffset, yoffset) -> prop.eventCallBack.invoke(new MouseEvents.MouseScrolledEvent(xoffset, yoffset)));
-        glfwSetCursorPosCallback(windowID, (window, xpos, ypos) -> prop.eventCallBack.invoke(new MouseEvents.MouseMovedEvent(xpos, ypos)));
+        glfwSetScrollCallback(
+                windowID,
+                (window, xoffset, yoffset) ->
+                        prop.eventCallBack.invoke(new MouseEvents.MouseScrolledEvent(xoffset, yoffset)));
+        glfwSetCursorPosCallback(
+                windowID,
+                (window, xpos, ypos) -> prop.eventCallBack.invoke(new MouseEvents.MouseMovedEvent(xpos, ypos)));
 
-        //JoystickListener.poll_controllers();
+        // JoystickListener.poll_controllers();
 
         graphicsContext = new OpenGLContext(windowID);
         graphicsContext.init();
