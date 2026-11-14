@@ -151,7 +151,8 @@ public class Scene {
     }
 
     public void deleteEntity(@NotNull Entity entity) {
-        if (entity == selectedEntity) {
+        // equals(), not ==: getEntity() returns a new Entity wrapper on every call.
+        if (entity.equals(selectedEntity)) {
             selectedEntity = null;
         }
         engine.delete(entity.getId());
