@@ -116,4 +116,9 @@ public class OpenGLTexture extends Texture {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(textureId);
+    }
 }

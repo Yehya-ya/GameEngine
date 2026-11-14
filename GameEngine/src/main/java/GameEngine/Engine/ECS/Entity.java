@@ -41,10 +41,16 @@ public class Entity {
         entity.edit().remove(type);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Entity) {
             return ((Entity) obj).getId() == this.getId();
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(getId());
     }
 }
