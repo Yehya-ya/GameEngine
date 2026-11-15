@@ -425,7 +425,7 @@ public class EditorLayer extends Layer {
 
         float size = ImGui.getWindowHeight() - 4.0f;
         Texture icon = sceneState == SceneState.Edit ? iconPlay : iconStop;
-        ImGui.setCursorPosX((ImGui.getWindowContentRegionMaxX() * 0.5f) - (size * 0.5f));
+        ImGui.setCursorPosX(ImGui.getCursorPosX() + (ImGui.getContentRegionAvailX() - size) * 0.5f);
         if (ImGui.imageButton("##SceneState", icon.getRendererId(), size, size, 0, 0, 1, 1)) {
             if (sceneState == SceneState.Edit) onScenePlay();
             else if (sceneState == SceneState.Play) onSceneStop();

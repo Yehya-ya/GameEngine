@@ -185,12 +185,10 @@ public class Viewport {
 
     private void drawImage() {
         ImVec2 size = ImGui.getContentRegionAvail();
+        ImVec2 imagePosition = ImGui.getCursorScreenPos();
         ImGui.image(frameBuffer.getColorAttachmentRendererId(), size.x, size.y, 0.0f, 1.0f, 1.0f, 0.0f);
-        ImVec2 contentMin = ImGui.getWindowContentRegionMin();
-        ImVec2 contentMax = ImGui.getWindowContentRegionMax();
-        ImVec2 windowPosition = ImGui.getWindowPos();
-        boundsMin.set(contentMin.x + windowPosition.x, contentMin.y + windowPosition.y);
-        boundsMax.set(contentMax.x + windowPosition.x, contentMax.y + windowPosition.y);
+        boundsMin.set(imagePosition.x, imagePosition.y);
+        boundsMax.set(imagePosition.x + size.x, imagePosition.y + size.y);
     }
 
     private void drawGizmo(Entity selectedEntity) {
