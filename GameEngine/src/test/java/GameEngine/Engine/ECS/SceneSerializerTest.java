@@ -46,6 +46,17 @@ class SceneSerializerTest {
     }
 
     @Test
+    void entityAddedAfterTheSceneWasReadIsSaved() {
+        Scene scene = SampleScene.create();
+        entityNamed(scene, "Player");
+        Entity late = scene.createEntity("Late");
+
+        Scene loaded = saveAndLoad(scene);
+
+        assertEquals(late.getUuid(), entityNamed(loaded, "Late").getUuid());
+    }
+
+    @Test
     void missingFileLoadsAsNoScene() {
         assertNull(SceneSerializer.deserialize(
                 projectDirectory.resolve("missing.yaml").toString(), project()));

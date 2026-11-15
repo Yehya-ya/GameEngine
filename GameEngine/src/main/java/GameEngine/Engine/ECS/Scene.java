@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Scene {
     private final World engine;
+    private final SceneInvocationStrategy invocationStrategy = new SceneInvocationStrategy();
     private final String title;
     private final TextureLibrary textures;
     private final boolean ownsTextures;
@@ -34,6 +35,7 @@ public class Scene {
     private Scene(String title, String uri, TextureLibrary textures, boolean ownsTextures) {
         WorldConfiguration configuration = new WorldConfigurationBuilder()
                 .with(new CameraSystem(this), new RenderSystem(this))
+                .register(invocationStrategy)
                 .build();
         engine = new World(configuration);
         this.title = title;
@@ -64,6 +66,7 @@ public class Scene {
 
     @SafeVarargs
     public final IntBag getEntitiesIds(Class<? extends Component>... args) {
+        invocationStrategy.applyPendingEntityChanges();
         return engine.getAspectSubscriptionManager().get(Aspect.all(args)).getEntities();
     }
 

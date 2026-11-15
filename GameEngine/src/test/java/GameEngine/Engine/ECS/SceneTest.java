@@ -4,6 +4,9 @@ import static GameEngine.Engine.ECS.SceneAssertions.assertEntitiesMatch;
 import static GameEngine.Engine.ECS.SceneAssertions.entityNamed;
 import static GameEngine.Engine.ECS.SceneAssertions.uuids;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import GameEngine.Engine.ECS.Components.CameraComponent;
@@ -11,6 +14,7 @@ import GameEngine.Engine.ECS.Components.SpriteComponent;
 import GameEngine.Engine.ECS.Components.TagComponent;
 import GameEngine.Engine.ECS.Components.TransformComponent;
 import java.util.List;
+import java.util.UUID;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.junit.jupiter.api.Test;
@@ -86,5 +90,45 @@ class SceneTest {
         Scene original = SampleScene.create();
 
         assertSame(original.getTextures(), original.copy().getTextures());
+    }
+
+    @Test
+    void duplicateGetsANewIdAndACopyName() {
+        Scene scene = SampleScene.create();
+        Entity player = entityNamed(scene, "Player");
+
+        scene.duplicateEntity(player);
+
+        Entity duplicate = entityNamed(scene, "Player copy");
+        assertNotEquals(player.getUuid(), duplicate.getUuid());
+        TransformComponent transform = player.getComponent(TransformComponent.class);
+        TransformComponent duplicateTransform = duplicate.getComponent(TransformComponent.class);
+        assertEquals(transform.translate, duplicateTransform.translate);
+        assertNotSame(transform.translate, duplicateTransform.translate);
+        SpriteComponent sprite = player.getComponent(SpriteComponent.class);
+        SpriteComponent duplicateSprite = duplicate.getComponent(SpriteComponent.class);
+        assertEquals(sprite.color, duplicateSprite.color);
+        assertNotSame(sprite.color, duplicateSprite.color);
+    }
+
+    @Test
+    void entityAddedAfterTheSceneWasReadIsFound() {
+        Scene scene = SampleScene.create();
+        entityNamed(scene, "Player");
+
+        Entity late = scene.createEntity("Late");
+
+        assertEquals(late.getUuid(), entityNamed(scene, "Late").getUuid());
+    }
+
+    @Test
+    void deletedEntityIsNotFoundAnyMore() {
+        Scene scene = SampleScene.create();
+        Entity player = entityNamed(scene, "Player");
+        UUID playerUuid = player.getUuid();
+
+        scene.deleteEntity(player);
+
+        assertFalse(uuids(scene).contains(playerUuid));
     }
 }
