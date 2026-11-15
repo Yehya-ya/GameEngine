@@ -104,7 +104,8 @@ public class EditorLayer extends Layer {
     }
 
     public void onScenePlay() {
-        if (editorScene == null) {
+        boolean canPlay = editorScene != null && sceneState == SceneState.Edit;
+        if (!canPlay) {
             return;
         }
         sceneState = SceneState.Play;
@@ -114,6 +115,9 @@ public class EditorLayer extends Layer {
     }
 
     public void onSceneStop() {
+        if (sceneState != SceneState.Play) {
+            return;
+        }
         sceneState = SceneState.Edit;
         scenesToDeleteNextFrame.add(runtimeScene);
         runtimeScene = null;
