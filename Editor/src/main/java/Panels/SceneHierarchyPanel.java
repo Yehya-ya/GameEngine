@@ -1,5 +1,7 @@
 package Panels;
 
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
+
 import GameEngine.Engine.ECS.Components.CameraComponent;
 import GameEngine.Engine.ECS.Components.SpriteComponent;
 import GameEngine.Engine.ECS.Components.TagComponent;
@@ -9,7 +11,9 @@ import GameEngine.Engine.ECS.Scene;
 import GameEngine.Engine.Renderer.Camera.CameraType;
 import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
 import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
+import GameEngine.Engine.Renderer.Texture;
 import GameEngine.Engine.Renderer.TextureLibrary;
+import GameEngine.Engine.Renderer.TextureLoadException;
 import Utils.FileDialog;
 import com.artemis.utils.IntBag;
 import imgui.ImGui;
@@ -49,10 +53,12 @@ public class SceneHierarchyPanel {
                     SpriteComponent.class,
                     SpriteComponent::new,
                     this::drawSprite));
+    private final TextureLibrary textures;
     private Scene scene;
 
-    public SceneHierarchyPanel(Selection selection) {
+    public SceneHierarchyPanel(Selection selection, TextureLibrary textures) {
         this.selection = selection;
+        this.textures = textures;
     }
 
     public void setScene(Scene scene) {
@@ -233,15 +239,23 @@ public class SceneHierarchyPanel {
                 FileDialog.openFile(
                         OpenTextureFileDialogId,
                         "JPEG (*.JPG; *.JPEG; *.JPE){.jpg,.jpeg,jpe}PNG (.PNG){.png}",
-                        () -> spriteComponent.texture = TextureLibrary.get(Path.of(ImGuiFileDialog.getFilePathName())));
+                        () -> useTexture(spriteComponent, Path.of(ImGuiFileDialog.getFilePathName())));
             }
             if (ImGui.beginDragDropTarget()) {
-                Object file = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
-                if (file instanceof File) {
-                    spriteComponent.texture = TextureLibrary.get(((File) file).toPath());
+                Object payload = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
+                if (payload instanceof File file && Texture.isImageFile(file.toPath())) {
+                    useTexture(spriteComponent, file.toPath());
                 }
                 ImGui.endDragDropTarget();
             }
+        }
+    }
+
+    private void useTexture(@NotNull SpriteComponent spriteComponent, @NotNull Path file) {
+        try {
+            spriteComponent.texture = textures.get(file);
+        } catch (TextureLoadException e) {
+            YH_LOG_ERROR("{}", e.getMessage());
         }
     }
 

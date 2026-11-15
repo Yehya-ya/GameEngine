@@ -6,7 +6,6 @@ import GameEngine.Engine.Renderer.Camera.Camera;
 import GameEngine.Engine.Renderer.Camera.CameraType;
 import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
 import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
-import GameEngine.Engine.Renderer.TextureLibrary;
 import com.artemis.Component;
 import java.nio.file.Path;
 import java.util.List;
@@ -23,7 +22,7 @@ public final class ComponentTypes {
             IdComponentData.class,
             id -> new IdComponent(id.id),
             (id, project) -> new IdComponentData(id),
-            (data, project) -> new IdComponent(data.id));
+            (data, assets) -> new IdComponent(data.id));
 
     public static final ComponentType<TagComponent, ?> Tag = new ComponentType<>(
             "!TagComponent",
@@ -31,7 +30,7 @@ public final class ComponentTypes {
             TagComponentData.class,
             tag -> new TagComponent(tag.name),
             (tag, project) -> new TagComponentData(tag),
-            (data, project) -> new TagComponent(data.name));
+            (data, assets) -> new TagComponent(data.name));
 
     public static final ComponentType<TransformComponent, ?> Transform = new ComponentType<>(
             "!TransformComponent",
@@ -40,7 +39,7 @@ public final class ComponentTypes {
             transform -> new TransformComponent(
                     new Vector3f(transform.translate), new Vector3f(transform.size), new Vector3f(transform.rotation)),
             (transform, project) -> new TransformComponentData(transform),
-            (data, project) -> new TransformComponent(data.translate, data.size, data.rotation));
+            (data, assets) -> new TransformComponent(data.translate, data.size, data.rotation));
 
     public static final ComponentType<CameraComponent, ?> Camera = new ComponentType<>(
             "!CameraComponent",
@@ -48,7 +47,7 @@ public final class ComponentTypes {
             CameraComponentData.class,
             ComponentTypes::copyCamera,
             (camera, project) -> new CameraComponentData(camera),
-            (data, project) -> loadCamera(data));
+            (data, assets) -> loadCamera(data));
 
     public static final ComponentType<SpriteComponent, ?> Sprite = new ComponentType<>(
             "!SpriteComponent",
@@ -138,12 +137,11 @@ public final class ComponentTypes {
         throw new IllegalArgumentException("A camera component has no camera");
     }
 
-    private static SpriteComponent loadSprite(SpriteComponentData data, Project project) {
+    private static SpriteComponent loadSprite(SpriteComponentData data, SceneAssets assets) {
         if (data.texturePath == null) {
             return new SpriteComponent(data.color);
         }
-        Path textureFile = project.resolve(data.texturePath);
-        return new SpriteComponent(TextureLibrary.get(textureFile), data.tilingFactor);
+        return new SpriteComponent(assets.texture(data.texturePath), data.tilingFactor);
     }
 
     private static class IdComponentData {

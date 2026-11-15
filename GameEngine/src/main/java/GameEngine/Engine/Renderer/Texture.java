@@ -6,14 +6,16 @@ import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
 import GameEngine.Engine.Utils.Resources;
 import GameEngine.Platforms.OpenGL.OpenGLTexture;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Locale;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 
 public abstract class Texture {
+    public static final List<String> ImageExtensions = List.of(".png", ".jpg", ".jpeg", ".jpe");
     protected final String path;
     protected int width, height;
 
@@ -33,8 +35,8 @@ public abstract class Texture {
         return null;
     }
 
-    public static @NotNull Texture create(String path) {
-        return fromEncodedImage(path, readFile(path));
+    public static @NotNull Texture create(@NotNull Path file) {
+        return fromEncodedImage(file.toString(), readFile(file));
     }
 
     public static @NotNull Texture createFromResource(String resourceName) {
@@ -50,6 +52,12 @@ public abstract class Texture {
         return texture;
     }
 
+    public static boolean isImageFile(@NotNull Path file) {
+        String fileName = file.toString().toLowerCase(Locale.ROOT);
+        boolean hasImageExtension = ImageExtensions.stream().anyMatch(fileName::endsWith);
+        return hasImageExtension && Files.isRegularFile(file);
+    }
+
     private static @NotNull Texture fromEncodedImage(String path, byte[] encodedImage) {
         switch (RendererCommandAPI.getApi()) {
             case OpenGL -> {
@@ -62,11 +70,11 @@ public abstract class Texture {
         return null;
     }
 
-    private static byte[] readFile(String path) {
+    private static byte[] readFile(Path file) {
         try {
-            return Files.readAllBytes(Path.of(path));
+            return Files.readAllBytes(file);
         } catch (IOException e) {
-            throw new UncheckedIOException("Failed to read the image " + path, e);
+            throw new TextureLoadException("Failed to read the image \"" + file + "\"", e);
         }
     }
 

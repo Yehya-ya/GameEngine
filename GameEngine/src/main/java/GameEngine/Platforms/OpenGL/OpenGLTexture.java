@@ -6,6 +6,7 @@ import static org.lwjgl.opengl.GL45.*;
 import static org.lwjgl.stb.STBImage.*;
 
 import GameEngine.Engine.Renderer.Texture;
+import GameEngine.Engine.Renderer.TextureLoadException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import org.jetbrains.annotations.NotNull;
@@ -48,8 +49,9 @@ public class OpenGLTexture extends Texture {
                 .flip();
         stbi_set_flip_vertically_on_load(true);
         ByteBuffer image = stbi_load_from_memory(encodedImageBuffer, width, height, channels, 0);
-
-        YH_ASSERT(image != null, "Failed to load the image \"" + path + "\": " + stbi_failure_reason());
+        if (image == null) {
+            throw new TextureLoadException("Failed to load the image \"" + path + "\": " + stbi_failure_reason());
+        }
 
         this.width = width.get(0);
         this.height = height.get(0);
@@ -63,9 +65,12 @@ public class OpenGLTexture extends Texture {
             dataFormat = GL_RGBA;
         }
 
-        YH_ASSERT(
-                (internalFormat & dataFormat) != 0,
-                "Error: (Texture) Unknown number of channels '" + channels.get(0) + "'");
+        boolean isSupportedFormat = internalFormat != 0;
+        if (!isSupportedFormat) {
+            stbi_image_free(image);
+            throw new TextureLoadException("The image \"" + path + "\" has " + channels.get(0)
+                    + " channels, but only RGB and RGBA images are supported");
+        }
 
         this.internalFormat = internalFormat;
         this.dataFormat = dataFormat;

@@ -14,8 +14,8 @@ public class ContentBrowserPanel {
     private static final float padding = 16.0f;
     private static final float thumbnailSize = 128.0f;
     private final File assetDirectory;
-    private Texture directoryIcon;
-    private Texture fileIcon;
+    private final Texture directoryIcon;
+    private final Texture fileIcon;
 
     private Scene scene;
     private File currentDirectory;
@@ -26,6 +26,11 @@ public class ContentBrowserPanel {
         setCurrentDirectory(this.assetDirectory);
         directoryIcon = Texture.createFromResource("/Icons/ContentBrowser/DirectoryIcon.png");
         fileIcon = Texture.createFromResource("/Icons/ContentBrowser/FileIcon.png");
+    }
+
+    public void delete() {
+        directoryIcon.delete();
+        fileIcon.delete();
     }
 
     public void setScene(Scene scene) {

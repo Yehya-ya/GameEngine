@@ -48,6 +48,7 @@ public class EditorLayer extends Layer {
     private Scene activeScene;
     private List<Scene> scenesToDeleteNextFrame;
     private BatchRenderer2D renderer;
+    private TextureLibrary textures;
     private Selection selection;
     private Viewport viewport;
     private SceneHierarchyPanel sceneHierarchyPanel;
@@ -69,6 +70,13 @@ public class EditorLayer extends Layer {
     }
 
     @Override
+    public void delete() {
+        iconPlay.delete();
+        iconStop.delete();
+        super.delete();
+    }
+
+    @Override
     public void onAttach() {
         sceneCount = 0;
         scenesToDeleteNextFrame = new ArrayList<>();
@@ -78,9 +86,10 @@ public class EditorLayer extends Layer {
         viewportSize = new Vector2f(0);
 
         FileDialog.setStartDirectory(project.getAssetDirectory());
+        textures = new TextureLibrary();
         selection = new Selection();
         viewport = new Viewport(selection, renderer);
-        sceneHierarchyPanel = new SceneHierarchyPanel(selection);
+        sceneHierarchyPanel = new SceneHierarchyPanel(selection, textures);
         contentBrowserPanel = new ContentBrowserPanel(project.getAssetDirectory());
         sceneState = SceneState.Edit;
     }
@@ -276,7 +285,8 @@ public class EditorLayer extends Layer {
         }
         activeScene = null;
         viewport.delete();
-        TextureLibrary.clear();
+        contentBrowserPanel.delete();
+        textures.delete();
     }
 
     @Override
@@ -356,7 +366,7 @@ public class EditorLayer extends Layer {
     }
 
     public void openActivity(String file) {
-        Scene scene = SceneSerializer.deserialize(file, project);
+        Scene scene = SceneSerializer.deserialize(file, project, textures);
         if (scene != null) {
             setEditorScene(scene);
         }

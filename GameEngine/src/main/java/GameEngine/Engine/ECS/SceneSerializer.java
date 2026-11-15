@@ -5,6 +5,8 @@ import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 
 import GameEngine.Engine.Core.Project;
 import GameEngine.Engine.ECS.Components.TagComponent;
+import GameEngine.Engine.Renderer.TextureLibrary;
+import GameEngine.Engine.Renderer.TextureLoadException;
 import com.artemis.Component;
 import com.artemis.utils.IntBag;
 import java.io.*;
@@ -49,7 +51,7 @@ public class SceneSerializer {
         YH_LOG_TRACE("Successfully serialized the scene.");
     }
 
-    public static @Nullable Scene deserialize(String path, @NotNull Project project) {
+    public static @Nullable Scene deserialize(String path, @NotNull Project project, @NotNull TextureLibrary textures) {
         SceneData sceneData;
         try (InputStream targetStream = new FileInputStream(path)) {
             sceneData = new Yaml(new SceneDataConstructor()).load(targetStream);
@@ -69,15 +71,16 @@ public class SceneSerializer {
         }
 
         Scene scene = new Scene(sceneData.title, path);
+        SceneAssets assets = new SceneAssets(project, textures);
         try {
             for (EntityData entityData : sceneData.entities) {
                 Entity entity = scene.emptyEntity();
                 for (Object componentData : entityData.components) {
-                    entity.addComponent(ComponentTypes.ofData(componentData).load(componentData, project));
+                    entity.addComponent(ComponentTypes.ofData(componentData).load(componentData, assets));
                 }
             }
-        } catch (IllegalArgumentException e) {
-            YH_LOG_ERROR("failed to deserialize the scene. The file `{}` is not a valid scene.", path);
+        } catch (IllegalArgumentException | TextureLoadException e) {
+            YH_LOG_ERROR("failed to deserialize the scene `{}`.", path);
             YH_LOG_ERROR("{}", e.getMessage());
             scene.delete();
             return null;

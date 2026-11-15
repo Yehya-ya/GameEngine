@@ -11,7 +11,7 @@ public record ComponentType<C extends Component, D>(
         Class<D> dataClass,
         UnaryOperator<C> copier,
         BiFunction<C, Project, D> saver,
-        BiFunction<D, Project, C> loader) {
+        BiFunction<D, SceneAssets, C> loader) {
 
     public Component copy(Component component) {
         return copier.apply(componentClass.cast(component));
@@ -21,7 +21,7 @@ public record ComponentType<C extends Component, D>(
         return saver.apply(componentClass.cast(component), project);
     }
 
-    public Component load(Object data, Project project) {
-        return loader.apply(dataClass.cast(data), project);
+    public Component load(Object data, SceneAssets assets) {
+        return loader.apply(dataClass.cast(data), assets);
     }
 }
