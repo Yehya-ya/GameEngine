@@ -39,7 +39,7 @@ public class SceneSerializer {
         }
 
         Representer representer = new SceneDataRepresenter();
-        Yaml yaml = new Yaml(representer);
+        Yaml yaml = new Yaml(representer, new DumperOptions());
         try (FileWriter writer = new FileWriter(path)) {
             yaml.dump(sceneData, writer);
         } catch (IOException e) {

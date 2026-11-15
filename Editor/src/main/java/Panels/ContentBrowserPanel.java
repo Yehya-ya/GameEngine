@@ -66,7 +66,7 @@ public class ContentBrowserPanel {
             boolean isDirectory = file.isDirectory();
             Texture icon = isDirectory ? directoryIcon : fileIcon;
             ImGui.pushStyleColor(ImGuiCol.Button, 0, 0, 0, 0);
-            ImGui.imageButton(icon.getRendererId(), thumbnailSize, thumbnailSize, 0, 1, 1, 0);
+            ImGui.imageButton("##Thumbnail", icon.getRendererId(), thumbnailSize, thumbnailSize, 0, 1, 1, 0);
             if (ImGui.beginDragDropSource()) {
                 ImGui.setDragDropPayload("CONTENT_BROWSER_ITEM", file);
                 ImGui.endDragDropSource();

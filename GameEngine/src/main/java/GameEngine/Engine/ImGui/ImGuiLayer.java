@@ -12,6 +12,7 @@ import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImGuiStyle;
+import imgui.ImVec4;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
@@ -78,11 +79,12 @@ public class ImGuiLayer extends Layer {
 
     @Override
     public void onDetach() {
-        imGuiImplGl3.dispose();
-        imGuiImplGlfw.dispose();
+        imGuiImplGl3.shutdown();
+        imGuiImplGlfw.shutdown();
     }
 
     public void begin() {
+        imGuiImplGl3.newFrame();
         imGuiImplGlfw.newFrame();
         ImGui.newFrame();
         ImGuizmo.beginFrame();
@@ -113,35 +115,35 @@ public class ImGuiLayer extends Layer {
     }
 
     public void setDarkThemeColors() {
-        float[][] colors = ImGui.getStyle().getColors();
-        colors[ImGuiCol.WindowBg] = new float[] {0.1f, 0.105f, 0.11f, 1.0f};
+        ImVec4[] colors = ImGui.getStyle().getColors();
+        colors[ImGuiCol.WindowBg] = new ImVec4(0.1f, 0.105f, 0.11f, 1.0f);
 
         // Headers
-        colors[ImGuiCol.Header] = new float[] {0.2f, 0.205f, 0.21f, 1.0f};
-        colors[ImGuiCol.HeaderHovered] = new float[] {0.3f, 0.305f, 0.31f, 1.0f};
-        colors[ImGuiCol.HeaderActive] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol.Header] = new ImVec4(0.2f, 0.205f, 0.21f, 1.0f);
+        colors[ImGuiCol.HeaderHovered] = new ImVec4(0.3f, 0.305f, 0.31f, 1.0f);
+        colors[ImGuiCol.HeaderActive] = new ImVec4(0.15f, 0.1505f, 0.151f, 1.0f);
 
         // Buttons
-        colors[ImGuiCol.Button] = new float[] {0.2f, 0.205f, 0.21f, 1.0f};
-        colors[ImGuiCol.ButtonHovered] = new float[] {0.3f, 0.305f, 0.31f, 1.0f};
-        colors[ImGuiCol.ButtonActive] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol.Button] = new ImVec4(0.2f, 0.205f, 0.21f, 1.0f);
+        colors[ImGuiCol.ButtonHovered] = new ImVec4(0.3f, 0.305f, 0.31f, 1.0f);
+        colors[ImGuiCol.ButtonActive] = new ImVec4(0.15f, 0.1505f, 0.151f, 1.0f);
 
         // Frame BG
-        colors[ImGuiCol.FrameBg] = new float[] {0.2f, 0.205f, 0.21f, 1.0f};
-        colors[ImGuiCol.FrameBgHovered] = new float[] {0.3f, 0.305f, 0.31f, 1.0f};
-        colors[ImGuiCol.FrameBgActive] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol.FrameBg] = new ImVec4(0.2f, 0.205f, 0.21f, 1.0f);
+        colors[ImGuiCol.FrameBgHovered] = new ImVec4(0.3f, 0.305f, 0.31f, 1.0f);
+        colors[ImGuiCol.FrameBgActive] = new ImVec4(0.15f, 0.1505f, 0.151f, 1.0f);
 
         // Tabs
-        colors[ImGuiCol.Tab] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
-        colors[ImGuiCol.TabHovered] = new float[] {0.38f, 0.3805f, 0.381f, 1.0f};
-        colors[ImGuiCol.TabActive] = new float[] {0.28f, 0.2805f, 0.281f, 1.0f};
-        colors[ImGuiCol.TabUnfocused] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
-        colors[ImGuiCol.TabUnfocusedActive] = new float[] {0.2f, 0.205f, 0.21f, 1.0f};
+        colors[ImGuiCol.Tab] = new ImVec4(0.15f, 0.1505f, 0.151f, 1.0f);
+        colors[ImGuiCol.TabHovered] = new ImVec4(0.38f, 0.3805f, 0.381f, 1.0f);
+        colors[ImGuiCol.TabSelected] = new ImVec4(0.28f, 0.2805f, 0.281f, 1.0f);
+        colors[ImGuiCol.TabDimmed] = new ImVec4(0.15f, 0.1505f, 0.151f, 1.0f);
+        colors[ImGuiCol.TabDimmedSelected] = new ImVec4(0.2f, 0.205f, 0.21f, 1.0f);
 
         // Title
-        colors[ImGuiCol.TitleBg] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
-        colors[ImGuiCol.TitleBgActive] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
-        colors[ImGuiCol.TitleBgCollapsed] = new float[] {0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol.TitleBg] = new ImVec4(0.15f, 0.1505f, 0.151f, 1.0f);
+        colors[ImGuiCol.TitleBgActive] = new ImVec4(0.15f, 0.1505f, 0.151f, 1.0f);
+        colors[ImGuiCol.TitleBgCollapsed] = new ImVec4(0.15f, 0.1505f, 0.151f, 1.0f);
 
         ImGui.getStyle().setColors(colors);
     }

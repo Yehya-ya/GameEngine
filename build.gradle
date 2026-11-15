@@ -1,5 +1,16 @@
 plugins {
     alias(libs.plugins.spotless)
+    alias(libs.plugins.gradle.versions)
+}
+
+def isUnstableVersion = { String version ->
+    def hasStableKeyword = ['RELEASE', 'FINAL', 'GA'].any { keyword -> version.toUpperCase().contains(keyword) }
+    !hasStableKeyword && !(version ==~ /^[0-9,.v-]+(-r)?$/)
+}
+
+tasks.named('dependencyUpdates').configure {
+    gradleReleaseChannel = 'current'
+    rejectVersionIf { isUnstableVersion(it.candidate.version) && !isUnstableVersion(it.currentVersion) }
 }
 
 spotless {

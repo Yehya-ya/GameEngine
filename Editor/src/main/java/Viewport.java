@@ -220,9 +220,9 @@ public class Viewport {
         float snapValue = gizmoOperation == Operation.ROTATE ? rotateSnapDegrees : translateAndScaleSnap;
         float[] snapValues = {snapValue, snapValue, snapValue};
         if (snap) {
-            ImGuizmo.manipulate(view, projection, transformation, gizmoOperation, Mode.LOCAL, snapValues);
+            ImGuizmo.manipulate(view, projection, gizmoOperation, Mode.LOCAL, transformation, null, snapValues);
         } else {
-            ImGuizmo.manipulate(view, projection, transformation, gizmoOperation, Mode.LOCAL);
+            ImGuizmo.manipulate(view, projection, gizmoOperation, Mode.LOCAL, transformation);
         }
         if (ImGuizmo.isUsing()) {
             float[] translate = new float[3];

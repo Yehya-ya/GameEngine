@@ -19,11 +19,13 @@ import Panels.ContentBrowserPanel;
 import Panels.SceneHierarchyPanel;
 import Panels.Selection;
 import Utils.FileDialog;
+import Utils.FileDialog.FileTypes;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImGuiViewport;
 import imgui.ImGuiWindowClass;
 import imgui.ImVec2;
+import imgui.ImVec4;
 import imgui.flag.*;
 import imgui.type.ImBoolean;
 import java.io.File;
@@ -35,7 +37,7 @@ public class EditorLayer extends Layer {
     public static final String ViewportWindowName = "Viewport";
     public static final String StatsWindowName = "Stats";
     public static final String ToolbarWindowName = "##toolbar";
-    private static final String sceneFileTypes = "scene file(*.yaml){.yaml}";
+    private static final FileTypes sceneFileTypes = new FileTypes("Scene files", List.of(".yaml"));
     private static final String untitledSceneFile = "untitled.yaml";
     private final Project project;
     private double average;
@@ -214,7 +216,6 @@ public class EditorLayer extends Layer {
             ImGui.endMenuBar();
         }
 
-        fileDialog.onImGuiRender();
         sceneHierarchyPanel.onImGuiRender();
         contentBrowserPanel.onImGuiRender();
 
@@ -405,12 +406,13 @@ public class EditorLayer extends Layer {
     public void uiToolbar() {
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 2);
         ImGui.pushStyleVar(ImGuiStyleVar.ItemInnerSpacing, 0, 0);
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
         ImGui.pushStyleColor(ImGuiCol.Button, 0, 0, 0, 0);
-        float[][] colors = ImGui.getStyle().getColors();
-        float[] buttonHovered = colors[ImGuiCol.ButtonHovered];
-        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, buttonHovered[0], buttonHovered[1], buttonHovered[2], 0.5f);
-        float[] buttonActive = colors[ImGuiCol.ButtonActive];
-        ImGui.pushStyleColor(ImGuiCol.ButtonActive, buttonActive[0], buttonActive[1], buttonActive[2], 0.5f);
+        ImVec4[] colors = ImGui.getStyle().getColors();
+        ImVec4 buttonHovered = colors[ImGuiCol.ButtonHovered];
+        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f);
+        ImVec4 buttonActive = colors[ImGuiCol.ButtonActive];
+        ImGui.pushStyleColor(ImGuiCol.ButtonActive, buttonActive.x, buttonActive.y, buttonActive.z, 0.5f);
 
         ImGui.setNextWindowClass(toolbarWindowClass);
         ImGui.begin(
@@ -424,11 +426,11 @@ public class EditorLayer extends Layer {
         float size = ImGui.getWindowHeight() - 4.0f;
         Texture icon = sceneState == SceneState.Edit ? iconPlay : iconStop;
         ImGui.setCursorPosX((ImGui.getWindowContentRegionMaxX() * 0.5f) - (size * 0.5f));
-        if (ImGui.imageButton(icon.getRendererId(), size, size, 0, 0, 1, 1, 0)) {
+        if (ImGui.imageButton("##SceneState", icon.getRendererId(), size, size, 0, 0, 1, 1)) {
             if (sceneState == SceneState.Edit) onScenePlay();
             else if (sceneState == SceneState.Play) onSceneStop();
         }
-        ImGui.popStyleVar(2);
+        ImGui.popStyleVar(3);
         ImGui.popStyleColor(3);
         ImGui.end();
     }

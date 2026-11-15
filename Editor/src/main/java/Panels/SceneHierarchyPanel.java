@@ -14,6 +14,7 @@ import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
 import GameEngine.Engine.Renderer.Texture;
 import GameEngine.Engine.Renderer.TextureLoadException;
 import Utils.FileDialog;
+import Utils.FileDialog.FileTypes;
 import com.artemis.utils.IntBag;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -30,7 +31,7 @@ import org.joml.Vector3f;
 public class SceneHierarchyPanel {
     public static final String HierarchyWindowName = "Scene Hierarchy";
     public static final String PropertiesWindowName = "Properties";
-    private static final String imageFileTypes = "Images{" + String.join(",", Texture.ImageExtensions) + "}";
+    private static final FileTypes imageFileTypes = new FileTypes("Images", Texture.ImageExtensions);
     private final Selection selection;
     private final List<ComponentEditor<?>> componentEditors = List.of(
             new ComponentEditor<>(
@@ -257,7 +258,7 @@ public class SceneHierarchyPanel {
     private boolean drawTextureButton(@NotNull SpriteComponent spriteComponent) {
         boolean isTextureChosen = spriteComponent.texture != null;
         if (isTextureChosen) {
-            return ImGui.imageButton(spriteComponent.texture.getRendererId(), 50, 50);
+            return ImGui.imageButton("##SpriteTexture", spriteComponent.texture.getRendererId(), 50, 50);
         }
         return ImGui.button("Choose texture");
     }

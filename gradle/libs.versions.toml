@@ -1,13 +1,15 @@
 [versions]
-lwjgl = "3.3.6"
-imgui = "1.86.10"
-joml = "1.10.5"
+lwjgl = "3.4.3"
+imgui = "1.92.7.1"
+joml = "1.10.9"
 artemis = "2.3.0"
-snakeyaml = "2.0"
-log4j = "2.20.0"
-jetbrains-annotations = "24.0.1"
-spotless = "8.9.0"
+snakeyaml = "2.7"
+log4j = "2.26.1"
+jetbrains-annotations = "26.1.0"
+spotless = "8.11.0"
 palantir-java-format = "2.103.0"
+gradle-versions = "0.67.0"
+slf4j = "2.0.20"
 
 [libraries]
 lwjgl-bom = { module = "org.lwjgl:lwjgl-bom", version.ref = "lwjgl" }
@@ -15,13 +17,16 @@ lwjgl-core = { module = "org.lwjgl:lwjgl" }
 lwjgl-glfw = { module = "org.lwjgl:lwjgl-glfw" }
 lwjgl-opengl = { module = "org.lwjgl:lwjgl-opengl" }
 lwjgl-stb = { module = "org.lwjgl:lwjgl-stb" }
+lwjgl-tinyfd = { module = "org.lwjgl:lwjgl-tinyfd" }
 imgui-binding = { module = "io.github.spair:imgui-java-binding", version.ref = "imgui" }
 imgui-lwjgl3 = { module = "io.github.spair:imgui-java-lwjgl3", version.ref = "imgui" }
 joml = { module = "org.joml:joml", version.ref = "joml" }
 artemis = { module = "net.onedaybeard.artemis:artemis-odb", version.ref = "artemis" }
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
-log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "log4j" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
+log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 
 [plugins]
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+gradle-versions = { id = "io.github.ben-manes.versions", version.ref = "gradle-versions" }

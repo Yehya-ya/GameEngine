@@ -1,60 +1,55 @@
 package Utils;
 
-import imgui.extension.imguifiledialog.ImGuiFileDialog;
-import imgui.extension.imguifiledialog.flag.ImGuiFileDialogFlags;
-import imgui.flag.ImGuiWindowFlags;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 public class FileDialog {
-    private static final String dialogKey = "FileDialog";
-    private static final int openFlags =
-            ImGuiFileDialogFlags.HideColumnType | ImGuiFileDialogFlags.DisableCreateDirectoryButton;
-    private static final int saveFlags = openFlags | ImGuiFileDialogFlags.ConfirmOverwrite;
-    private static final int singleFile = 1;
-    private static final long noUserData = 0;
-
     private final Path startDirectory;
-    private Consumer<Path> onFileChosen;
 
     public FileDialog(@NotNull Path startDirectory) {
         this.startDirectory = startDirectory;
     }
 
-    public void openFile(String fileTypes, Consumer<Path> onFileChosen) {
-        show("Choose a file", fileTypes, "", openFlags, onFileChosen);
-    }
-
-    public void saveFile(String fileTypes, String fileName, Consumer<Path> onFileChosen) {
-        show("Save file as", fileTypes, fileName, saveFlags, onFileChosen);
-    }
-
-    public void onImGuiRender() {
-        boolean isFinished = ImGuiFileDialog.display(dialogKey, ImGuiWindowFlags.NoCollapse, 500, 400, 1000, 800);
-        if (!isFinished) {
-            return;
+    public void openFile(@NotNull FileTypes fileTypes, @NotNull Consumer<Path> onFileChosen) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            String chosenFile = TinyFileDialogs.tinyfd_openFileDialog(
+                    "Choose a file", startPath(""), patterns(stack, fileTypes), fileTypes.description(), false);
+            deliver(chosenFile, onFileChosen);
         }
-        Consumer<Path> callback = onFileChosen;
-        Path chosenFile = ImGuiFileDialog.isOk() ? Path.of(ImGuiFileDialog.getFilePathName()) : null;
-        onFileChosen = null;
-        ImGuiFileDialog.close();
+    }
+
+    public void saveFile(@NotNull FileTypes fileTypes, @NotNull String fileName, @NotNull Consumer<Path> onFileChosen) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            String chosenFile = TinyFileDialogs.tinyfd_saveFileDialog(
+                    "Save file as", startPath(fileName), patterns(stack, fileTypes), fileTypes.description());
+            deliver(chosenFile, onFileChosen);
+        }
+    }
+
+    private static PointerBuffer patterns(MemoryStack stack, FileTypes fileTypes) {
+        PointerBuffer patterns = stack.mallocPointer(fileTypes.extensions().size());
+        fileTypes.extensions().forEach(extension -> patterns.put(stack.UTF8("*" + extension)));
+        return patterns.flip();
+    }
+
+    private static void deliver(String chosenFile, Consumer<Path> onFileChosen) {
         if (chosenFile != null) {
-            callback.accept(chosenFile);
+            onFileChosen.accept(Path.of(chosenFile));
         }
     }
 
-    private void show(String title, String fileTypes, String fileName, int flags, Consumer<Path> onFileChosen) {
-        if (ImGuiFileDialog.isOpened(dialogKey)) {
-            return;
-        }
-        this.onFileChosen = onFileChosen;
-        ImGuiFileDialog.openModal(dialogKey, title, fileTypes, startPath(), fileName, singleFile, noUserData, flags);
+    private String startPath(String fileName) {
+        Path directory = Files.isDirectory(startDirectory) ? startDirectory : Path.of("");
+        return directory.toAbsolutePath() + File.separator + fileName;
     }
 
-    private String startPath() {
-        boolean startDirectoryExists = Files.isDirectory(startDirectory);
-        return startDirectoryExists ? startDirectory.toString() : "";
-    }
+    public record FileTypes(
+            @NotNull String description, @NotNull List<String> extensions) {}
 }
