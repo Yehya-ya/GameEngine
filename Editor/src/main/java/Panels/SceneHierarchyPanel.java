@@ -18,7 +18,6 @@ import Utils.FileDialog;
 import com.artemis.utils.IntBag;
 import imgui.ImGui;
 import imgui.ImVec2;
-import imgui.extension.imguifiledialog.ImGuiFileDialog;
 import imgui.flag.*;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
@@ -30,9 +29,9 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 public class SceneHierarchyPanel {
-    public static final long OpenTextureFileDialogId = 201;
     public static final String HierarchyWindowName = "Scene Hierarchy";
     public static final String PropertiesWindowName = "Properties";
+    private static final String imageFileTypes = "Images{" + String.join(",", Texture.ImageExtensions) + "}";
     private final Selection selection;
     private final List<ComponentEditor<?>> componentEditors = List.of(
             new ComponentEditor<>(
@@ -54,11 +53,13 @@ public class SceneHierarchyPanel {
                     SpriteComponent::new,
                     this::drawSprite));
     private final TextureLibrary textures;
+    private final FileDialog fileDialog;
     private Scene scene;
 
-    public SceneHierarchyPanel(Selection selection, TextureLibrary textures) {
+    public SceneHierarchyPanel(Selection selection, TextureLibrary textures, FileDialog fileDialog) {
         this.selection = selection;
         this.textures = textures;
+        this.fileDialog = fileDialog;
     }
 
     public void setScene(Scene scene) {
@@ -236,10 +237,7 @@ public class SceneHierarchyPanel {
             }
 
             if (drawTextureButton(spriteComponent)) {
-                FileDialog.openFile(
-                        OpenTextureFileDialogId,
-                        "JPEG (*.JPG; *.JPEG; *.JPE){.jpg,.jpeg,jpe}PNG (.PNG){.png}",
-                        () -> useTexture(spriteComponent, Path.of(ImGuiFileDialog.getFilePathName())));
+                fileDialog.openFile(imageFileTypes, file -> useTexture(spriteComponent, file));
             }
             if (ImGui.beginDragDropTarget()) {
                 Object payload = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");

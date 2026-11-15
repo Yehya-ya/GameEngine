@@ -1,70 +1,59 @@
 package Utils;
 
-import GameEngine.Engine.Utils.Action;
 import imgui.extension.imguifiledialog.ImGuiFileDialog;
 import imgui.extension.imguifiledialog.flag.ImGuiFileDialogFlags;
 import imgui.flag.ImGuiWindowFlags;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.function.Consumer;
+import org.jetbrains.annotations.NotNull;
 
 public class FileDialog {
+    private static final String dialogKey = "FileDialog";
+    private static final int openFlags =
+            ImGuiFileDialogFlags.HideColumnType | ImGuiFileDialogFlags.DisableCreateDirectoryButton;
+    private static final int saveFlags = openFlags | ImGuiFileDialogFlags.ConfirmOverwrite;
+    private static final int singleFile = 1;
+    private static final long noUserData = 0;
 
-    private static final HashMap<Long, Action> actions = new HashMap<>();
-    private static Path startDirectory = Path.of("");
+    private final Path startDirectory;
+    private Consumer<Path> onFileChosen;
 
-    public static void setStartDirectory(Path directory) {
-        startDirectory = directory;
+    public FileDialog(@NotNull Path startDirectory) {
+        this.startDirectory = startDirectory;
     }
 
-    public static void openFile(long id, String fileTypes, Action action) {
-        ImGuiFileDialog.openModal(
-                "FileDialogKey",
-                "Choose a file",
-                fileTypes,
-                startPath(),
-                "",
-                null,
-                250,
-                1,
-                id,
-                ImGuiFileDialogFlags.HideColumnType | ImGuiFileDialogFlags.DisableCreateDirectoryButton);
-        actions.put(id, action);
+    public void openFile(String fileTypes, Consumer<Path> onFileChosen) {
+        show("Choose a file", fileTypes, "", openFlags, onFileChosen);
     }
 
-    public static void saveFile(long id, String fileTypes, Action action) {
-        saveFile(id, fileTypes, action, "untitled.yaml");
+    public void saveFile(String fileTypes, String fileName, Consumer<Path> onFileChosen) {
+        show("Save file as", fileTypes, fileName, saveFlags, onFileChosen);
     }
 
-    public static void saveFile(long id, String fileTypes, Action action, String fileName) {
-        ImGuiFileDialog.openModal(
-                "FileDialogKey",
-                "Save file as",
-                fileTypes,
-                startPath(),
-                fileName,
-                null,
-                250,
-                1,
-                id,
-                ImGuiFileDialogFlags.HideColumnType
-                        | ImGuiFileDialogFlags.DisableCreateDirectoryButton
-                        | ImGuiFileDialogFlags.ConfirmOverwrite);
-        actions.put(id, action);
-    }
-
-    public static void update() {
-        if (ImGuiFileDialog.display("FileDialogKey", ImGuiWindowFlags.NoCollapse, 500, 400, 1000, 800)) {
-            if (ImGuiFileDialog.isOk()) {
-                long userDatas = ImGuiFileDialog.getUserDatas();
-                actions.get(userDatas).action();
-                actions.remove(userDatas);
-            }
-            ImGuiFileDialog.close();
+    public void onImGuiRender() {
+        boolean isFinished = ImGuiFileDialog.display(dialogKey, ImGuiWindowFlags.NoCollapse, 500, 400, 1000, 800);
+        if (!isFinished) {
+            return;
+        }
+        Consumer<Path> callback = onFileChosen;
+        Path chosenFile = ImGuiFileDialog.isOk() ? Path.of(ImGuiFileDialog.getFilePathName()) : null;
+        onFileChosen = null;
+        ImGuiFileDialog.close();
+        if (chosenFile != null) {
+            callback.accept(chosenFile);
         }
     }
 
-    private static String startPath() {
+    private void show(String title, String fileTypes, String fileName, int flags, Consumer<Path> onFileChosen) {
+        if (ImGuiFileDialog.isOpened(dialogKey)) {
+            return;
+        }
+        this.onFileChosen = onFileChosen;
+        ImGuiFileDialog.openModal(dialogKey, title, fileTypes, startPath(), fileName, singleFile, noUserData, flags);
+    }
+
+    private String startPath() {
         boolean startDirectoryExists = Files.isDirectory(startDirectory);
         return startDirectoryExists ? startDirectory.toString() : "";
     }

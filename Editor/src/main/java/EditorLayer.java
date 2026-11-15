@@ -25,7 +25,6 @@ import imgui.ImGuiIO;
 import imgui.ImGuiViewport;
 import imgui.ImGuiWindowClass;
 import imgui.ImVec2;
-import imgui.extension.imguifiledialog.ImGuiFileDialog;
 import imgui.flag.*;
 import imgui.type.ImBoolean;
 import java.io.File;
@@ -34,11 +33,11 @@ import java.util.List;
 import org.joml.Vector2f;
 
 public class EditorLayer extends Layer {
-    public static final long OpenFileDialogId = 101;
-    public static final long SaveFileDialogId = 102;
     public static final String ViewportWindowName = "Viewport";
     public static final String StatsWindowName = "Stats";
     public static final String ToolbarWindowName = "##toolbar";
+    private static final String sceneFileTypes = "scene file(*.yaml){.yaml}";
+    private static final String untitledSceneFile = "untitled.yaml";
     private final Project project;
     private double average;
     private Vector2f viewportSize;
@@ -49,6 +48,7 @@ public class EditorLayer extends Layer {
     private List<Scene> scenesToDeleteNextFrame;
     private BatchRenderer2D renderer;
     private TextureLibrary textures;
+    private FileDialog fileDialog;
     private Selection selection;
     private Viewport viewport;
     private SceneHierarchyPanel sceneHierarchyPanel;
@@ -85,11 +85,11 @@ public class EditorLayer extends Layer {
 
         viewportSize = new Vector2f(0);
 
-        FileDialog.setStartDirectory(project.getAssetDirectory());
+        fileDialog = new FileDialog(project.getAssetDirectory());
         textures = new TextureLibrary();
         selection = new Selection();
         viewport = new Viewport(selection, renderer);
-        sceneHierarchyPanel = new SceneHierarchyPanel(selection, textures);
+        sceneHierarchyPanel = new SceneHierarchyPanel(selection, textures, fileDialog);
         contentBrowserPanel = new ContentBrowserPanel(project.getAssetDirectory());
         sceneState = SceneState.Edit;
     }
@@ -217,7 +217,7 @@ public class EditorLayer extends Layer {
             ImGui.endMenuBar();
         }
 
-        FileDialog.update();
+        fileDialog.onImGuiRender();
         sceneHierarchyPanel.onImGuiRender();
         contentBrowserPanel.onImGuiRender();
 
@@ -337,9 +337,7 @@ public class EditorLayer extends Layer {
     }
 
     public void open() {
-        FileDialog.openFile(EditorLayer.OpenFileDialogId, "scene file(*.yaml){.yaml}", () -> {
-            openActivity(ImGuiFileDialog.getFilePathName());
-        });
+        fileDialog.openFile(sceneFileTypes, file -> openActivity(file.toString()));
     }
 
     public void save() {
@@ -354,9 +352,7 @@ public class EditorLayer extends Layer {
 
     public void saveAs() {
         if (editorScene != null) {
-            FileDialog.saveFile(EditorLayer.SaveFileDialogId, "scene file(*.yaml){.yaml}", () -> {
-                saveActivity(ImGuiFileDialog.getFilePathName());
-            });
+            fileDialog.saveFile(sceneFileTypes, untitledSceneFile, file -> saveActivity(file.toString()));
         }
     }
 
