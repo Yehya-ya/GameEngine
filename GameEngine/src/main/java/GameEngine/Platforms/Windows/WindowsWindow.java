@@ -53,10 +53,11 @@ public class WindowsWindow extends Window {
         monitorID = glfwGetPrimaryMonitor();
 
         // set input callback handlers
-        glfwSetWindowSizeCallback(
-                windowID,
-                (window, width, height) ->
-                        prop.eventCallBack.invoke(new WindowEvents.WindowResizeEvent(width, height)));
+        glfwSetWindowSizeCallback(windowID, (window, width, height) -> {
+            prop.width = width;
+            prop.height = height;
+            prop.eventCallBack.invoke(new WindowEvents.WindowResizeEvent(width, height));
+        });
         glfwSetWindowCloseCallback(windowID, window -> prop.eventCallBack.invoke(new WindowEvents.WindowCloseEvent()));
 
         // key events
