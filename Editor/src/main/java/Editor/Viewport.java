@@ -85,12 +85,16 @@ public class Viewport {
     }
 
     public void resize(@NotNull Vector2f size) {
+        boolean hasArea = size.x > 0 && size.y > 0;
+        if (!hasArea) {
+            return;
+        }
         FrameBuffer.FrameBufferSpecification specification = frameBuffer.getSpecification();
         if (!size.equals(specification.width, specification.height)) {
             frameBuffer.resize((int) size.x, (int) size.y);
         }
         if (isPlaying) {
-            resizeSceneCameras(size);
+            scene.onViewportResize(size.x, size.y);
         } else {
             editorCamera.setViewportSize(size);
         }
@@ -127,13 +131,6 @@ public class Viewport {
         Entity selectedEntity = selection.getEntity();
         if (!isPlaying && selectedEntity != null && gizmoOperation != noGizmo) {
             drawGizmo(selectedEntity);
-        }
-    }
-
-    private void resizeSceneCameras(Vector2f size) {
-        boolean hasArea = size.x > 0 && size.y > 0;
-        if (hasArea) {
-            scene.onViewportResize(size.x, size.y);
         }
     }
 
