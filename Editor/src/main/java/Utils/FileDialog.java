@@ -4,7 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
@@ -17,19 +17,17 @@ public class FileDialog {
         this.startDirectory = startDirectory;
     }
 
-    public void openFile(@NotNull FileTypes fileTypes, @NotNull Consumer<Path> onFileChosen) {
+    public Optional<Path> openFile(@NotNull FileTypes fileTypes) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            String chosenFile = TinyFileDialogs.tinyfd_openFileDialog(
-                    "Choose a file", startPath(""), patterns(stack, fileTypes), fileTypes.description(), false);
-            deliver(chosenFile, onFileChosen);
+            return toPath(TinyFileDialogs.tinyfd_openFileDialog(
+                    "Choose a file", startPath(""), patterns(stack, fileTypes), fileTypes.description(), false));
         }
     }
 
-    public void saveFile(@NotNull FileTypes fileTypes, @NotNull String fileName, @NotNull Consumer<Path> onFileChosen) {
+    public Optional<Path> saveFile(@NotNull FileTypes fileTypes, @NotNull String fileName) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            String chosenFile = TinyFileDialogs.tinyfd_saveFileDialog(
-                    "Save file as", startPath(fileName), patterns(stack, fileTypes), fileTypes.description());
-            deliver(chosenFile, onFileChosen);
+            return toPath(TinyFileDialogs.tinyfd_saveFileDialog(
+                    "Save file as", startPath(fileName), patterns(stack, fileTypes), fileTypes.description()));
         }
     }
 
@@ -39,10 +37,8 @@ public class FileDialog {
         return patterns.flip();
     }
 
-    private static void deliver(String chosenFile, Consumer<Path> onFileChosen) {
-        if (chosenFile != null) {
-            onFileChosen.accept(Path.of(chosenFile));
-        }
+    private static Optional<Path> toPath(String chosenFile) {
+        return Optional.ofNullable(chosenFile).map(Path::of);
     }
 
     private String startPath(String fileName) {

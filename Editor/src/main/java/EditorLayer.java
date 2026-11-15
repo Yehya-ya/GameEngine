@@ -334,7 +334,7 @@ public class EditorLayer extends Layer {
     }
 
     public void open() {
-        fileDialog.openFile(sceneFileTypes, file -> openActivity(file.toString()));
+        fileDialog.openFile(sceneFileTypes).ifPresent(file -> openActivity(file.toString()));
     }
 
     public void save() {
@@ -349,7 +349,7 @@ public class EditorLayer extends Layer {
 
     public void saveAs() {
         if (editorScene != null) {
-            fileDialog.saveFile(sceneFileTypes, untitledSceneFile, file -> saveActivity(file.toString()));
+            fileDialog.saveFile(sceneFileTypes, untitledSceneFile).ifPresent(file -> saveActivity(file.toString()));
         }
     }
 

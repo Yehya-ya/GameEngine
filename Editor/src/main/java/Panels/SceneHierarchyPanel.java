@@ -235,7 +235,7 @@ public class SceneHierarchyPanel {
             }
 
             if (drawTextureButton(spriteComponent)) {
-                fileDialog.openFile(imageFileTypes, file -> useTexture(spriteComponent, file));
+                fileDialog.openFile(imageFileTypes).ifPresent(file -> useTexture(spriteComponent, file));
             }
             if (ImGui.beginDragDropTarget()) {
                 Object payload = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
