@@ -19,6 +19,8 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 
 public class WindowsWindow extends Window {
+    private static final int requiredOpenGLMajorVersion = 4;
+    private static final int requiredOpenGLMinorVersion = 5;
     private boolean GLFWInitialized;
     private long windowID;
     private long monitorID;
@@ -56,10 +58,14 @@ public class WindowsWindow extends Window {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, BuildType.current().isDebug() ? GLFW_TRUE : GLFW_FALSE);
         // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, requiredOpenGLMajorVersion);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, requiredOpenGLMinorVersion);
 
         // Create the window
         windowID = glfwCreateWindow(prop.width, prop.height, prop.title, NULL, NULL);
-        YH_ASSERT(windowID != NULL, "Failed to create the GLFW window");
+        if (windowID == NULL) {
+            throw new IllegalStateException(missingOpenGLMessage());
+        }
 
         monitorID = glfwGetPrimaryMonitor();
 
@@ -100,6 +106,12 @@ public class WindowsWindow extends Window {
         graphicsContext.init();
         setVSync(false);
         glfwShowWindow(windowID);
+    }
+
+    private static String missingOpenGLMessage() {
+        String requiredVersion = requiredOpenGLMajorVersion + "." + requiredOpenGLMinorVersion;
+        return "Could not open a window with OpenGL " + requiredVersion + ". The graphics card or its driver does not"
+                + " support OpenGL " + requiredVersion + "; updating the graphics driver may help.";
     }
 
     @Override

@@ -42,7 +42,7 @@ The screenshots show a demo level; scene files aren't kept in the repo.
 
 ## Running it
 
-You need a GPU with OpenGL 4.5. The build picks the LWJGL and ImGui native libraries for the system it runs on, but the engine has only been run on Windows, and macOS stops at OpenGL 4.1, so it won't run there.
+You need a GPU with OpenGL 4.5; on a PC without it, the editor stops with a message that says so. The build picks the LWJGL and ImGui native libraries for the system it runs on, but the engine has only been run on Windows, and macOS stops at OpenGL 4.1, so it won't run there.
 
 The project builds and runs on JDK 21. The build sets this with a Gradle toolchain, so Gradle uses an installed JDK 21 or downloads one. Gradle itself needs JDK 17 or newer to start.
 
