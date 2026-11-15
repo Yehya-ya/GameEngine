@@ -5,15 +5,11 @@ import GameEngine.Engine.ECS.Systems.CameraSystem;
 import GameEngine.Engine.ECS.Systems.RenderSystem;
 import GameEngine.Engine.Renderer.BatchRenderer2D;
 import GameEngine.Engine.Renderer.Camera.Camera;
-import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
-import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
 import GameEngine.Engine.Utils.TimeStep;
 import com.artemis.*;
 import com.artemis.utils.IntBag;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 public class Scene {
     private final World engine;
@@ -132,51 +128,7 @@ public class Scene {
     }
 
     private Component copyComponent(Component component) {
-        if (component instanceof IdComponent idComponent) {
-            return new IdComponent(idComponent.id);
-        }
-        if (component instanceof TagComponent tagComponent) {
-            return new TagComponent(tagComponent.name);
-        }
-        if (component instanceof TransformComponent transformComponent) {
-            return new TransformComponent(
-                    new Vector3f(transformComponent.translate),
-                    new Vector3f(transformComponent.size),
-                    new Vector3f(transformComponent.rotation));
-        }
-        if (component instanceof SpriteComponent spriteComponent) {
-            if (spriteComponent.texture != null) {
-                return new SpriteComponent(spriteComponent.texture, spriteComponent.tilingFactor);
-            } else {
-                return new SpriteComponent(new Vector4f(spriteComponent.color));
-            }
-        }
-
-        if (component instanceof CameraComponent cameraComponent) {
-            if (cameraComponent.camera instanceof OrthographicCamera orthographicCamera) {
-                return new CameraComponent(
-                        new OrthographicCamera(
-                                new Vector3f(orthographicCamera.getPosition()),
-                                new Vector3f(orthographicCamera.getRotation()),
-                                orthographicCamera.getAspectRatio(),
-                                orthographicCamera.getNear(),
-                                orthographicCamera.getFar(),
-                                orthographicCamera.getZoomLevel()),
-                        cameraComponent.primary);
-            } else if (cameraComponent.camera instanceof PerspectiveCamera perspectiveCamera) {
-                return new CameraComponent(
-                        new PerspectiveCamera(
-                                new Vector3f(perspectiveCamera.getPosition()),
-                                new Vector3f(perspectiveCamera.getRotation()),
-                                perspectiveCamera.getAspectRatio(),
-                                perspectiveCamera.getNear(),
-                                perspectiveCamera.getFar(),
-                                perspectiveCamera.getFov()),
-                        cameraComponent.primary);
-            }
-        }
-
-        return null;
+        return ComponentTypes.of(component).copy(component);
     }
 
     private Component duplicateComponent(Component component) {

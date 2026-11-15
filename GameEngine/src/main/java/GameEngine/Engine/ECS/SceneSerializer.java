@@ -4,22 +4,16 @@ import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 
 import GameEngine.Engine.Core.Project;
-import GameEngine.Engine.ECS.Components.*;
-import GameEngine.Engine.Renderer.Camera.Camera;
-import GameEngine.Engine.Renderer.Camera.CameraType;
-import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
-import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
-import GameEngine.Engine.Renderer.TextureLibrary;
+import GameEngine.Engine.ECS.Components.TagComponent;
+import com.artemis.Component;
 import com.artemis.utils.IntBag;
 import java.io.*;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
@@ -75,56 +69,18 @@ public class SceneSerializer {
         }
 
         Scene scene = new Scene(sceneData.title, path);
-        for (EntityData entityData : sceneData.entities) {
-            Entity entity = scene.emptyEntity();
-            for (ComponentData componentData : entityData.components) {
-                if (componentData instanceof IdComponentData idComponentData) {
-                    entity.addComponent(new IdComponent(idComponentData.id));
-                }
-
-                if (componentData instanceof TagComponentData tagComponentData) {
-                    entity.addComponent(new TagComponent(tagComponentData.name));
-                }
-
-                if (componentData instanceof TransformComponentData transformComponentData) {
-                    entity.addComponent(new TransformComponent(
-                            transformComponentData.translate,
-                            transformComponentData.size,
-                            transformComponentData.rotation));
-                }
-                if (componentData instanceof CameraComponentData cameraComponentData) {
-                    if (cameraComponentData.cameraData instanceof OrthographicCameraData orthographicCameraData) {
-                        entity.addComponent(new CameraComponent(
-                                new OrthographicCamera(
-                                        orthographicCameraData.position,
-                                        orthographicCameraData.rotation,
-                                        orthographicCameraData.aspectRatio,
-                                        orthographicCameraData.near,
-                                        orthographicCameraData.far,
-                                        orthographicCameraData.zoomLevel),
-                                cameraComponentData.primary));
-                    } else if (cameraComponentData.cameraData instanceof PerspectiveCameraData perspectiveCameraData) {
-                        entity.addComponent(new CameraComponent(
-                                new PerspectiveCamera(
-                                        perspectiveCameraData.position,
-                                        perspectiveCameraData.rotation,
-                                        perspectiveCameraData.aspectRatio,
-                                        perspectiveCameraData.near,
-                                        perspectiveCameraData.far,
-                                        perspectiveCameraData.fov),
-                                cameraComponentData.primary));
-                    }
-                }
-                if (componentData instanceof SpriteComponentData spriteComponentData) {
-                    if (spriteComponentData.texturePath == null) {
-                        entity.addComponent(new SpriteComponent(spriteComponentData.color));
-                    } else {
-                        Path textureFile = project.resolve(spriteComponentData.texturePath);
-                        entity.addComponent(
-                                new SpriteComponent(TextureLibrary.get(textureFile), spriteComponentData.tilingFactor));
-                    }
+        try {
+            for (EntityData entityData : sceneData.entities) {
+                Entity entity = scene.emptyEntity();
+                for (Object componentData : entityData.components) {
+                    entity.addComponent(ComponentTypes.ofData(componentData).load(componentData, project));
                 }
             }
+        } catch (IllegalArgumentException e) {
+            YH_LOG_ERROR("failed to deserialize the scene. The file `{}` is not a valid scene.", path);
+            YH_LOG_ERROR("{}", e.getMessage());
+            scene.delete();
+            return null;
         }
 
         return scene;
@@ -140,7 +96,7 @@ public class SceneSerializer {
     }
 
     private static class EntityData {
-        public List<ComponentData> components;
+        public List<Object> components;
         public int entity;
 
         public EntityData() {
@@ -150,146 +106,12 @@ public class SceneSerializer {
         public EntityData(@NotNull Entity entity, @NotNull Project project) {
             this.entity = entity.getId();
             components = new ArrayList<>();
-            IdComponent idComponent = entity.getComponent(IdComponent.class);
-            if (idComponent != null) {
-                components.add(new IdComponentData(idComponent));
+            for (ComponentType<?, ?> type : ComponentTypes.All) {
+                Component component = entity.getComponent(type.componentClass());
+                if (component != null) {
+                    components.add(type.save(component, project));
+                }
             }
-
-            TagComponent tagComponent = entity.getComponent(TagComponent.class);
-            if (tagComponent != null) {
-                components.add(new TagComponentData(tagComponent));
-            }
-
-            TransformComponent transformComponent = entity.getComponent(TransformComponent.class);
-            if (transformComponent != null) {
-                components.add(new TransformComponentData(transformComponent));
-            }
-
-            CameraComponent cameraComponent = entity.getComponent(CameraComponent.class);
-            if (cameraComponent != null) {
-                components.add(new CameraComponentData(cameraComponent));
-            }
-
-            SpriteComponent spriteComponent = entity.getComponent(SpriteComponent.class);
-            if (spriteComponent != null) {
-                components.add(new SpriteComponentData(spriteComponent, project));
-            }
-        }
-    }
-
-    private abstract static class ComponentData {}
-
-    private static class IdComponentData extends ComponentData {
-        public UUID id;
-
-        public IdComponentData() {}
-
-        public IdComponentData(@NotNull IdComponent idComponent) {
-            this.id = idComponent.id;
-        }
-    }
-
-    private static class TagComponentData extends ComponentData {
-        public String name;
-
-        public TagComponentData() {}
-
-        public TagComponentData(@NotNull TagComponent tagComponent) {
-            this.name = tagComponent.name;
-        }
-    }
-
-    private static class TransformComponentData extends ComponentData {
-        public Vector3f translate;
-        public Vector3f size;
-        public Vector3f rotation;
-
-        public TransformComponentData() {}
-
-        public TransformComponentData(@NotNull TransformComponent transformComponent) {
-            this.translate = transformComponent.translate;
-            this.size = transformComponent.size;
-            this.rotation = transformComponent.rotation;
-        }
-    }
-
-    private static class CameraComponentData extends ComponentData {
-        public boolean primary;
-        public CameraType cameraType;
-        public CameraData cameraData;
-
-        public CameraComponentData() {}
-
-        public CameraComponentData(@NotNull CameraComponent cameraComponent) {
-            this.primary = cameraComponent.primary;
-            this.cameraType = cameraComponent.cameraType;
-            if (cameraComponent.camera instanceof OrthographicCamera orthographicCamera) {
-                this.cameraData = new OrthographicCameraData(orthographicCamera);
-            } else if (cameraComponent.camera instanceof PerspectiveCamera perspectiveCamera) {
-                this.cameraData = new PerspectiveCameraData(perspectiveCamera);
-            }
-        }
-    }
-
-    private static class SpriteComponentData extends ComponentData {
-        public Vector4f color;
-        public float tilingFactor;
-        public String texturePath;
-
-        public SpriteComponentData() {}
-
-        public SpriteComponentData(@NotNull SpriteComponent spriteComponent, @NotNull Project project) {
-            boolean hasTexture = spriteComponent.texture != null;
-            boolean hasTextureFile = hasTexture && spriteComponent.texture.getPath() != null;
-            boolean isBlankTexture = hasTexture && !hasTextureFile;
-            this.color = isBlankTexture ? new Vector4f(1.0f) : spriteComponent.color;
-            this.tilingFactor = spriteComponent.tilingFactor;
-            this.texturePath =
-                    hasTextureFile ? project.toProjectPath(Path.of(spriteComponent.texture.getPath())) : null;
-        }
-    }
-
-    private abstract static class CameraData {
-        public Vector3f position;
-        public Vector3f rotation;
-
-        public float aspectRatio;
-        public float far, near;
-
-        public CameraData() {}
-
-        public CameraData(@NotNull Camera camera) {
-            this.position = camera.getPosition();
-            this.rotation = camera.getRotation();
-            this.aspectRatio = camera.getAspectRatio();
-            this.far = camera.getFar();
-            this.near = camera.getNear();
-        }
-    }
-
-    private static class OrthographicCameraData extends CameraData {
-        public float zoomLevel;
-
-        public OrthographicCameraData() {
-            super();
-        }
-
-        public OrthographicCameraData(OrthographicCamera camera) {
-            super(camera);
-            this.zoomLevel = camera.getZoomLevel();
-        }
-    }
-
-    private static class PerspectiveCameraData extends CameraData {
-        public float fov;
-
-        public PerspectiveCameraData() {
-            super();
-        }
-
-        public PerspectiveCameraData(PerspectiveCamera camera) {
-            super(camera);
-            this.fov = camera.getFov();
         }
     }
 
@@ -298,13 +120,12 @@ public class SceneSerializer {
             super(new DumperOptions());
 
             this.addClassTag(SceneData.class, new Tag("!Scene"));
-            this.addClassTag(IdComponentData.class, new Tag("!IdComponent"));
-            this.addClassTag(TagComponentData.class, new Tag("!TagComponent"));
-            this.addClassTag(TransformComponentData.class, new Tag("!TransformComponent"));
-            this.addClassTag(CameraComponentData.class, new Tag("!CameraComponent"));
-            this.addClassTag(SpriteComponentData.class, new Tag("!SpriteComponent"));
-            this.addClassTag(OrthographicCameraData.class, new Tag("!OrthographicCamera"));
-            this.addClassTag(PerspectiveCameraData.class, new Tag("!PerspectiveCamera"));
+            for (ComponentType<?, ?> type : ComponentTypes.All) {
+                this.addClassTag(type.dataClass(), new Tag(type.fileTag()));
+            }
+            for (Map.Entry<Class<?>, String> nestedData : ComponentTypes.NestedDataTags.entrySet()) {
+                this.addClassTag(nestedData.getKey(), new Tag(nestedData.getValue()));
+            }
             this.addClassTag(UUID.class, new Tag("!UUID"));
         }
     }
@@ -314,13 +135,12 @@ public class SceneSerializer {
             super(new LoaderOptions());
 
             this.addTypeDescription(new TypeDescription(SceneData.class, "!Scene"));
-            this.addTypeDescription(new TypeDescription(IdComponentData.class, "!IdComponent"));
-            this.addTypeDescription(new TypeDescription(TagComponentData.class, "!TagComponent"));
-            this.addTypeDescription(new TypeDescription(TransformComponentData.class, "!TransformComponent"));
-            this.addTypeDescription(new TypeDescription(CameraComponentData.class, "!CameraComponent"));
-            this.addTypeDescription(new TypeDescription(SpriteComponentData.class, "!SpriteComponent"));
-            this.addTypeDescription(new TypeDescription(OrthographicCameraData.class, "!OrthographicCamera"));
-            this.addTypeDescription(new TypeDescription(PerspectiveCameraData.class, "!PerspectiveCamera"));
+            for (ComponentType<?, ?> type : ComponentTypes.All) {
+                this.addTypeDescription(new TypeDescription(type.dataClass(), type.fileTag()));
+            }
+            for (Map.Entry<Class<?>, String> nestedData : ComponentTypes.NestedDataTags.entrySet()) {
+                this.addTypeDescription(new TypeDescription(nestedData.getKey(), nestedData.getValue()));
+            }
             this.addTypeDescription(new TypeDescription(UUID.class, "!UUID"));
         }
     }
