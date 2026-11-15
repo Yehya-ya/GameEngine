@@ -2,9 +2,6 @@ plugins {
     id 'java-library'
 }
 
-group = 'org.example'
-version = '1.0'
-
 def lwjglModules = [libs.lwjgl.core, libs.lwjgl.glfw, libs.lwjgl.opengl, libs.lwjgl.stb]
 
 dependencies {
