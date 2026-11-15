@@ -1,6 +1,7 @@
 package GameEngine.Engine.Core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
@@ -45,5 +46,28 @@ class ProjectTest {
         Project project = new Project(projectDirectory);
 
         assertEquals(projectDirectory.resolve("assets").toAbsolutePath().normalize(), project.getAssetDirectory());
+    }
+
+    @Test
+    void projectInAFolderIsNamedAfterItAndHasNoStartScene() {
+        Project project = new Project(projectDirectory);
+        String folderName = projectDirectory.getFileName().toString();
+
+        assertEquals(folderName, project.getName());
+        assertEquals(
+                projectDirectory
+                        .resolve(folderName + ".geproj")
+                        .toAbsolutePath()
+                        .normalize(),
+                project.getFile());
+        assertNull(project.getStartScene());
+    }
+
+    @Test
+    void projectFileIsNamedAfterTheProject() {
+        Project project = new Project(projectDirectory, "MyGame", "assets/scenes/level1.yaml");
+
+        assertEquals(projectDirectory.resolve("MyGame.geproj").toAbsolutePath().normalize(), project.getFile());
+        assertEquals("assets/scenes/level1.yaml", project.getStartScene());
     }
 }

@@ -93,6 +93,11 @@ public class EditorLayer extends Layer {
         sceneHierarchyPanel = new SceneHierarchyPanel(selection, fileDialog);
         contentBrowserPanel = new ContentBrowserPanel(project.getAssetDirectory());
         sceneState = SceneState.Edit;
+
+        String startScene = project.getStartScene();
+        if (startScene != null) {
+            openActivity(project.resolve(startScene).toString());
+        }
     }
 
     @Override

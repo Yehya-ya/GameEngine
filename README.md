@@ -50,13 +50,21 @@ The project builds and runs on JDK 21. The build sets this with a Gradle toolcha
 From a terminal in the project root:
 
 ```
-.\gradlew.bat :Editor:run --args="C:\path\to\MyProject"
+.\gradlew.bat :Editor:run --args="C:\path\to\MyGame"
 .\gradlew.bat :SandBox:run
 ```
 
-The editor opens a project folder, given as its first argument. Projects live outside this repository. A project is a folder with an `assets` folder: textures, scenes and the content browser all live there, and scenes store texture paths relative to the project, so a project can be moved or shared. Without an argument the editor uses the current folder as the project.
+The editor opens the project given as its first argument: a project file, or the folder that holds it. Without an argument it looks in the current folder. Projects live outside this repository.
 
-In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Editor/Main.java` with a project folder as the program argument. Run `SandBox/src/main/java/Main.java` as it is. The engine's shaders, the editor's icons and the sandbox's textures are packed into each module's jar, so neither app needs a particular working directory.
+A project is a folder with a project file named after the project, such as `MyGame.geproj`, and an `assets` folder. Textures, scenes and the content browser all live in `assets`, and scenes store texture paths relative to the project, so a project can be moved or shared. The project file is YAML and names the scene the editor opens first:
+
+```
+startScene: assets/scenes/level1.yaml
+```
+
+To start a project, make its folder with an `assets` folder and an empty project file.
+
+In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Editor/Main.java` with a project file or folder as the program argument. Run `SandBox/src/main/java/Main.java` as it is. The engine's shaders, the editor's icons and the sandbox's textures are packed into each module's jar, so neither app needs a particular working directory.
 
 ## Packaging the editor
 
@@ -64,7 +72,7 @@ In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Ed
 .\gradlew.bat :Editor:jpackage
 ```
 
-This builds `Editor/build/package/Editor`, a folder with `Editor.exe` and its own Java runtime, so it runs on machines without Java. Copy the whole folder. Pass a project folder to it the same way, e.g. `Editor.exe C:\path\to\MyProject`. On Windows a console window opens next to the editor and shows the log.
+This builds `Editor/build/package/Editor`, a folder with `Editor.exe` and its own Java runtime, so it runs on machines without Java. Copy the whole folder. Pass a project to it the same way, e.g. `Editor.exe C:\path\to\MyGame`. On Windows a console window opens next to the editor and shows the log.
 
 The runtime holds only the Java modules the editor's libraries use, listed as `runtimeModules` in `Editor/build.gradle`, so the folder is about 90 MB instead of 160 MB. After adding a library, run the task and compare that list with the last line of:
 
