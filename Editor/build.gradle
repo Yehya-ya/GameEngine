@@ -19,3 +19,35 @@ application {
 tasks.named('run') {
     args = [rootProject.file('SampleProject').path]
 }
+
+def isWindows = rootProject.nativePlatform == 'windows'
+def jpackageExecutable = javaToolchains.launcherFor(java.toolchain).map { launcher ->
+    launcher.metadata.installationPath.file('bin/jpackage').asFile.path
+}
+
+tasks.register('jpackage', Exec) {
+    def libraryDirectory = new File(tasks.named('installDist', Sync).get().destinationDir, 'lib')
+    def packageDirectory = layout.buildDirectory.dir('package').get().asFile
+
+    group = 'distribution'
+    description = 'Packages the editor as an app folder with its own Java runtime, in build/package.'
+    dependsOn 'installDist'
+    inputs.dir(libraryDirectory)
+    outputs.dir(packageDirectory)
+
+    executable = jpackageExecutable.get()
+    args '--type', 'app-image',
+            '--name', project.name,
+            '--app-version', project.version,
+            '--input', libraryDirectory,
+            '--main-jar', tasks.named('jar', Jar).get().archiveFileName.get(),
+            '--main-class', application.mainClass.get(),
+            '--dest', packageDirectory
+    if (isWindows) {
+        args '--win-console'
+    }
+
+    doFirst {
+        packageDirectory.deleteDir()
+    }
+}

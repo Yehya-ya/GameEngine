@@ -58,6 +58,16 @@ The editor opens a project folder, given as its first argument; `:Editor:run` op
 
 In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Editor/Main.java` with `SampleProject` as the program argument. Run `SandBox/src/main/java/Main.java` as it is. The engine's shaders, the editor's icons and the sandbox's textures are packed into each module's jar, so neither app needs a particular working directory.
 
+## Packaging the editor
+
+```
+.\gradlew.bat :Editor:jpackage
+```
+
+This builds `Editor/build/package/Editor`, a folder with `Editor.exe` and its own Java runtime, so it runs on machines without Java. Copy the whole folder. Pass a project folder to it the same way, e.g. `Editor.exe C:\path\to\SampleProject`. On Windows a console window opens next to the editor and shows the log.
+
+The package only holds the native libraries for the system that built it, so build it on Linux to get a Linux version. `.\gradlew.bat :Editor:distZip` makes a smaller zip without a Java runtime, for machines that have Java 21 installed.
+
 ## Project layout
 
 - `GameEngine/src/main/resources/engine/`: shaders the renderer needs.
