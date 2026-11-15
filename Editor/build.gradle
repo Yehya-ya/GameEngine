@@ -9,7 +9,7 @@ version = '1.0'
 dependencies {
     implementation project(':GameEngine')
     implementation libs.lwjgl.tinyfd
-    runtimeOnly variantOf(libs.lwjgl.tinyfd) { classifier(lwjglNatives) }
+    runtimeOnly variantOf(libs.lwjgl.tinyfd) { classifier(rootProject.lwjglNatives) }
 }
 
 application {
