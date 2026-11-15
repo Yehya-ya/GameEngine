@@ -2,8 +2,12 @@ package GameEngine.Platforms.Windows;
 
 import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_WARN;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.stb.STBImage.stbi_failure_reason;
+import static org.lwjgl.stb.STBImage.stbi_image_free;
+import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import GameEngine.Engine.Core.BuildType;
@@ -13,14 +17,21 @@ import GameEngine.Engine.Events.KeyEvent;
 import GameEngine.Engine.Events.MouseEvents;
 import GameEngine.Engine.Events.WindowEvents;
 import GameEngine.Engine.Renderer.GraphicsContext;
+import GameEngine.Engine.Utils.Resources;
 import GameEngine.Platforms.OpenGL.OpenGLContext;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 public class WindowsWindow extends Window {
     private static final int requiredOpenGLMajorVersion = 4;
     private static final int requiredOpenGLMinorVersion = 5;
+    private static final int rgbaChannels = 4;
     private boolean GLFWInitialized;
     private long windowID;
     private long monitorID;
@@ -106,6 +117,29 @@ public class WindowsWindow extends Window {
         graphicsContext.init();
         setVSync(false);
         glfwShowWindow(windowID);
+    }
+
+    @Override
+    public void setIcon(@NotNull String resourceName) {
+        byte[] encodedImage = Resources.readBytes(resourceName);
+        ByteBuffer encodedBuffer =
+                MemoryUtil.memAlloc(encodedImage.length).put(encodedImage).flip();
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            IntBuffer width = stack.mallocInt(1);
+            IntBuffer height = stack.mallocInt(1);
+            IntBuffer channelsInFile = stack.mallocInt(1);
+            ByteBuffer pixels = stbi_load_from_memory(encodedBuffer, width, height, channelsInFile, rgbaChannels);
+            if (pixels == null) {
+                YH_LOG_WARN("Could not load the window icon `{}`: {}", resourceName, stbi_failure_reason());
+                return;
+            }
+            GLFWImage.Buffer icons = GLFWImage.malloc(1, stack);
+            icons.get(0).set(width.get(0), height.get(0), pixels);
+            glfwSetWindowIcon(windowID, icons);
+            stbi_image_free(pixels);
+        } finally {
+            MemoryUtil.memFree(encodedBuffer);
+        }
     }
 
     private static String missingOpenGLMessage() {

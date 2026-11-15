@@ -16,12 +16,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class Editor extends Application implements ProjectSwitcher {
     public static final String applicationName = "Editor";
+    private static final String appIconResource = "/Icons/AppIcon.png";
     private final RecentProjects recentProjects;
     private final ImGuiLayer imGuiLayer;
     private @Nullable Layer projectLayer;
 
     public Editor(@NotNull RecentProjects recentProjects, @Nullable Project project) {
         super(applicationName);
+        getWindow().setIcon(appIconResource);
         this.recentProjects = recentProjects;
         imGuiLayer = new ImGuiLayer(getWindow().getWindowID(), SettingsDirectory.file(applicationName, "imgui.ini"));
         pushOverlay(imGuiLayer);

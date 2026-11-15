@@ -32,6 +32,7 @@ tasks.named('startScripts', CreateStartScripts) {
 }
 
 def isWindows = rootProject.nativePlatform == 'windows'
+def appIcon = file(isWindows ? 'jpackage/Editor.ico' : 'jpackage/Editor.png')
 def runtimeModules = [
     'java.base',
     'java.compiler',
@@ -56,6 +57,7 @@ tasks.register('jpackage', Exec) {
     dependsOn 'installDist'
     inputs.dir(libraryDirectory)
     inputs.files(licenseFiles)
+    inputs.file(appIcon)
     outputs.dir(packageDirectory)
 
     executable = jpackageExecutable.get()
@@ -68,6 +70,7 @@ tasks.register('jpackage', Exec) {
             '--add-modules', runtimeModules.join(','),
             '--java-options', releaseBuildOption,
             '--app-content', licenseFiles.join(','),
+            '--icon', appIcon,
             '--dest', packageDirectory
     if (isWindows) {
         args '--win-console'

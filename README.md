@@ -89,7 +89,8 @@ The package only holds the native libraries for the system that built it, so bui
 ## Project layout
 
 - `GameEngine/src/main/resources/engine/`: shaders the renderer needs.
-- `Editor/src/main/resources/Icons/`: editor icons.
+- `Editor/src/main/resources/Icons/`: editor icons, including `AppIcon.png`, the window's icon.
+- `Editor/jpackage/`: the packaged editor's icon, `Editor.ico` for Windows and `Editor.png` for Linux.
 
 On first launch the editor docks its panels into a default layout, and **Window > Reset Layout** restores it. The editor saves its layout per user, to `%APPDATA%\GameEngine\Editor\imgui.ini` on Windows and `~/.config/GameEngine/Editor/imgui.ini` elsewhere. The editor keeps its list of recent projects next to it, in `recent-projects.txt`.
 

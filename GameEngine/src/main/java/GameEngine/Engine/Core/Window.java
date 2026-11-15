@@ -23,6 +23,8 @@ public abstract class Window {
 
     public abstract Input getInput();
 
+    public abstract void setIcon(@NotNull String resourceName);
+
     protected abstract void init();
 
     protected abstract void shutdown();
