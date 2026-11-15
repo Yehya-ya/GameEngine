@@ -5,11 +5,7 @@ plugins {
 group = 'org.example'
 version = '1.0'
 
-def operatingSystem = System.getProperty('os.name').toLowerCase()
-def nativePlatform = operatingSystem.contains('windows') ? 'windows' : operatingSystem.contains('mac') ? 'macos' : 'linux'
-def isArm64 = System.getProperty('os.arch') in ['aarch64', 'arm64']
-def lwjglNatives = isArm64 ? "natives-$nativePlatform-arm64" : "natives-$nativePlatform"
-def lwjglModules = [libs.lwjgl.core, libs.lwjgl.glfw, libs.lwjgl.opengl, libs.lwjgl.stb, libs.lwjgl.tinyfd]
+def lwjglModules = [libs.lwjgl.core, libs.lwjgl.glfw, libs.lwjgl.opengl, libs.lwjgl.stb]
 
 dependencies {
     api platform(libs.lwjgl.bom)
