@@ -40,7 +40,7 @@ public abstract class Camera {
     }
 
     public void setPosition(Vector3f position) {
-        this.position = position;
+        this.position = new Vector3f(position);
         updateViewMatrix();
     }
 
@@ -81,7 +81,7 @@ public abstract class Camera {
     }
 
     public void setRotation(Vector3f rotation) {
-        this.rotation = rotation;
+        this.rotation = new Vector3f(rotation);
         updateViewMatrix();
     }
 
