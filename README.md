@@ -95,6 +95,8 @@ On first launch the editor docks its panels into a default layout, and **Window 
 
 The editor writes its log to `logs\latest.log` in that folder as well, and keeps the logs of the four sessions before it as `previous-1.log` to `previous-4.log`. If something stops the editor, it shows the error in a message box that says where the log is.
 
-## Credits
+## License
 
-The editor's icons in `Editor/src/main/resources/Icons/` come from [TheCherno's Hazel](https://github.com/TheCherno/Hazel), under the [Apache License 2.0](https://github.com/TheCherno/Hazel/blob/master/LICENSE).
+GameEngine is licensed under the [Apache License 2.0](LICENSE). The editor uses third-party libraries under their own licenses; [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) lists them with their license texts. The packaged editor and the zip include both files.
+
+The content browser and toolbar icons in `Editor/src/main/resources/Icons/` come from [TheCherno's Hazel](https://github.com/TheCherno/Hazel), also under the Apache License 2.0.

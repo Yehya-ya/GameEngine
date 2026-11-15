@@ -17,6 +17,15 @@ application {
 }
 
 def releaseBuildOption = '-Dgameengine.build=release'
+def licenseFiles = [rootProject.file('LICENSE'), rootProject.file('THIRD-PARTY-NOTICES.txt')]
+
+distributions {
+    main {
+        contents {
+            from(licenseFiles)
+        }
+    }
+}
 
 tasks.named('startScripts', CreateStartScripts) {
     defaultJvmOpts = [releaseBuildOption]
@@ -46,6 +55,7 @@ tasks.register('jpackage', Exec) {
     description = 'Packages the editor as an app folder with its own Java runtime, in build/package.'
     dependsOn 'installDist'
     inputs.dir(libraryDirectory)
+    inputs.files(licenseFiles)
     outputs.dir(packageDirectory)
 
     executable = jpackageExecutable.get()
@@ -57,6 +67,7 @@ tasks.register('jpackage', Exec) {
             '--main-class', application.mainClass.get(),
             '--add-modules', runtimeModules.join(','),
             '--java-options', releaseBuildOption,
+            '--app-content', licenseFiles.join(','),
             '--dest', packageDirectory
     if (isWindows) {
         args '--win-console'
