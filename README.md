@@ -66,6 +66,8 @@ In the editor, the **File** menu has the scene commands, then **New Project**, *
 
 Before the editor opens another scene or project, or closes, it asks whether to save the scene's changes. **Yes** saves them, asking where for a scene that has never been saved, **No** throws them away and **Cancel** stays.
 
+**Help > About** shows the editor's version, whether it is a debug or release build, its license and the log folder, which **Copy Log Folder** puts on the clipboard for bug reports. The version is set once, in `gradle.properties`.
+
 In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Editor/Main.java` with a project file or folder as the program argument. The engine's shaders and the editor's icons are packed into the jars, so the editor does not need a particular working directory.
 
 `:Editor:run` and runs from the IDE are debug builds: the log shows everything down to TRACE, and OpenGL reports problems through its debug output. The packaged editor and the `distZip` start scripts are release builds: the log keeps INFO and above, and OpenGL debug output is off. The launchers choose this with the JVM option `-Dgameengine.build=release`; add it to a run configuration to try a release build from the IDE.

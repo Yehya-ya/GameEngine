@@ -16,6 +16,15 @@ application {
     mainClass = 'Editor.Main'
 }
 
+def editorVersion = project.version.toString()
+
+tasks.named('processResources', ProcessResources) {
+    inputs.property('version', editorVersion)
+    filesMatching('build-info.properties') {
+        expand(version: editorVersion)
+    }
+}
+
 def releaseBuildOption = '-Dgameengine.build=release'
 def licenseFiles = [rootProject.file('LICENSE'), rootProject.file('THIRD-PARTY-NOTICES.txt')]
 

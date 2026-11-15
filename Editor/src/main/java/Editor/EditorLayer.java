@@ -69,6 +69,7 @@ public class EditorLayer extends Layer {
     private boolean isLayoutResetRequested;
     private final ProjectMenu projectMenu;
     private final SceneChanges sceneChanges;
+    private final AboutWindow aboutWindow;
 
     public EditorLayer(Application application, ImGuiLayer imGuiLayer, Project project, ProjectSwitcher projects) {
         super("EditorLayer");
@@ -78,6 +79,7 @@ public class EditorLayer extends Layer {
         this.project = project;
         projectMenu = new ProjectMenu(project, projects, this::confirmLeavingScene);
         sceneChanges = new SceneChanges(project);
+        aboutWindow = new AboutWindow();
         iconPlay = Texture.createFromResource("/Icons/PlayButton.png");
         iconStop = Texture.createFromResource("/Icons/StopButton.png");
         toolbarWindowClass = new ImGuiWindowClass();
@@ -237,9 +239,16 @@ public class EditorLayer extends Layer {
                 }
                 ImGui.endMenu();
             }
+            if (ImGui.beginMenu("Help")) {
+                if (ImGui.menuItem("About")) {
+                    aboutWindow.open();
+                }
+                ImGui.endMenu();
+            }
 
             ImGui.endMenuBar();
         }
+        aboutWindow.draw();
 
         sceneHierarchyPanel.onImGuiRender();
         contentBrowserPanel.onImGuiRender();
