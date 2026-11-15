@@ -11,7 +11,6 @@ import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
 import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
 import GameEngine.Engine.Renderer.TextureLibrary;
 import Utils.FileDialog;
-import com.artemis.Component;
 import com.artemis.utils.IntBag;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -22,7 +21,7 @@ import imgui.type.ImInt;
 import imgui.type.ImString;
 import java.io.File;
 import java.nio.file.Path;
-import java.util.function.Function;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -31,6 +30,25 @@ public class SceneHierarchyPanel {
     public static final String HierarchyWindowName = "Scene Hierarchy";
     public static final String PropertiesWindowName = "Properties";
     private final Selection selection;
+    private final List<ComponentEditor<?>> componentEditors = List.of(
+            new ComponentEditor<>(
+                    "Transformation Component",
+                    "Transform",
+                    TransformComponent.class,
+                    TransformComponent::new,
+                    this::drawTransform),
+            new ComponentEditor<>(
+                    "Camera Component",
+                    "Camera",
+                    CameraComponent.class,
+                    () -> new CameraComponent(new OrthographicCamera(1.0f)),
+                    this::drawCamera),
+            new ComponentEditor<>(
+                    "Sprite Renderer Component",
+                    "Sprite",
+                    SpriteComponent.class,
+                    SpriteComponent::new,
+                    this::drawSprite));
     private Scene scene;
 
     public SceneHierarchyPanel(Selection selection) {
@@ -76,19 +94,12 @@ public class SceneHierarchyPanel {
             }
 
             if (ImGui.beginPopup("AddComponent")) {
-                if (ImGui.menuItem("Transformation Component")) {
-                    selectedEntity.addComponent(new TransformComponent());
-                    ImGui.closeCurrentPopup();
-                }
-
-                if (ImGui.menuItem("Camera Component")) {
-                    selectedEntity.addComponent(new CameraComponent(new OrthographicCamera(1.0f)));
-                    ImGui.closeCurrentPopup();
-                }
-
-                if (ImGui.menuItem("Sprite Renderer Component")) {
-                    selectedEntity.addComponent(new SpriteComponent());
-                    ImGui.closeCurrentPopup();
+                for (ComponentEditor<?> componentEditor : componentEditors) {
+                    boolean canAdd = !componentEditor.isOn(selectedEntity);
+                    if (canAdd && ImGui.menuItem(componentEditor.menuName())) {
+                        componentEditor.addTo(selectedEntity);
+                        ImGui.closeCurrentPopup();
+                    }
                 }
 
                 ImGui.endPopup();
@@ -130,110 +141,108 @@ public class SceneHierarchyPanel {
             }
         }
 
-        drawEntityComponentProperties("Transform", e, TransformComponent.class, transformComponent -> {
-            drawVector3Editor("Size", transformComponent.size, 1.0f);
-            drawVector3Editor("Transform", transformComponent.translate);
-            Vector3f rotation = transformComponent.getRotationInDegrees();
-            drawVector3Editor("Rotation", rotation);
-            transformComponent.setRotationInDegrees(rotation);
+        for (ComponentEditor<?> componentEditor : componentEditors) {
+            drawComponentProperties(componentEditor, e);
+        }
+    }
 
-            return null;
-        });
+    private void drawTransform(Entity e, TransformComponent transformComponent) {
+        drawVector3Editor("Size", transformComponent.size, 1.0f);
+        drawVector3Editor("Transform", transformComponent.translate);
+        Vector3f rotation = transformComponent.getRotationInDegrees();
+        drawVector3Editor("Rotation", rotation);
+        transformComponent.setRotationInDegrees(rotation);
+    }
 
-        drawEntityComponentProperties("Camera", e, CameraComponent.class, cameraComponent -> {
-            ImBoolean imBoolean = new ImBoolean(cameraComponent.primary);
-            ImGui.checkbox("Primary Camera", imBoolean);
-            cameraComponent.primary = imBoolean.get();
+    private void drawCamera(Entity e, CameraComponent cameraComponent) {
+        ImBoolean imBoolean = new ImBoolean(cameraComponent.primary);
+        ImGui.checkbox("Primary Camera", imBoolean);
+        cameraComponent.primary = imBoolean.get();
 
-            float[] far = new float[] {cameraComponent.camera.getFar()};
-            if (ImGui.dragFloat("Far", far, 0.01f)) {
-                cameraComponent.camera.setFar(far[0]);
+        float[] far = new float[] {cameraComponent.camera.getFar()};
+        if (ImGui.dragFloat("Far", far, 0.01f)) {
+            cameraComponent.camera.setFar(far[0]);
+        }
+
+        float[] near = new float[] {cameraComponent.camera.getNear()};
+        if (ImGui.dragFloat("Near", near, 0.01f)) {
+            cameraComponent.camera.setNear(near[0]);
+        }
+
+        ImInt imInt = new ImInt(cameraComponent.cameraType.ordinal());
+        ImGui.listBox("Type", imInt, new String[] {CameraType.Orthographic.name(), CameraType.Perspective.name()});
+        if (cameraComponent.cameraType != CameraType.getInstanceFromIndex(imInt.get())) {
+            cameraComponent.cameraType = CameraType.getInstanceFromIndex(imInt.get());
+            if (cameraComponent.cameraType == CameraType.Perspective) {
+                cameraComponent.camera = new PerspectiveCamera(
+                        cameraComponent.camera.getAspectRatio(),
+                        ((OrthographicCamera) cameraComponent.camera).getZoomLevel() * 9.0f,
+                        cameraComponent.camera.getNear(),
+                        cameraComponent.camera.getFar());
+            } else if (cameraComponent.cameraType == CameraType.Orthographic) {
+                cameraComponent.camera = new OrthographicCamera(
+                        cameraComponent.camera.getAspectRatio(),
+                        ((PerspectiveCamera) cameraComponent.camera).getFov() / 9.0f,
+                        cameraComponent.camera.getNear(),
+                        cameraComponent.camera.getFar());
+            }
+        }
+
+        if (cameraComponent.camera instanceof OrthographicCamera orthographicCamera) {
+            float[] zoom = new float[] {orthographicCamera.getZoomLevel()};
+            if (ImGui.dragFloat("Zoom", zoom, 0.01f)) {
+                orthographicCamera.setZoomLevel(zoom[0]);
+            }
+        } else if (cameraComponent.camera instanceof PerspectiveCamera perspectiveCamera) {
+            float[] fov = new float[] {perspectiveCamera.getFov()};
+            if (ImGui.dragFloat("Fov", fov, 0.1f)) {
+                perspectiveCamera.setFov(fov[0]);
+            }
+        }
+    }
+
+    private void drawSprite(Entity e, SpriteComponent spriteComponent) {
+        int type = spriteComponent.isTextured ? 1 : 0;
+        ImInt imInt = new ImInt(type);
+        ImGui.listBox("Type", imInt, new String[] {"color", "texture"});
+        if (type != imInt.get()) {
+            if (imInt.get() == 0) {
+                spriteComponent.setToColor();
+            } else if (imInt.get() == 1) {
+                spriteComponent.setToTexture();
+            }
+        }
+
+        if (!spriteComponent.isTextured) {
+            float[] color = new float[] {
+                spriteComponent.color.x, spriteComponent.color.y, spriteComponent.color.z, spriteComponent.color.w
+            };
+            if (ImGui.colorEdit4("Color" + e.getId(), color)) {
+                spriteComponent.color.x = color[0];
+                spriteComponent.color.y = color[1];
+                spriteComponent.color.z = color[2];
+                spriteComponent.color.w = color[3];
+            }
+        } else {
+            float[] tilingFactor = new float[] {spriteComponent.tilingFactor};
+            if (ImGui.dragFloat("Tiling Factor", tilingFactor, 0.1f)) {
+                spriteComponent.tilingFactor = tilingFactor[0];
             }
 
-            float[] near = new float[] {cameraComponent.camera.getNear()};
-            if (ImGui.dragFloat("Near", near, 0.01f)) {
-                cameraComponent.camera.setNear(near[0]);
+            if (drawTextureButton(spriteComponent)) {
+                FileDialog.openFile(
+                        OpenTextureFileDialogId,
+                        "JPEG (*.JPG; *.JPEG; *.JPE){.jpg,.jpeg,jpe}PNG (.PNG){.png}",
+                        () -> spriteComponent.texture = TextureLibrary.get(Path.of(ImGuiFileDialog.getFilePathName())));
             }
-
-            ImInt imInt = new ImInt(cameraComponent.cameraType.ordinal());
-            ImGui.listBox("Type", imInt, new String[] {CameraType.Orthographic.name(), CameraType.Perspective.name()});
-            if (cameraComponent.cameraType != CameraType.getInstanceFromIndex(imInt.get())) {
-                cameraComponent.cameraType = CameraType.getInstanceFromIndex(imInt.get());
-                if (cameraComponent.cameraType == CameraType.Perspective) {
-                    cameraComponent.camera = new PerspectiveCamera(
-                            cameraComponent.camera.getAspectRatio(),
-                            ((OrthographicCamera) cameraComponent.camera).getZoomLevel() * 9.0f,
-                            cameraComponent.camera.getNear(),
-                            cameraComponent.camera.getFar());
-                } else if (cameraComponent.cameraType == CameraType.Orthographic) {
-                    cameraComponent.camera = new OrthographicCamera(
-                            cameraComponent.camera.getAspectRatio(),
-                            ((PerspectiveCamera) cameraComponent.camera).getFov() / 9.0f,
-                            cameraComponent.camera.getNear(),
-                            cameraComponent.camera.getFar());
+            if (ImGui.beginDragDropTarget()) {
+                Object file = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
+                if (file instanceof File) {
+                    spriteComponent.texture = TextureLibrary.get(((File) file).toPath());
                 }
+                ImGui.endDragDropTarget();
             }
-
-            if (cameraComponent.camera instanceof OrthographicCamera orthographicCamera) {
-                float[] zoom = new float[] {orthographicCamera.getZoomLevel()};
-                if (ImGui.dragFloat("Zoom", zoom, 0.01f)) {
-                    orthographicCamera.setZoomLevel(zoom[0]);
-                }
-            } else if (cameraComponent.camera instanceof PerspectiveCamera perspectiveCamera) {
-                float[] fov = new float[] {perspectiveCamera.getFov()};
-                if (ImGui.dragFloat("Fov", fov, 0.1f)) {
-                    perspectiveCamera.setFov(fov[0]);
-                }
-            }
-
-            return null;
-        });
-
-        drawEntityComponentProperties("Sprite", e, SpriteComponent.class, spriteComponent -> {
-            int type = spriteComponent.isTextured ? 1 : 0;
-            ImInt imInt = new ImInt(type);
-            ImGui.listBox("Type", imInt, new String[] {"color", "texture"});
-            if (type != imInt.get()) {
-                if (imInt.get() == 0) {
-                    spriteComponent.setToColor();
-                } else if (imInt.get() == 1) {
-                    spriteComponent.setToTexture();
-                }
-            }
-
-            if (!spriteComponent.isTextured) {
-                float[] color = new float[] {
-                    spriteComponent.color.x, spriteComponent.color.y, spriteComponent.color.z, spriteComponent.color.w
-                };
-                if (ImGui.colorEdit4("Color" + e.getId(), color)) {
-                    spriteComponent.color.x = color[0];
-                    spriteComponent.color.y = color[1];
-                    spriteComponent.color.z = color[2];
-                    spriteComponent.color.w = color[3];
-                }
-            } else {
-                float[] tilingFactor = new float[] {spriteComponent.tilingFactor};
-                if (ImGui.dragFloat("Tiling Factor", tilingFactor, 0.1f)) {
-                    spriteComponent.tilingFactor = tilingFactor[0];
-                }
-
-                if (drawTextureButton(spriteComponent)) {
-                    FileDialog.openFile(
-                            OpenTextureFileDialogId,
-                            "JPEG (*.JPG; *.JPEG; *.JPE){.jpg,.jpeg,jpe}PNG (.PNG){.png}",
-                            () -> spriteComponent.texture =
-                                    TextureLibrary.get(Path.of(ImGuiFileDialog.getFilePathName())));
-                }
-                if (ImGui.beginDragDropTarget()) {
-                    Object file = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
-                    if (file instanceof File) {
-                        spriteComponent.texture = TextureLibrary.get(((File) file).toPath());
-                    }
-                    ImGui.endDragDropTarget();
-                }
-            }
-            return null;
-        });
+        }
     }
 
     private boolean drawTextureButton(@NotNull SpriteComponent spriteComponent) {
@@ -244,14 +253,12 @@ public class SceneHierarchyPanel {
         return ImGui.button("Choose texture");
     }
 
-    private <T extends Component> void drawEntityComponentProperties(
-            String label, @NotNull Entity entity, Class<T> componentType, Function<T, Void> function) {
+    private void drawComponentProperties(@NotNull ComponentEditor<?> componentEditor, @NotNull Entity entity) {
         int flags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.DefaultOpen;
-
-        T component = entity.getComponent(componentType);
-        if (component != null) {
-            if (ImGui.treeNodeEx(label + entity.getId(), flags, label)) {
-                function.apply(component);
+        if (componentEditor.isOn(entity)) {
+            String title = componentEditor.title();
+            if (ImGui.treeNodeEx(title + entity.getId(), flags, title)) {
+                componentEditor.draw(entity);
                 ImGui.treePop();
             }
         }
