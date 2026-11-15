@@ -21,6 +21,17 @@ tasks.named('run') {
 }
 
 def isWindows = rootProject.nativePlatform == 'windows'
+def runtimeModules = [
+    'java.base',
+    'java.compiler',
+    'java.desktop',
+    'java.management',
+    'java.naming',
+    'java.rmi',
+    'java.scripting',
+    'java.sql',
+    'jdk.unsupported',
+]
 def jpackageExecutable = javaToolchains.launcherFor(java.toolchain).map { launcher ->
     launcher.metadata.installationPath.file('bin/jpackage').asFile.path
 }
@@ -42,6 +53,7 @@ tasks.register('jpackage', Exec) {
             '--input', libraryDirectory,
             '--main-jar', tasks.named('jar', Jar).get().archiveFileName.get(),
             '--main-class', application.mainClass.get(),
+            '--add-modules', runtimeModules.join(','),
             '--dest', packageDirectory
     if (isWindows) {
         args '--win-console'

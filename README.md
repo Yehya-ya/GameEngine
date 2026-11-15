@@ -66,6 +66,12 @@ In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Ed
 
 This builds `Editor/build/package/Editor`, a folder with `Editor.exe` and its own Java runtime, so it runs on machines without Java. Copy the whole folder. Pass a project folder to it the same way, e.g. `Editor.exe C:\path\to\SampleProject`. On Windows a console window opens next to the editor and shows the log.
 
+The runtime holds only the Java modules the editor's libraries use, listed as `runtimeModules` in `Editor/build.gradle`, so the folder is about 90 MB instead of 160 MB. After adding a library, run the task and compare that list with the last line of:
+
+```
+jdeps --print-module-deps --ignore-missing-deps --multi-release 21 (Get-ChildItem Editor\build\install\Editor\lib\*.jar).FullName
+```
+
 The package only holds the native libraries for the system that built it, so build it on Linux to get a Linux version. `.\gradlew.bat :Editor:distZip` makes a smaller zip without a Java runtime, for machines that have Java 21 installed.
 
 ## Project layout
