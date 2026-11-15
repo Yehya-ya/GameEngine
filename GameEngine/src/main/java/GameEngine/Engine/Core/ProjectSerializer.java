@@ -95,7 +95,7 @@ public final class ProjectSerializer {
         }
 
         Path absoluteFile = file.toAbsolutePath().normalize();
-        return new Project(absoluteFile.getParent(), projectNameOf(absoluteFile), (String) startScene);
+        return new Project(absoluteFile.getParent(), Project.nameFromFile(absoluteFile), (String) startScene);
     }
 
     public static @NotNull List<Path> findProjectFiles(@NotNull Path directory) {
@@ -115,10 +115,5 @@ public final class ProjectSerializer {
 
     private static boolean hasProjectExtension(@NotNull Path file) {
         return file.getFileName().toString().endsWith(Project.fileExtension);
-    }
-
-    private static @NotNull String projectNameOf(@NotNull Path file) {
-        String fileName = file.getFileName().toString();
-        return fileName.substring(0, fileName.length() - Project.fileExtension.length());
     }
 }

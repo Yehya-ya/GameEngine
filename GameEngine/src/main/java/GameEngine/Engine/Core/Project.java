@@ -23,6 +23,12 @@ public final class Project {
         this.startScene = startScene;
     }
 
+    public static @NotNull String nameFromFile(@NotNull Path projectFile) {
+        String fileName = projectFile.getFileName().toString();
+        boolean hasProjectExtension = fileName.endsWith(fileExtension);
+        return hasProjectExtension ? fileName.substring(0, fileName.length() - fileExtension.length()) : fileName;
+    }
+
     public @NotNull String getName() {
         return name;
     }

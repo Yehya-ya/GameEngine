@@ -50,11 +50,11 @@ The project builds and runs on JDK 21. The build sets this with a Gradle toolcha
 From a terminal in the project root:
 
 ```
-.\gradlew.bat :Editor:run --args="C:\path\to\MyGame"
+.\gradlew.bat :Editor:run
 .\gradlew.bat :SandBox:run
 ```
 
-The editor opens the project given as its first argument: a project file, or the folder that holds it. Without an argument it looks in the current folder. Projects live outside this repository.
+The editor opens the project you last worked on. The first time, or when that project is gone, it shows a project picker with your recent projects and buttons to open a project or make a new one. To open a particular project, pass its project file, or the folder that holds it, as the first argument, e.g. `.\gradlew.bat :Editor:run --args="C:\path\to\MyGame"`. Projects live outside this repository.
 
 A project is a folder with a project file named after the project, such as `MyGame.geproj`, and an `assets` folder. Textures, scenes and the content browser all live in `assets`, and scenes store texture paths relative to the project, so a project can be moved or shared. The project file is YAML and names the scene the editor opens first:
 
@@ -62,7 +62,7 @@ A project is a folder with a project file named after the project, such as `MyGa
 startScene: assets/scenes/level1.yaml
 ```
 
-To start a project, make its folder with an `assets` folder and an empty project file.
+**New Project** in the picker asks for an empty folder and makes the project file, `assets/scenes` and `assets/textures` in it. The project takes the folder's name. In a folder that already has an `assets` folder, it keeps the assets and adds the project file.
 
 In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Editor/Main.java` with a project file or folder as the program argument. Run `SandBox/src/main/java/Main.java` as it is. The engine's shaders, the editor's icons and the sandbox's textures are packed into each module's jar, so neither app needs a particular working directory.
 
@@ -72,7 +72,7 @@ In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Ed
 .\gradlew.bat :Editor:jpackage
 ```
 
-This builds `Editor/build/package/Editor`, a folder with `Editor.exe` and its own Java runtime, so it runs on machines without Java. Copy the whole folder. Pass a project to it the same way, e.g. `Editor.exe C:\path\to\MyGame`. On Windows a console window opens next to the editor and shows the log.
+This builds `Editor/build/package/Editor`, a folder with `Editor.exe` and its own Java runtime, so it runs on machines without Java. Copy the whole folder. Started by itself it opens the last project or the picker, and it takes a project the same way, e.g. `Editor.exe C:\path\to\MyGame`. On Windows a console window opens next to the editor and shows the log.
 
 The runtime holds only the Java modules the editor's libraries use, listed as `runtimeModules` in `Editor/build.gradle`, so the folder is about 90 MB instead of 160 MB. After adding a library, run the task and compare that list with the last line of:
 
@@ -88,4 +88,4 @@ The package only holds the native libraries for the system that built it, so bui
 - `Editor/src/main/resources/Icons/`: editor icons.
 - `SandBox/src/main/resources/`: the sandbox's textures and shaders.
 
-On first launch the editor docks its panels into a default layout, and **Window > Reset Layout** restores it. Each app saves its layout per user in its own folder, to `%APPDATA%\GameEngine\Editor\imgui.ini` on Windows and `~/.config/GameEngine/Editor/imgui.ini` elsewhere (`SandBox` for the sandbox).
+On first launch the editor docks its panels into a default layout, and **Window > Reset Layout** restores it. Each app saves its layout per user in its own folder, to `%APPDATA%\GameEngine\Editor\imgui.ini` on Windows and `~/.config/GameEngine/Editor/imgui.ini` elsewhere (`SandBox` for the sandbox). The editor keeps its list of recent projects next to it, in `recent-projects.txt`.

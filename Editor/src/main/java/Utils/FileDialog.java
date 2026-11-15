@@ -31,6 +31,10 @@ public class FileDialog {
         }
     }
 
+    public Optional<Path> selectFolder(@NotNull String title) {
+        return toPath(TinyFileDialogs.tinyfd_selectFolderDialog(title, startPath("")));
+    }
+
     private static PointerBuffer patterns(MemoryStack stack, FileTypes fileTypes) {
         PointerBuffer patterns = stack.mallocPointer(fileTypes.extensions().size());
         fileTypes.extensions().forEach(extension -> patterns.put(stack.UTF8("*" + extension)));

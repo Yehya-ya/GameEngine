@@ -64,6 +64,11 @@ class ProjectTest {
     }
 
     @Test
+    void projectNameIsTheProjectFileNameWithoutItsExtension() {
+        assertEquals("MyGame", Project.nameFromFile(projectDirectory.resolve("MyGame.geproj")));
+    }
+
+    @Test
     void projectFileIsNamedAfterTheProject() {
         Project project = new Project(projectDirectory, "MyGame", "assets/scenes/level1.yaml");
 
