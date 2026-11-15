@@ -2,6 +2,7 @@
 <Configuration status="ERROR" monitorInterval="5">
     <Properties>
         <Property name="pattern">%highlight{%d{yyyy-MM-dd hh:mm:ss} [%p]: %m%n}{FATAL=bright red, ERROR=bright red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=default}</Property>
+        <Property name="filePattern">%d{yyyy-MM-dd HH:mm:ss} [%p]: %m%n</Property>
         <Select>
             <SystemPropertyArbiter propertyName="gameengine.build" propertyValue="release">
                 <Property name="rootLevel">info</Property>
@@ -18,13 +19,28 @@
         <Console name="console" target="SYSTEM_OUT">
             <PatternLayout pattern="${pattern}"/>
         </Console>
+        <SystemPropertyArbiter propertyName="gameengine.logDirectory">
+            <RollingFile name="file"
+                         fileName="${sys:gameengine.logDirectory}/latest.log"
+                         filePattern="${sys:gameengine.logDirectory}/previous-%i.log">
+                <PatternLayout pattern="${filePattern}"/>
+                <OnStartupTriggeringPolicy minSize="0"/>
+                <DefaultRolloverStrategy min="1" max="4" fileIndex="min"/>
+            </RollingFile>
+        </SystemPropertyArbiter>
     </Appenders>
     <Loggers>
         <Logger name="error_logger" level="error" additivity="false">
             <AppenderRef ref="console_error"/>
+            <SystemPropertyArbiter propertyName="gameengine.logDirectory">
+                <AppenderRef ref="file"/>
+            </SystemPropertyArbiter>
         </Logger>
         <Root level="${rootLevel}">
             <AppenderRef ref="console"/>
+            <SystemPropertyArbiter propertyName="gameengine.logDirectory">
+                <AppenderRef ref="file"/>
+            </SystemPropertyArbiter>
         </Root>
     </Loggers>
 </Configuration>

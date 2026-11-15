@@ -1,6 +1,7 @@
 package GameEngine.Platforms.Windows;
 
 import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
+import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -42,10 +43,10 @@ public class WindowsWindow extends Window {
     @Override
     protected void init() {
         if (!GLFWInitialized) {
+            glfwSetErrorCallback((error, description) ->
+                    YH_LOG_ERROR("GLFW error {}: {}", error, GLFWErrorCallback.getDescription(description)));
             boolean success = glfwInit();
             YH_ASSERT(success, "Could not initialize GLFW!");
-            GLFWErrorCallback.createPrint(System.err);
-            glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
             GLFWInitialized = true;
         }
         // Configure GLFW
@@ -112,6 +113,10 @@ public class WindowsWindow extends Window {
         glfwFreeCallbacks(windowID);
         glfwDestroyWindow(windowID);
         glfwTerminate();
+        GLFWErrorCallback errorCallback = glfwSetErrorCallback(null);
+        if (errorCallback != null) {
+            errorCallback.free();
+        }
     }
 
     @Override

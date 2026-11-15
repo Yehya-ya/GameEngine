@@ -93,6 +93,8 @@ The package only holds the native libraries for the system that built it, so bui
 
 On first launch the editor docks its panels into a default layout, and **Window > Reset Layout** restores it. The editor saves its layout per user, to `%APPDATA%\GameEngine\Editor\imgui.ini` on Windows and `~/.config/GameEngine/Editor/imgui.ini` elsewhere. The editor keeps its list of recent projects next to it, in `recent-projects.txt`.
 
+The editor writes its log to `logs\latest.log` in that folder as well, and keeps the logs of the four sessions before it as `previous-1.log` to `previous-4.log`. If something stops the editor, it shows the error in a message box that says where the log is.
+
 ## Credits
 
 The editor's icons in `Editor/src/main/resources/Icons/` come from [TheCherno's Hazel](https://github.com/TheCherno/Hazel), under the [Apache License 2.0](https://github.com/TheCherno/Hazel/blob/master/LICENSE).
