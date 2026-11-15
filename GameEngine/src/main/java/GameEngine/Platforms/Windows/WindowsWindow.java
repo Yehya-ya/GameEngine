@@ -5,6 +5,7 @@ import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import GameEngine.Engine.Core.BuildType;
 import GameEngine.Engine.Core.Input;
 import GameEngine.Engine.Core.Window;
 import GameEngine.Engine.Events.KeyEvent;
@@ -51,6 +52,7 @@ public class WindowsWindow extends Window {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, BuildType.current().isDebug() ? GLFW_TRUE : GLFW_FALSE);
         // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 

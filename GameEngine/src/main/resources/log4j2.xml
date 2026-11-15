@@ -2,6 +2,14 @@
 <Configuration status="ERROR" monitorInterval="5">
     <Properties>
         <Property name="pattern">%highlight{%d{yyyy-MM-dd hh:mm:ss} [%p]: %m%n}{FATAL=bright red, ERROR=bright red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=default}</Property>
+        <Select>
+            <SystemPropertyArbiter propertyName="gameengine.build" propertyValue="release">
+                <Property name="rootLevel">info</Property>
+            </SystemPropertyArbiter>
+            <DefaultArbiter>
+                <Property name="rootLevel">trace</Property>
+            </DefaultArbiter>
+        </Select>
     </Properties>
     <Appenders>
         <Console name="console_error" target="SYSTEM_ERR">
@@ -15,7 +23,7 @@
         <Logger name="error_logger" level="error" additivity="false">
             <AppenderRef ref="console_error"/>
         </Logger>
-        <Root level="trace">
+        <Root level="${rootLevel}">
             <AppenderRef ref="console"/>
         </Root>
     </Loggers>

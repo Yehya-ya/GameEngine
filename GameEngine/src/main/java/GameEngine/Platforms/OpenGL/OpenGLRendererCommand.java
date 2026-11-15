@@ -5,6 +5,7 @@ import static org.lwjgl.opengl.GL45.*;
 import static org.lwjgl.system.MemoryUtil.memByteBuffer;
 import static org.lwjgl.system.MemoryUtil.memUTF8;
 
+import GameEngine.Engine.Core.BuildType;
 import GameEngine.Engine.Renderer.RendererCommand;
 import GameEngine.Engine.Renderer.VertexArray;
 import org.jetbrains.annotations.NotNull;
@@ -15,17 +16,23 @@ public class OpenGLRendererCommand extends RendererCommand {
 
     @Override
     public void init() {
+        if (BuildType.current().isDebug()) {
+            enableDebugOutputLogging();
+        }
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    private static void enableDebugOutputLogging() {
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(
                 (source, type, id, severity, length, message, userParam) ->
                         logDebugMessage(type, severity, id, memUTF8(memByteBuffer(message, length))),
                 0);
-
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
     private static void logDebugMessage(int type, int severity, int id, String message) {

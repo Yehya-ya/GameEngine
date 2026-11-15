@@ -68,6 +68,8 @@ Before the editor opens another scene or project, or closes, it asks whether to 
 
 In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Editor/Main.java` with a project file or folder as the program argument. The engine's shaders and the editor's icons are packed into the jars, so the editor does not need a particular working directory.
 
+`:Editor:run` and runs from the IDE are debug builds: the log shows everything down to TRACE, and OpenGL reports problems through its debug output. The packaged editor and the `distZip` start scripts are release builds: the log keeps INFO and above, and OpenGL debug output is off. The launchers choose this with the JVM option `-Dgameengine.build=release`; add it to a run configuration to try a release build from the IDE.
+
 ## Packaging the editor
 
 ```
