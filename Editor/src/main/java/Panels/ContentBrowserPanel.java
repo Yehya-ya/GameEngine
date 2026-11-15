@@ -1,6 +1,5 @@
 package Panels;
 
-import GameEngine.Engine.ECS.Scene;
 import GameEngine.Engine.Renderer.Texture;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
@@ -17,7 +16,6 @@ public class ContentBrowserPanel {
     private final Texture directoryIcon;
     private final Texture fileIcon;
 
-    private Scene scene;
     private File currentDirectory;
     private File[] currentFileList;
 
@@ -31,10 +29,6 @@ public class ContentBrowserPanel {
     public void delete() {
         directoryIcon.delete();
         fileIcon.delete();
-    }
-
-    public void setScene(Scene scene) {
-        this.scene = scene;
     }
 
     public void setCurrentDirectory(File directory) {
