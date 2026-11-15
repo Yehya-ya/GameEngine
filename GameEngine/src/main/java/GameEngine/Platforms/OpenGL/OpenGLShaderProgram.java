@@ -25,17 +25,6 @@ public class OpenGLShaderProgram extends ShaderProgram {
         this.name = name;
     }
 
-    public OpenGLShaderProgram(String name, String vertexSource, String fragmentSource) {
-        YH_LOG_TRACE("Creating OpenGLShaderProgram \"{}\" from separate vertex and fragment shaders.", name);
-
-        Map<Integer, String> sourceMap = new HashMap<>();
-        sourceMap.put(GL_VERTEX_SHADER, vertexSource);
-        sourceMap.put(GL_FRAGMENT_SHADER, fragmentSource);
-        compile(sourceMap);
-
-        this.name = name;
-    }
-
     @Override
     protected void compile(@NotNull Map<Integer, String> sourceMap) {
         List<Integer> ids = new ArrayList<>();

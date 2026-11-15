@@ -5,10 +5,6 @@ import static GameEngine.Engine.Utils.YH_Log.YH_LOG_ERROR;
 
 import GameEngine.Engine.Utils.Resources;
 import GameEngine.Platforms.OpenGL.OpenGLShaderProgram;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
@@ -16,33 +12,8 @@ import org.joml.*;
 public abstract class ShaderProgram {
     protected String name;
 
-    public static @NotNull ShaderProgram create(String path) {
-        return fromSource(nameOf(path), readFile(path));
-    }
-
     public static @NotNull ShaderProgram createFromResource(String resourceName) {
         return fromSource(nameOf(resourceName), Resources.readText(resourceName));
-    }
-
-    public static @NotNull ShaderProgram create(String name, String vertexPath, String fragmentPath) {
-        return fromSources(name, readFile(vertexPath), readFile(fragmentPath));
-    }
-
-    public static @NotNull ShaderProgram createFromResources(
-            String name, String vertexResourceName, String fragmentResourceName) {
-        return fromSources(name, Resources.readText(vertexResourceName), Resources.readText(fragmentResourceName));
-    }
-
-    private static @NotNull ShaderProgram fromSources(String name, String vertexSource, String fragmentSource) {
-        switch (RendererCommandAPI.getApi()) {
-            case OpenGL -> {
-                return new OpenGLShaderProgram(name, vertexSource, fragmentSource);
-            }
-        }
-
-        YH_LOG_ERROR("unknown renderer type {}", RendererCommandAPI.getApi().name());
-        YH_ASSERT(false, "unknown renderer type");
-        return null;
     }
 
     private static @NotNull ShaderProgram fromSource(String name, String source) {
@@ -62,14 +33,6 @@ public abstract class ShaderProgram {
         String fileName = path.substring(fileNameStart);
         int extensionStart = fileName.lastIndexOf('.');
         return extensionStart > 0 ? fileName.substring(0, extensionStart) : fileName;
-    }
-
-    private static @NotNull String readFile(String path) {
-        try {
-            return Files.readString(Path.of(path));
-        } catch (IOException e) {
-            throw new UncheckedIOException("Failed to read the shader " + path, e);
-        }
     }
 
     public String getName() {
