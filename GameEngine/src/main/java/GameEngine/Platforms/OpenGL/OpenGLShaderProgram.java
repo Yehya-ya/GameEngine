@@ -95,43 +95,43 @@ public class OpenGLShaderProgram extends ShaderProgram {
     }
 
     @Override
-    public void UploadUniformInt(String name, int value) {
+    public void uploadUniformInt(String name, int value) {
         int location = glGetUniformLocation(programID, name);
         glUniform1i(location, value);
     }
 
     @Override
-    public void UploadUniformIntArray(String name, int[] value) {
+    public void uploadUniformIntArray(String name, int[] value) {
         int location = glGetUniformLocation(programID, name);
         glUniform1iv(location, value);
     }
 
     @Override
-    public void UploadUniformFloat(String name, float value) {
+    public void uploadUniformFloat(String name, float value) {
         int location = glGetUniformLocation(programID, name);
         glUniform1f(location, value);
     }
 
     @Override
-    public void UploadUniformFloat2(String name, @NotNull Vector2f value) {
+    public void uploadUniformFloat2(String name, @NotNull Vector2f value) {
         int location = glGetUniformLocation(programID, name);
         glUniform2f(location, value.x, value.y);
     }
 
     @Override
-    public void UploadUniformFloat3(String name, @NotNull Vector3f value) {
+    public void uploadUniformFloat3(String name, @NotNull Vector3f value) {
         int location = glGetUniformLocation(programID, name);
         glUniform3f(location, value.x, value.y, value.z);
     }
 
     @Override
-    public void UploadUniformFloat4(String name, @NotNull Vector4f value) {
+    public void uploadUniformFloat4(String name, @NotNull Vector4f value) {
         int location = glGetUniformLocation(programID, name);
         glUniform4f(location, value.x, value.y, value.z, value.w);
     }
 
     @Override
-    public void UploadUniformMat3(String name, @NotNull Matrix3f matrix) {
+    public void uploadUniformMat3(String name, @NotNull Matrix3f matrix) {
         int location = glGetUniformLocation(programID, name);
         float[] arr = new float[9];
         matrix.get(arr);
@@ -139,7 +139,7 @@ public class OpenGLShaderProgram extends ShaderProgram {
     }
 
     @Override
-    public void UploadUniformMat4(String name, @NotNull Matrix4f matrix) {
+    public void uploadUniformMat4(String name, @NotNull Matrix4f matrix) {
         int location = glGetUniformLocation(programID, name);
         float[] arr = new float[16];
         matrix.get(arr);

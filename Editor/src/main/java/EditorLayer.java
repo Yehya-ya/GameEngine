@@ -60,7 +60,7 @@ public class EditorLayer extends Layer {
     private boolean isLayoutResetRequested;
 
     public EditorLayer(Project project) {
-        super("Example Layer 2D");
+        super("EditorLayer");
 
         this.project = project;
         iconPlay = Texture.createFromResource("/Icons/PlayButton.png");

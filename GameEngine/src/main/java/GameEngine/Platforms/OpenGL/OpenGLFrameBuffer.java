@@ -80,7 +80,7 @@ public class OpenGLFrameBuffer extends FrameBuffer {
     }
 
     @Override
-    public int ReadPixel(int attachmentIndex, int x, int y) {
+    public int readPixel(int attachmentIndex, int x, int y) {
         YH_ASSERT(attachmentIndex < colorAttachments.length, "index out of bounds for color attachments array");
 
         glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);

@@ -84,19 +84,19 @@ public abstract class ShaderProgram {
 
     public abstract void unbind();
 
-    public abstract void UploadUniformInt(String name, int value);
+    public abstract void uploadUniformInt(String name, int value);
 
-    public abstract void UploadUniformIntArray(String name, int[] value);
+    public abstract void uploadUniformIntArray(String name, int[] value);
 
-    public abstract void UploadUniformFloat(String name, float value);
+    public abstract void uploadUniformFloat(String name, float value);
 
-    public abstract void UploadUniformFloat2(String name, Vector2f value);
+    public abstract void uploadUniformFloat2(String name, Vector2f value);
 
-    public abstract void UploadUniformFloat3(String name, Vector3f value);
+    public abstract void uploadUniformFloat3(String name, Vector3f value);
 
-    public abstract void UploadUniformFloat4(String name, Vector4f value);
+    public abstract void uploadUniformFloat4(String name, Vector4f value);
 
-    public abstract void UploadUniformMat3(String name, Matrix3f matrix);
+    public abstract void uploadUniformMat3(String name, Matrix3f matrix);
 
-    public abstract void UploadUniformMat4(String name, Matrix4f matrix);
+    public abstract void uploadUniformMat4(String name, Matrix4f matrix);
 }

@@ -52,10 +52,10 @@ public class ExampleLayer3D extends Layer {
 
         bricks.bind(textureSlot);
         shader.bind();
-        shader.UploadUniformMat4("projectionMatrix", camera.getProjectionMatrix());
-        shader.UploadUniformMat4("viewMatrix", camera.getViewMatrix());
-        shader.UploadUniformMat4("transformationMatrix", cubeTransformation);
-        shader.UploadUniformInt("uTexture", textureSlot);
+        shader.uploadUniformMat4("projectionMatrix", camera.getProjectionMatrix());
+        shader.uploadUniformMat4("viewMatrix", camera.getViewMatrix());
+        shader.uploadUniformMat4("transformationMatrix", cubeTransformation);
+        shader.uploadUniformInt("uTexture", textureSlot);
         cube.bind();
         RendererCommandAPI.drawIndexed(cube);
     }

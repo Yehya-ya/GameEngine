@@ -77,8 +77,8 @@ public class ExampleLayerBatchShader extends Layer {
         bricks.bind(bricksSlot);
         dirt.bind(dirtSlot);
         shader.bind();
-        shader.UploadUniformMat4("uViewProjection", cameraController.getCamera().getViewProjectionMatrix());
-        shader.UploadUniformIntArray("uTextures", textureSlots);
+        shader.uploadUniformMat4("uViewProjection", cameraController.getCamera().getViewProjectionMatrix());
+        shader.uploadUniformIntArray("uTextures", textureSlots);
         quadsArray.bind();
         RendererCommandAPI.drawIndexed(quadsArray);
     }

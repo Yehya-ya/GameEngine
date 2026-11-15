@@ -90,7 +90,7 @@ public class BufferLayout {
             this.normalized = normalized;
         }
 
-        public int GetComponentCount() {
+        public int getComponentCount() {
             switch (type) {
                 case Float:
                     return 1;

@@ -16,8 +16,8 @@ public class Renderer {
     public static void submit(
             @NotNull ShaderProgram shaderProgram, @NotNull VertexArray vertexArray, Matrix4f transformation) {
         shaderProgram.bind();
-        shaderProgram.UploadUniformMat4("uViewProjection", sceneData.viewProjectionMatrix);
-        shaderProgram.UploadUniformMat4("uTransformation", transformation);
+        shaderProgram.uploadUniformMat4("uViewProjection", sceneData.viewProjectionMatrix);
+        shaderProgram.uploadUniformMat4("uTransformation", transformation);
         vertexArray.bind();
         RendererCommandAPI.drawIndexed(vertexArray);
     }

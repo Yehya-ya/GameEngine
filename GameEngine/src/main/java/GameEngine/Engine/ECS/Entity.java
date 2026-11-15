@@ -16,7 +16,7 @@ public class Entity {
         return entity.getId();
     }
 
-    public UUID GetUUID() {
+    public UUID getUuid() {
         return getComponent(IdComponent.class).id;
     }
 

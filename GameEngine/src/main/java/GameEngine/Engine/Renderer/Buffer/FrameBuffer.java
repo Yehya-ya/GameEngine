@@ -38,7 +38,7 @@ public abstract class FrameBuffer {
 
     public abstract void resize(int width, int height);
 
-    public abstract int ReadPixel(int attachmentIndex, int x, int y);
+    public abstract int readPixel(int attachmentIndex, int x, int y);
 
     public abstract void clearAttachment(int attachmentIndex, int value);
 

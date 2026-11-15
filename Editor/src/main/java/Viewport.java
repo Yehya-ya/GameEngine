@@ -174,7 +174,7 @@ public class Viewport {
 
     private void selectEntityAt(int x, int y) {
         frameBuffer.bind();
-        int entityId = frameBuffer.ReadPixel(entityIdAttachment, x, y);
+        int entityId = frameBuffer.readPixel(entityIdAttachment, x, y);
         frameBuffer.unbind();
         if (entityId == noEntity) {
             selection.clear();

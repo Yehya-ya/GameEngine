@@ -44,7 +44,7 @@ public class Renderer2D {
 
         storage.shader = ShaderProgram.createFromResource("/engine/shaders/shader2D.glsl");
         storage.shader.bind();
-        storage.shader.UploadUniformInt("uTexture", 0);
+        storage.shader.uploadUniformInt("uTexture", 0);
     }
 
     public static RendererStatistics getStatistics() {
@@ -60,7 +60,7 @@ public class Renderer2D {
 
     public static void begin(@NotNull Camera camera) {
         storage.shader.bind();
-        storage.shader.UploadUniformMat4("uViewProjection", camera.getViewProjectionMatrix());
+        storage.shader.uploadUniformMat4("uViewProjection", camera.getViewProjectionMatrix());
     }
 
     public static void end() {}
@@ -71,9 +71,9 @@ public class Renderer2D {
 
     public static void drawQuad(Vector3f pos, @NotNull Vector2f size, Vector4f color) {
         Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, 1.0f);
-        storage.shader.UploadUniformFloat4("uColor", color);
-        storage.shader.UploadUniformFloat("uTilingFactor", 1.0f);
-        storage.shader.UploadUniformMat4("uTransformation", transformation);
+        storage.shader.uploadUniformFloat4("uColor", color);
+        storage.shader.uploadUniformFloat("uTilingFactor", 1.0f);
+        storage.shader.uploadUniformMat4("uTransformation", transformation);
 
         storage.whiteTexture.bind(0);
         storage.vertexArray.bind();
@@ -96,9 +96,9 @@ public class Renderer2D {
 
     public static void drawQuad(Vector3f pos, @NotNull Vector2f size, @NotNull Texture texture, float tilingFactor) {
         Matrix4f transformation = new Matrix4f().translate(pos).scale(size.x, size.y, 1.0f);
-        storage.shader.UploadUniformFloat4("uColor", new Vector4f(1.0f));
-        storage.shader.UploadUniformFloat("uTilingFactor", tilingFactor);
-        storage.shader.UploadUniformMat4("uTransformation", transformation);
+        storage.shader.uploadUniformFloat4("uColor", new Vector4f(1.0f));
+        storage.shader.uploadUniformFloat("uTilingFactor", tilingFactor);
+        storage.shader.uploadUniformMat4("uTransformation", transformation);
 
         texture.bind(0);
         storage.vertexArray.bind();
@@ -116,9 +116,9 @@ public class Renderer2D {
                 .translate(pos)
                 .rotate(rotationAngle, new Vector3f(0.0f, 0.0f, 1.0f))
                 .scale(size.x, size.y, 1.0f);
-        storage.shader.UploadUniformFloat4("uColor", color);
-        storage.shader.UploadUniformFloat("uTilingFactor", 1.0f);
-        storage.shader.UploadUniformMat4("uTransformation", transformation);
+        storage.shader.uploadUniformFloat4("uColor", color);
+        storage.shader.uploadUniformFloat("uTilingFactor", 1.0f);
+        storage.shader.uploadUniformMat4("uTransformation", transformation);
 
         storage.whiteTexture.bind(0);
         storage.vertexArray.bind();
@@ -146,9 +146,9 @@ public class Renderer2D {
                 .translate(pos)
                 .rotate(rotationAngle, new Vector3f(0.0f, 0.0f, 1.0f))
                 .scale(size.x, size.y, 1.0f);
-        storage.shader.UploadUniformFloat4("uColor", new Vector4f(1.0f));
-        storage.shader.UploadUniformFloat("uTilingFactor", tilingFactor);
-        storage.shader.UploadUniformMat4("uTransformation", transformation);
+        storage.shader.uploadUniformFloat4("uColor", new Vector4f(1.0f));
+        storage.shader.uploadUniformFloat("uTilingFactor", tilingFactor);
+        storage.shader.uploadUniformMat4("uTransformation", transformation);
 
         texture.bind(0);
         storage.vertexArray.bind();

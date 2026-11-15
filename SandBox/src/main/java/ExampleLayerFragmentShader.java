@@ -58,10 +58,10 @@ public class ExampleLayerFragmentShader extends Layer {
         RendererCommandAPI.clear();
 
         shader.bind();
-        shader.UploadUniformFloat2("u_resolution", resolution);
-        shader.UploadUniformFloat("u_time", elapsedSeconds);
-        shader.UploadUniformFloat2("point1", firstCircleCenter);
-        shader.UploadUniformFloat2("point2", secondCircleCenter);
+        shader.uploadUniformFloat2("u_resolution", resolution);
+        shader.uploadUniformFloat("u_time", elapsedSeconds);
+        shader.uploadUniformFloat2("point1", firstCircleCenter);
+        shader.uploadUniformFloat2("point2", secondCircleCenter);
         screen.bind();
         RendererCommandAPI.drawIndexed(screen);
     }

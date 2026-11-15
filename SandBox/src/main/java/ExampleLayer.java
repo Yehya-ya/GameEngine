@@ -90,7 +90,7 @@ public class ExampleLayer extends Layer {
         Renderer.beginScene(cameraController.getCamera());
 
         soldColorShader.bind();
-        soldColorShader.UploadUniformFloat4("u_color", new Vector4f(col));
+        soldColorShader.uploadUniformFloat4("u_color", new Vector4f(col));
         Renderer.submit(soldColorShader, triangle, new Matrix4f());
 
         Renderer.submit(textureShader, rectangle, transformation);

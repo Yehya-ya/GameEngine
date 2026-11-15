@@ -3,16 +3,16 @@ import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Core.Project;
 
 public class Editor extends Application {
-    private final Layer exampleLayer;
+    private final Layer editorLayer;
 
     public Editor(Project project) {
         super("Editor");
-        exampleLayer = new EditorLayer(project);
-        pushLayer(exampleLayer);
+        editorLayer = new EditorLayer(project);
+        pushLayer(editorLayer);
     }
 
     @Override
     public void shutdown() {
-        exampleLayer.delete();
+        editorLayer.delete();
     }
 }

@@ -61,7 +61,7 @@ public class OpenGLVertexArray extends VertexArray {
             glEnableVertexAttribArray(vertexBufferIndex);
             glVertexAttribPointer(
                     vertexBufferIndex,
-                    element.GetComponentCount(),
+                    element.getComponentCount(),
                     getOpenGLNativeType(element.type),
                     element.normalized,
                     vertexBuffer.getLayout().getOffset(),
