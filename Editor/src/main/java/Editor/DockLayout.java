@@ -1,3 +1,5 @@
+package Editor;
+
 import Panels.ContentBrowserPanel;
 import Panels.SceneHierarchyPanel;
 import imgui.ImVec2;

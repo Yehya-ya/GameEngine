@@ -1,3 +1,5 @@
+package Editor;
+
 import static GameEngine.Engine.Utils.KeyCodes.*;
 
 import GameEngine.Engine.Core.Application;

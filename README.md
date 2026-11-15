@@ -56,7 +56,7 @@ From a terminal in the project root:
 
 The editor opens a project folder, given as its first argument; `:Editor:run` opens `SampleProject`. Textures, scenes and the content browser all live in the project's `assets` folder, and scenes store texture paths relative to the project, so a project can be moved or shared. Without an argument the editor uses the current folder as the project.
 
-In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Main.java` with `SampleProject` as the program argument. Run `SandBox/src/main/java/Main.java` as it is. The engine's shaders, the editor's icons and the sandbox's textures are packed into each module's jar, so neither app needs a particular working directory.
+In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Editor/Main.java` with `SampleProject` as the program argument. Run `SandBox/src/main/java/Main.java` as it is. The engine's shaders, the editor's icons and the sandbox's textures are packed into each module's jar, so neither app needs a particular working directory.
 
 ## Project layout
 

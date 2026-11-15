@@ -13,7 +13,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'Main'
+    mainClass = 'Editor.Main'
 }
 
 tasks.named('run') {

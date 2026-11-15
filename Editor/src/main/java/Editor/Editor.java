@@ -1,3 +1,5 @@
+package Editor;
+
 import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Core.Project;
