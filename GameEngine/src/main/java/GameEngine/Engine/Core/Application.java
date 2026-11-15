@@ -5,10 +5,8 @@ import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 import GameEngine.Engine.Events.*;
-import GameEngine.Engine.ImGui.ImGuiLayer;
 import GameEngine.Engine.Renderer.BatchRenderer2D;
 import GameEngine.Engine.Renderer.RendererCommandAPI;
-import GameEngine.Engine.Utils.SettingsDirectory;
 import GameEngine.Engine.Utils.TimeStep;
 import GameEngine.Platforms.Windows.WindowsWindow;
 import java.util.ArrayList;
@@ -18,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 public class Application {
     private final WindowsWindow window;
     private final LayerStack layersStack;
-    private final ImGuiLayer imGuiLayer;
     private final BatchRenderer2D renderer2D;
     private final List<Runnable> actionsBeforeNextFrame = new ArrayList<>();
     private boolean isRunning;
@@ -37,8 +34,6 @@ public class Application {
         renderer2D = new BatchRenderer2D();
 
         layersStack = new LayerStack();
-        imGuiLayer = new ImGuiLayer(window.getWindowID(), SettingsDirectory.file(name, "imgui.ini"));
-        pushOverlay(imGuiLayer);
     }
 
     public WindowsWindow getWindow() {
@@ -69,17 +64,21 @@ public class Application {
                 }
             }
 
-            imGuiLayer.begin();
+            beginGui();
             for (Layer layer : layersStack) {
-                layer.onImGuiRender();
+                layer.onGuiRender();
             }
-            imGuiLayer.end();
+            endGui();
 
             window.onUpdate();
         }
         YH_LOG_TRACE("The application stops running.");
         this.delete();
     }
+
+    protected void beginGui() {}
+
+    protected void endGui() {}
 
     private void runActionsBeforeThisFrame() {
         List<Runnable> actions = List.copyOf(actionsBeforeNextFrame);
@@ -124,10 +123,6 @@ public class Application {
         }
     }
 
-    public ImGuiLayer getImGuiLayer() {
-        return imGuiLayer;
-    }
-
     public void pushLayer(Layer layer) {
         layersStack.pushLayer(layer);
     }
@@ -159,7 +154,6 @@ public class Application {
 
     private void delete() {
         layersStack.delete();
-        imGuiLayer.delete();
         this.shutdown();
         renderer2D.delete();
         window.delete();

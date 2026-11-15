@@ -1,4 +1,4 @@
-package GameEngine.Engine.ImGui;
+package Editor;
 
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;

@@ -6,6 +6,7 @@ import static GameEngine.Engine.Utils.YH_Log.YH_LOG_WARN;
 import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Core.Project;
+import GameEngine.Engine.Utils.SettingsDirectory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -16,11 +17,14 @@ import org.jetbrains.annotations.Nullable;
 public class Editor extends Application implements ProjectSwitcher {
     public static final String applicationName = "Editor";
     private final RecentProjects recentProjects;
+    private final ImGuiLayer imGuiLayer;
     private @Nullable Layer projectLayer;
 
     public Editor(@NotNull RecentProjects recentProjects, @Nullable Project project) {
         super(applicationName);
         this.recentProjects = recentProjects;
+        imGuiLayer = new ImGuiLayer(getWindow().getWindowID(), SettingsDirectory.file(applicationName, "imgui.ini"));
+        pushOverlay(imGuiLayer);
         if (project != null) {
             openProject(project);
         } else {
@@ -38,7 +42,7 @@ public class Editor extends Application implements ProjectSwitcher {
         }
         recentProjects.add(project.getFile());
         getWindow().setTitle(project.getName() + " - " + applicationName);
-        replaceProjectLayer(() -> new EditorLayer(this, project, this));
+        replaceProjectLayer(() -> new EditorLayer(this, imGuiLayer, project, this));
     }
 
     @Override
@@ -69,9 +73,20 @@ public class Editor extends Application implements ProjectSwitcher {
     }
 
     @Override
+    protected void beginGui() {
+        imGuiLayer.begin();
+    }
+
+    @Override
+    protected void endGui() {
+        imGuiLayer.end();
+    }
+
+    @Override
     public void shutdown() {
         if (projectLayer != null) {
             projectLayer.delete();
         }
+        imGuiLayer.delete();
     }
 }

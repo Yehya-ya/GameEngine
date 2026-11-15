@@ -10,6 +10,9 @@ dependencies {
     implementation project(':GameEngine')
     implementation libs.lwjgl.tinyfd
     runtimeOnly variantOf(libs.lwjgl.tinyfd) { classifier(rootProject.lwjglNatives) }
+    implementation libs.imgui.binding
+    implementation libs.imgui.lwjgl3
+    runtimeOnly "io.github.spair:imgui-java-natives-${rootProject.nativePlatform}:${libs.versions.imgui.get()}"
 }
 
 application {

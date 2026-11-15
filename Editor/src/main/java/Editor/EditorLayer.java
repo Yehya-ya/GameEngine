@@ -46,6 +46,7 @@ public class EditorLayer extends Layer {
     private static final FileTypes sceneFileTypes = new FileTypes("Scene files", List.of(".yaml"));
     private static final String untitledSceneFile = "untitled.yaml";
     private final Application application;
+    private final ImGuiLayer imGuiLayer;
     private final Project project;
     private double average;
     private Vector2f viewportSize;
@@ -69,10 +70,11 @@ public class EditorLayer extends Layer {
     private final ProjectMenu projectMenu;
     private final SceneChanges sceneChanges;
 
-    public EditorLayer(Application application, Project project, ProjectSwitcher projects) {
+    public EditorLayer(Application application, ImGuiLayer imGuiLayer, Project project, ProjectSwitcher projects) {
         super("EditorLayer");
 
         this.application = application;
+        this.imGuiLayer = imGuiLayer;
         this.project = project;
         projectMenu = new ProjectMenu(project, projects, this::confirmLeavingScene);
         sceneChanges = new SceneChanges(project);
@@ -153,8 +155,8 @@ public class EditorLayer extends Layer {
     }
 
     @Override
-    public void onImGuiRender() {
-        super.onImGuiRender();
+    public void onGuiRender() {
+        super.onGuiRender();
         deleteScenesFromPreviousFrame();
 
         ImBoolean dockspaceOpen = new ImBoolean(true);
@@ -253,7 +255,7 @@ public class EditorLayer extends Layer {
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
         ImGui.begin(ViewportWindowName);
         boolean isViewportHovered = ImGui.isWindowHovered();
-        application.getImGuiLayer().setBlockingEvents(!isViewportHovered);
+        imGuiLayer.setBlockingEvents(!isViewportHovered);
         //        ImGui.beginTabBar("Tabs");
         //        for (Scene scene : scenes) {
         //            int tabFlags = ImGuiTabItemFlags.Trailing;

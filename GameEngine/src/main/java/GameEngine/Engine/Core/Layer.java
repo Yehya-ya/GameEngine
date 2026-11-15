@@ -30,7 +30,7 @@ public abstract class Layer {
 
     public void onEvent(Event event) {}
 
-    public void onImGuiRender() {}
+    public void onGuiRender() {}
 
     public boolean confirmClose() {
         return true;

@@ -33,7 +33,7 @@ public class ProjectPickerLayer extends Layer {
     }
 
     @Override
-    public void onImGuiRender() {
+    public void onGuiRender() {
         ImGuiViewport viewport = ImGui.getMainViewport();
         ImGui.setNextWindowPos(viewport.getPosX(), viewport.getPosY());
         ImGui.setNextWindowSize(viewport.getSizeX(), viewport.getSizeY());
