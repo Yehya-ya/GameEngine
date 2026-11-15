@@ -4,8 +4,10 @@ import static GameEngine.Engine.ECS.SceneAssertions.assertEntitiesMatch;
 import static GameEngine.Engine.ECS.SceneAssertions.entityNamed;
 import static GameEngine.Engine.ECS.SceneAssertions.uuids;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import GameEngine.Engine.Core.Project;
 import java.io.IOException;
@@ -30,6 +32,27 @@ class SceneSerializerTest {
         for (String name : List.of("Player", "Main Camera", "Eye")) {
             assertEntitiesMatch(entityNamed(original, name), entityNamed(loaded, name));
         }
+    }
+
+    @Test
+    void savedFileHoldsTheSceneYaml() throws IOException {
+        Scene scene = SampleScene.create();
+        Path file = projectDirectory.resolve("saved.yaml");
+
+        assertTrue(SceneSerializer.serialize(scene, file.toString(), project()));
+
+        assertEquals(SceneSerializer.toYaml(scene, project()), Files.readString(file));
+    }
+
+    @Test
+    void failedSaveLeavesTheSceneWhereItWas() {
+        Scene scene = SampleScene.create();
+        String pathInMissingFolder =
+                projectDirectory.resolve("missing").resolve("saved.yaml").toString();
+
+        assertFalse(SceneSerializer.serialize(scene, pathInMissingFolder, project()));
+
+        assertNull(scene.getUri());
     }
 
     @Test

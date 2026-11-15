@@ -99,7 +99,7 @@ public class Application {
     public void onEvent(Event event) {
         new EventDispatcher(event).dispatch(EventType.WindowClose, event1 -> {
             WindowEvents.WindowCloseEvent e = (WindowEvents.WindowCloseEvent) event1;
-            close();
+            runBeforeNextFrame(this::requestClose);
             e.handled = true;
             return true;
         });
@@ -151,6 +151,15 @@ public class Application {
 
     public void popOverlay(Layer layer) {
         layersStack.popOverlay(layer);
+    }
+
+    public void requestClose() {
+        for (Layer layer : layersStack) {
+            if (!layer.confirmClose()) {
+                return;
+            }
+        }
+        close();
     }
 
     public void close() {

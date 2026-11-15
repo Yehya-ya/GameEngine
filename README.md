@@ -66,6 +66,8 @@ startScene: assets/scenes/level1.yaml
 
 In the editor, the **File** menu has the scene commands, then **New Project**, **Open Project**, **Recent Projects** and **Close Project**, which goes back to the picker. **Use as Start Scene** makes the open scene, once saved, the one the project starts with; it is ticked when it already is, and choosing it again clears the start scene.
 
+Before the editor opens another scene or project, or closes, it asks whether to save the scene's changes. **Yes** saves them, asking where for a scene that has never been saved, **No** throws them away and **Cancel** stays.
+
 In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Editor/Main.java` with a project file or folder as the program argument. Run `SandBox/src/main/java/Main.java` as it is. The engine's shaders, the editor's icons and the sandbox's textures are packed into each module's jar, so neither app needs a particular working directory.
 
 ## Packaging the editor

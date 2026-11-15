@@ -65,12 +65,14 @@ public class EditorLayer extends Layer {
     private SceneState sceneState;
     private boolean isLayoutResetRequested;
     private final ProjectMenu projectMenu;
+    private final SceneChanges sceneChanges;
 
     public EditorLayer(Project project, ProjectSwitcher projects) {
         super("EditorLayer");
 
         this.project = project;
-        projectMenu = new ProjectMenu(project, projects);
+        projectMenu = new ProjectMenu(project, projects, this::confirmLeavingScene);
+        sceneChanges = new SceneChanges(project);
         iconPlay = Texture.createFromResource("/Icons/PlayButton.png");
         iconStop = Texture.createFromResource("/Icons/StopButton.png");
         toolbarWindowClass = new ImGuiWindowClass();
@@ -219,7 +221,7 @@ public class EditorLayer extends Layer {
                 projectMenu.drawItems();
                 ImGui.separator();
                 if (ImGui.menuItem("Exit")) {
-                    Application.get().close();
+                    Application.get().requestClose();
                 }
                 ImGui.endMenu();
             }
@@ -274,7 +276,7 @@ public class EditorLayer extends Layer {
             if (file != null) {
                 int index = file.getName().lastIndexOf('.');
                 String extension = index > 0 ? file.getName().substring(index + 1) : "";
-                if (extension.equals("yaml")) {
+                if (extension.equals("yaml") && confirmLeavingScene()) {
                     openActivity(file.getPath());
                 }
             }
@@ -301,6 +303,11 @@ public class EditorLayer extends Layer {
         activeScene = null;
         viewport.delete();
         contentBrowserPanel.delete();
+    }
+
+    @Override
+    public boolean confirmClose() {
+        return confirmLeavingScene();
     }
 
     @Override
@@ -375,29 +382,50 @@ public class EditorLayer extends Layer {
         }
     }
 
+    private boolean confirmLeavingScene() {
+        if (!sceneChanges.hasUnsavedChanges(editorScene)) {
+            return true;
+        }
+        String question = "Save the changes to " + sceneName() + "?";
+        return switch (MessageBox.askYesNoCancel(Editor.applicationName, question)) {
+            case Yes -> save();
+            case No -> true;
+            case Cancel -> false;
+        };
+    }
+
+    private String sceneName() {
+        boolean isSceneSaved = editorScene.getUri() != null;
+        return isSceneSaved ? Path.of(editorScene.getUri()).getFileName().toString() : editorScene.getTitle();
+    }
+
     public void open() {
-        fileDialog.openFile(sceneFileTypes).ifPresent(file -> openActivity(file.toString()));
-    }
-
-    public void save() {
-        if (editorScene != null) {
-            if (editorScene.getUri() != null) {
-                saveActivity(editorScene.getUri());
-            } else {
-                saveAs();
-            }
+        if (confirmLeavingScene()) {
+            fileDialog.openFile(sceneFileTypes).ifPresent(file -> openActivity(file.toString()));
         }
     }
 
-    public void saveAs() {
-        if (editorScene != null) {
-            fileDialog.saveFile(sceneFileTypes, untitledSceneFile).ifPresent(file -> saveActivity(file.toString()));
+    public boolean save() {
+        if (editorScene == null) {
+            return false;
         }
+        return editorScene.getUri() != null ? saveActivity(editorScene.getUri()) : saveAs();
+    }
+
+    public boolean saveAs() {
+        if (editorScene == null) {
+            return false;
+        }
+        return fileDialog
+                .saveFile(sceneFileTypes, untitledSceneFile)
+                .map(file -> saveActivity(file.toString()))
+                .orElse(false);
     }
 
     public void newSceneActivity() {
-        Scene scene = new Scene("Scene" + sceneCount++, null);
-        setEditorScene(scene);
+        if (confirmLeavingScene()) {
+            setEditorScene(new Scene("Scene" + sceneCount++, null));
+        }
     }
 
     public void openActivity(String file) {
@@ -407,8 +435,15 @@ public class EditorLayer extends Layer {
         }
     }
 
-    public void saveActivity(String directory) {
-        SceneSerializer.serialize(editorScene, directory, project);
+    public boolean saveActivity(String path) {
+        boolean isSaved = SceneSerializer.serialize(editorScene, path, project);
+        if (isSaved) {
+            sceneChanges.markSaved(editorScene);
+        } else {
+            MessageBox.showError(
+                    Editor.applicationName, "Could not save the scene to " + path + ".\nThe console log says why.");
+        }
+        return isSaved;
     }
 
     private void setEditorScene(Scene scene) {
@@ -419,6 +454,7 @@ public class EditorLayer extends Layer {
             scenesToDeleteNextFrame.add(editorScene);
         }
         editorScene = scene;
+        sceneChanges.markSaved(scene);
         showScene(scene);
         viewport.resetCamera();
         viewport.edit(scene);

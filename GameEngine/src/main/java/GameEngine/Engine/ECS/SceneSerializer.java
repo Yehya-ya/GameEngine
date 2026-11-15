@@ -9,6 +9,9 @@ import GameEngine.Engine.Renderer.TextureLoadException;
 import com.artemis.Component;
 import com.artemis.utils.IntBag;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +31,19 @@ public class SceneSerializer {
 
     private SceneSerializer() {}
 
-    public static void serialize(@NotNull Scene scene, String path, @NotNull Project project) {
+    public static boolean serialize(@NotNull Scene scene, String path, @NotNull Project project) {
+        try {
+            Files.writeString(Path.of(path), toYaml(scene, project));
+        } catch (IOException | InvalidPathException e) {
+            YH_LOG_ERROR("failed to serialize the scene to `{}`.\n{}", path, e.getMessage());
+            return false;
+        }
         scene.setUri(path);
+        YH_LOG_TRACE("Successfully serialized the scene.");
+        return true;
+    }
+
+    public static @NotNull String toYaml(@NotNull Scene scene, @NotNull Project project) {
         SceneData sceneData = new SceneData();
         sceneData.title = scene.getTitle();
         IntBag intBag = scene.getEntitiesIds(TagComponent.class);
@@ -37,17 +51,7 @@ public class SceneSerializer {
             Entity entity = scene.getEntity(intBag.get(i));
             sceneData.entities.add(new EntityData(entity, project));
         }
-
-        Representer representer = new SceneDataRepresenter();
-        Yaml yaml = new Yaml(representer, new DumperOptions());
-        try (FileWriter writer = new FileWriter(path)) {
-            yaml.dump(sceneData, writer);
-        } catch (IOException e) {
-            YH_LOG_ERROR("failed to serialize the scene.\n{}", e.getMessage());
-            e.printStackTrace();
-            return;
-        }
-        YH_LOG_TRACE("Successfully serialized the scene.");
+        return new Yaml(new SceneDataRepresenter(), new DumperOptions()).dump(sceneData);
     }
 
     public static @Nullable Scene deserialize(String path, @NotNull Project project) {
