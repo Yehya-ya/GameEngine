@@ -45,6 +45,7 @@ public class EditorLayer extends Layer {
     public static final String ToolbarWindowName = "##toolbar";
     private static final FileTypes sceneFileTypes = new FileTypes("Scene files", List.of(".yaml"));
     private static final String untitledSceneFile = "untitled.yaml";
+    private final Application application;
     private final Project project;
     private double average;
     private Vector2f viewportSize;
@@ -68,9 +69,10 @@ public class EditorLayer extends Layer {
     private final ProjectMenu projectMenu;
     private final SceneChanges sceneChanges;
 
-    public EditorLayer(Project project, ProjectSwitcher projects) {
+    public EditorLayer(Application application, Project project, ProjectSwitcher projects) {
         super("EditorLayer");
 
+        this.application = application;
         this.project = project;
         projectMenu = new ProjectMenu(project, projects, this::confirmLeavingScene);
         sceneChanges = new SceneChanges(project);
@@ -91,8 +93,8 @@ public class EditorLayer extends Layer {
     public void onAttach() {
         sceneCount = 0;
         scenesToDeleteNextFrame = new ArrayList<>();
-        renderer = Application.get().getRenderer2D();
-        input = Application.get().getWindow().getInput();
+        renderer = application.getRenderer2D();
+        input = application.getWindow().getInput();
         average = 0;
 
         viewportSize = new Vector2f(0);
@@ -223,7 +225,7 @@ public class EditorLayer extends Layer {
                 projectMenu.drawItems();
                 ImGui.separator();
                 if (ImGui.menuItem("Exit")) {
-                    Application.get().requestClose();
+                    application.requestClose();
                 }
                 ImGui.endMenu();
             }
@@ -251,7 +253,7 @@ public class EditorLayer extends Layer {
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
         ImGui.begin(ViewportWindowName);
         boolean isViewportHovered = ImGui.isWindowHovered();
-        Application.get().getImGuiLayer().setBlockingEvents(!isViewportHovered);
+        application.getImGuiLayer().setBlockingEvents(!isViewportHovered);
         //        ImGui.beginTabBar("Tabs");
         //        for (Scene scene : scenes) {
         //            int tabFlags = ImGuiTabItemFlags.Trailing;

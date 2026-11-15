@@ -1,4 +1,3 @@
-import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Core.Window;
 import GameEngine.Engine.Events.Event;
@@ -30,10 +29,9 @@ public class ExampleLayerFragmentShader extends Layer {
     private ShaderProgram shader;
     private VertexArray screen;
 
-    public ExampleLayerFragmentShader(String fragmentShader) {
+    public ExampleLayerFragmentShader(Window window, String fragmentShader) {
         super("Fragment Shader Example");
         this.fragmentShader = fragmentShader;
-        Window window = Application.get().getWindow();
         resolution = new Vector2f(window.getWidth(), window.getHeight());
     }
 

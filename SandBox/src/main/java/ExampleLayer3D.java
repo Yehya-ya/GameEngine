@@ -1,4 +1,3 @@
-import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Core.Window;
 import GameEngine.Engine.Events.Event;
@@ -26,9 +25,8 @@ public class ExampleLayer3D extends Layer {
     private Texture bricks;
     private VertexArray cube;
 
-    public ExampleLayer3D() {
+    public ExampleLayer3D(Window window) {
         super("3D Example");
-        Window window = Application.get().getWindow();
         camera = new PerspectiveCamera((float) window.getWidth() / window.getHeight());
         camera.setPosition(new Vector3f(0, 0, 6));
     }

@@ -1,7 +1,6 @@
 package GameEngine.Engine.Core;
 
 import static GameEngine.Engine.Utils.KeyCodes.YH_KEY_F11;
-import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
@@ -17,8 +16,6 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public class Application {
-    private static Application instance;
-
     private final WindowsWindow window;
     private final LayerStack layersStack;
     private final ImGuiLayer imGuiLayer;
@@ -30,8 +27,6 @@ public class Application {
 
     protected Application(String name) {
         YH_LOG_TRACE("Creating the application.");
-        YH_ASSERT(instance == null, "Application already exists!");
-        instance = this;
         lastFrameTime = glfwGetTime();
         window = new WindowsWindow(new Window.WindowProp(name));
         window.setEventCallback(this::onEvent);
@@ -42,12 +37,8 @@ public class Application {
         renderer2D = new BatchRenderer2D();
 
         layersStack = new LayerStack();
-        imGuiLayer = new ImGuiLayer(SettingsDirectory.file(name, "imgui.ini"));
+        imGuiLayer = new ImGuiLayer(window.getWindowID(), SettingsDirectory.file(name, "imgui.ini"));
         pushOverlay(imGuiLayer);
-    }
-
-    public static Application get() {
-        return instance;
     }
 
     public WindowsWindow getWindow() {
@@ -172,7 +163,6 @@ public class Application {
         this.shutdown();
         renderer2D.delete();
         window.delete();
-        instance = null;
         YH_LOG_TRACE("Deleting the application.");
     }
 }

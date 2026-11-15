@@ -6,7 +6,7 @@ public class Sandbox extends Application {
 
     public Sandbox() {
         super("SandBox");
-        exampleLayer = new ExampleLayer2DBatchRenderer();
+        exampleLayer = new ExampleLayer2DBatchRenderer(getRenderer2D());
         pushLayer(exampleLayer);
     }
 

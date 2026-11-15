@@ -1,6 +1,5 @@
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
-import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Events.Event;
 import GameEngine.Engine.Renderer.BatchRenderer2D;
@@ -16,13 +15,14 @@ import org.joml.Vector4f;
 
 public class ExampleLayer2DBatchRenderer extends Layer {
     private final OrthographicCameraController cameraController;
-    private BatchRenderer2D renderer;
+    private final BatchRenderer2D renderer;
     private double lastRenderTime, average, count;
     private Texture bricks;
     private Texture dirt;
 
-    public ExampleLayer2DBatchRenderer() {
+    public ExampleLayer2DBatchRenderer(BatchRenderer2D renderer) {
         super("Example Layer 2D");
+        this.renderer = renderer;
         cameraController = new OrthographicCameraController(1280f / 720f);
     }
 
@@ -30,7 +30,6 @@ public class ExampleLayer2DBatchRenderer extends Layer {
     public void onAttach() {
         bricks = Texture.createFromResource("/textures/bricks.png");
         dirt = Texture.createFromResource("/textures/dirt.png");
-        renderer = Application.get().getRenderer2D();
         lastRenderTime = glfwGetTime();
         average = 0;
         count = 0;

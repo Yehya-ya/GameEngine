@@ -4,7 +4,6 @@ import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 
-import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Events.Event;
 import GameEngine.Engine.Events.EventCategory;
@@ -23,11 +22,13 @@ import java.nio.file.Path;
 public class ImGuiLayer extends Layer {
     private final ImGuiImplGlfw imGuiImplGlfw;
     private final ImGuiImplGl3 imGuiImplGl3;
+    private final long windowID;
     private final Path layoutFile;
     private boolean isBlockingEvents;
 
-    public ImGuiLayer(Path layoutFile) {
+    public ImGuiLayer(long windowID, Path layoutFile) {
         super("ImGuiLayer");
+        this.windowID = windowID;
         this.layoutFile = layoutFile;
         ImGui.createContext();
         imGuiImplGlfw = new ImGuiImplGlfw();
@@ -64,7 +65,7 @@ public class ImGuiLayer extends Layer {
         setDarkThemeColors();
 
         // Setup Platform/Renderer bindings
-        imGuiImplGlfw.init(Application.get().getWindow().getWindowID(), true);
+        imGuiImplGlfw.init(windowID, true);
         imGuiImplGl3.init("#version 130");
     }
 

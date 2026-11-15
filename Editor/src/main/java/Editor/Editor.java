@@ -38,7 +38,7 @@ public class Editor extends Application implements ProjectSwitcher {
         }
         recentProjects.add(project.getFile());
         getWindow().setTitle(project.getName() + " - " + applicationName);
-        replaceProjectLayer(() -> new EditorLayer(project, this));
+        replaceProjectLayer(() -> new EditorLayer(this, project, this));
     }
 
     @Override
