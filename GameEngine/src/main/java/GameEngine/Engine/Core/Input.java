@@ -2,32 +2,10 @@ package GameEngine.Engine.Core;
 
 import org.joml.Vector2d;
 
-public abstract class Input {
-    protected static Input instance;
+public interface Input {
+    boolean isKeyPressed(int keyCode);
 
-    public static boolean isKeyPressed(int keyCode) {
-        return instance.protectedIsKeyPressed(keyCode);
-    }
+    boolean isMouseButtonPressed(int mouseCode);
 
-    public static boolean isMouseButtonPressed(int mouseCode) {
-        return instance.protectedIsMouseButtonPressed(mouseCode);
-    }
-
-    public static Vector2d getMousePosition() {
-        return instance.protectedGetMousePosition();
-    }
-
-    public static double getMouseX() {
-        return instance.protectedGetMousePosition().x;
-    }
-
-    public static double getMouseY() {
-        return instance.protectedGetMousePosition().y;
-    }
-
-    protected abstract boolean protectedIsKeyPressed(int keyCode);
-
-    protected abstract Vector2d protectedGetMousePosition();
-
-    protected abstract boolean protectedIsMouseButtonPressed(int mouseCode);
+    Vector2d getMousePosition();
 }

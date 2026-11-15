@@ -38,6 +38,7 @@ public class Viewport {
 
     private final Selection selection;
     private final BatchRenderer2D renderer;
+    private final Input input;
     private final FrameBuffer frameBuffer;
     private final Vector2f boundsMin = new Vector2f();
     private final Vector2f boundsMax = new Vector2f();
@@ -47,10 +48,11 @@ public class Viewport {
     private boolean isHovered;
     private boolean isPlaying;
 
-    public Viewport(Selection selection, BatchRenderer2D renderer) {
+    public Viewport(Selection selection, BatchRenderer2D renderer, Input input) {
         this.renderer = renderer;
         this.selection = selection;
-        this.editorCamera = new EditorCamera();
+        this.input = input;
+        this.editorCamera = new EditorCamera(input);
         this.gizmoOperation = noGizmo;
 
         FrameBuffer.FrameBufferSpecification specification = new FrameBuffer.FrameBufferSpecification();
@@ -77,7 +79,7 @@ public class Viewport {
     }
 
     public void resetCamera() {
-        editorCamera = new EditorCamera();
+        editorCamera = new EditorCamera(input);
     }
 
     public void delete() {
@@ -153,7 +155,7 @@ public class Viewport {
         boolean isSelectClick = event.getButton() == MouseCodes.GLFW_MOUSE_BUTTON_LEFT
                 && isHovered
                 && !ImGuizmo.isOver()
-                && !Input.isKeyPressed(YH_KEY_LEFT_ALT);
+                && !input.isKeyPressed(YH_KEY_LEFT_ALT);
         if (isSelectClick) {
             selectEntityUnderMouse();
         }
@@ -213,7 +215,7 @@ public class Viewport {
                 },
                 new float[] {transformComponent.size.x, transformComponent.size.y, transformComponent.size.z});
 
-        boolean snap = Input.isKeyPressed(YH_KEY_LEFT_CONTROL) || Input.isKeyPressed(YH_KEY_RIGHT_CONTROL);
+        boolean snap = input.isKeyPressed(YH_KEY_LEFT_CONTROL) || input.isKeyPressed(YH_KEY_RIGHT_CONTROL);
         float snapValue = gizmoOperation == Operation.ROTATE ? rotateSnapDegrees : translateAndScaleSnap;
         float[] snapValues = {snapValue, snapValue, snapValue};
         if (snap) {

@@ -5,6 +5,7 @@ import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import GameEngine.Engine.Core.Input;
 import GameEngine.Engine.Core.Window;
 import GameEngine.Engine.Events.KeyEvent;
 import GameEngine.Engine.Events.MouseEvents;
@@ -20,15 +21,21 @@ public class WindowsWindow extends Window {
     private long windowID;
     private long monitorID;
     private GraphicsContext graphicsContext;
+    private final WindowsInput input;
 
     public WindowsWindow(Window.WindowProp prop) {
         super(prop);
-        WindowsInput.create();
+        input = new WindowsInput(windowID);
         GLFWInitialized = false;
     }
 
     public long getWindowID() {
         return windowID;
+    }
+
+    @Override
+    public Input getInput() {
+        return input;
     }
 
     @Override

@@ -1,32 +1,27 @@
 package GameEngine.Platforms.Windows;
 
-import static GameEngine.Engine.Utils.YH_Log.YH_ASSERT;
 import static org.lwjgl.glfw.GLFW.*;
 
-import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Input;
 import java.nio.DoubleBuffer;
 import org.joml.Vector2d;
 import org.lwjgl.BufferUtils;
 
-public class WindowsInput extends Input {
-    private WindowsInput() {}
+public class WindowsInput implements Input {
+    private final long windowID;
 
-    public static void create() {
-        YH_ASSERT(instance == null, "Input instance has already created.");
-        instance = new WindowsInput();
+    public WindowsInput(long windowID) {
+        this.windowID = windowID;
     }
 
     @Override
-    protected boolean protectedIsKeyPressed(int keyCode) {
-        long windowID = Application.get().getWindow().getWindowID();
+    public boolean isKeyPressed(int keyCode) {
         int status = glfwGetKey(windowID, keyCode);
         return status == GLFW_PRESS || status == GLFW_REPEAT;
     }
 
     @Override
-    protected Vector2d protectedGetMousePosition() {
-        long windowID = Application.get().getWindow().getWindowID();
+    public Vector2d getMousePosition() {
         DoubleBuffer posX = BufferUtils.createDoubleBuffer(1);
         DoubleBuffer posY = BufferUtils.createDoubleBuffer(1);
         glfwGetCursorPos(windowID, posX, posY);
@@ -34,8 +29,7 @@ public class WindowsInput extends Input {
     }
 
     @Override
-    protected boolean protectedIsMouseButtonPressed(int mouseCode) {
-        long windowID = Application.get().getWindow().getWindowID();
+    public boolean isMouseButtonPressed(int mouseCode) {
         int status = glfwGetMouseButton(windowID, mouseCode);
         return status == GLFW_PRESS;
     }

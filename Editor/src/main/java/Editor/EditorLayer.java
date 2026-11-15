@@ -54,6 +54,7 @@ public class EditorLayer extends Layer {
     private Scene activeScene;
     private List<Scene> scenesToDeleteNextFrame;
     private BatchRenderer2D renderer;
+    private Input input;
     private FileDialog fileDialog;
     private Selection selection;
     private Viewport viewport;
@@ -91,13 +92,14 @@ public class EditorLayer extends Layer {
         sceneCount = 0;
         scenesToDeleteNextFrame = new ArrayList<>();
         renderer = Application.get().getRenderer2D();
+        input = Application.get().getWindow().getInput();
         average = 0;
 
         viewportSize = new Vector2f(0);
 
         fileDialog = new FileDialog(project.getAssetDirectory());
         selection = new Selection();
-        viewport = new Viewport(selection, renderer);
+        viewport = new Viewport(selection, renderer, input);
         sceneHierarchyPanel = new SceneHierarchyPanel(selection, fileDialog);
         contentBrowserPanel = new ContentBrowserPanel(project.getAssetDirectory());
         sceneState = SceneState.Edit;
@@ -326,8 +328,8 @@ public class EditorLayer extends Layer {
             return false;
         }
 
-        boolean control = Input.isKeyPressed(YH_KEY_LEFT_CONTROL) || Input.isKeyPressed(YH_KEY_RIGHT_CONTROL);
-        boolean shift = Input.isKeyPressed(YH_KEY_LEFT_SHIFT) || Input.isKeyPressed(YH_KEY_RIGHT_SHIFT);
+        boolean control = input.isKeyPressed(YH_KEY_LEFT_CONTROL) || input.isKeyPressed(YH_KEY_RIGHT_CONTROL);
+        boolean shift = input.isKeyPressed(YH_KEY_LEFT_SHIFT) || input.isKeyPressed(YH_KEY_RIGHT_SHIFT);
 
         switch (event.getKeyCode()) {
             case YH_KEY_S -> {

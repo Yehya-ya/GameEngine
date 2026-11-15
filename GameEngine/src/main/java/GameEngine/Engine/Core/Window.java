@@ -21,6 +21,8 @@ public abstract class Window {
 
     public abstract void onUpdate();
 
+    public abstract Input getInput();
+
     protected abstract void init();
 
     protected abstract void shutdown();

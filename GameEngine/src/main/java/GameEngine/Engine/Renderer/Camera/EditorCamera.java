@@ -12,6 +12,7 @@ import org.joml.*;
 import org.joml.Math;
 
 public class EditorCamera extends Camera {
+    private final Input input;
     private final float fov;
     private final Vector3f focalPoint;
     private Vector2f initialMousePosition;
@@ -21,12 +22,13 @@ public class EditorCamera extends Camera {
     private float viewportWidth = 1280;
     private float viewportHeight = 720;
 
-    public EditorCamera() {
-        this(1.778f, 45.0f, 0.1f, 1000.0f);
+    public EditorCamera(Input input) {
+        this(input, 1.778f, 45.0f, 0.1f, 1000.0f);
     }
 
-    public EditorCamera(float aspectRatio, float fov, float nearClip, float farClip) {
+    public EditorCamera(Input input, float aspectRatio, float fov, float nearClip, float farClip) {
         super();
+        this.input = input;
         this.position = new Vector3f();
         this.focalPoint = new Vector3f();
         this.initialMousePosition = new Vector2f();
@@ -73,16 +75,17 @@ public class EditorCamera extends Camera {
     }
 
     public void onUpdate(TimeStep ts) {
-        if (Input.isKeyPressed(KeyCodes.YH_KEY_LEFT_ALT)) {
-            Vector2f mouse = new Vector2f((float) Input.getMouseX(), (float) Input.getMouseY());
+        if (input.isKeyPressed(KeyCodes.YH_KEY_LEFT_ALT)) {
+            Vector2d mousePosition = input.getMousePosition();
+            Vector2f mouse = new Vector2f((float) mousePosition.x, (float) mousePosition.y);
             Vector2f delta = new Vector2f(mouse).sub(initialMousePosition).mul(0.003f);
             initialMousePosition = mouse;
 
-            if (Input.isMouseButtonPressed(MouseCodes.GLFW_MOUSE_BUTTON_MIDDLE)) {
+            if (input.isMouseButtonPressed(MouseCodes.GLFW_MOUSE_BUTTON_MIDDLE)) {
                 mousePan(delta);
-            } else if (Input.isMouseButtonPressed(MouseCodes.GLFW_MOUSE_BUTTON_LEFT)) {
+            } else if (input.isMouseButtonPressed(MouseCodes.GLFW_MOUSE_BUTTON_LEFT)) {
                 mouseRotate(delta);
-            } else if (Input.isMouseButtonPressed(MouseCodes.GLFW_MOUSE_BUTTON_RIGHT)) {
+            } else if (input.isMouseButtonPressed(MouseCodes.GLFW_MOUSE_BUTTON_RIGHT)) {
                 mouseZoom(delta.y);
             }
         }
