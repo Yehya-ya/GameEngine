@@ -16,10 +16,6 @@ application {
     mainClass = 'Editor.Main'
 }
 
-tasks.named('run') {
-    args = [rootProject.file('SampleProject').path]
-}
-
 def isWindows = rootProject.nativePlatform == 'windows'
 def runtimeModules = [
     'java.base',

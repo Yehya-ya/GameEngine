@@ -14,7 +14,7 @@ public class Main {
         YH_LOG_INFO("Opening the project in `{}`.", project.getDirectory());
         if (!Files.isDirectory(project.getAssetDirectory())) {
             YH_LOG_WARN(
-                    "The project has no `{}` folder. Pass a project folder as the first argument, e.g. SampleProject.",
+                    "The project has no `{}` folder. Pass a project folder as the first argument.",
                     project.getAssetDirectory().getFileName());
         }
 
