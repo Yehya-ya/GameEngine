@@ -46,8 +46,8 @@ public abstract class Texture {
     public static @NotNull Texture createWhite() {
         Texture texture = create(1, 1);
         byte white = (byte) 0xFF;
-        texture.setData(BufferUtils.createByteBuffer(3)
-                .put(new byte[] {white, white, white})
+        texture.setData(BufferUtils.createByteBuffer(4)
+                .put(new byte[] {white, white, white, white})
                 .flip());
         return texture;
     }

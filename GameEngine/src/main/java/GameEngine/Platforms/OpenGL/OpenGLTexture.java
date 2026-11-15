@@ -13,9 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 
 public class OpenGLTexture extends Texture {
+    private static final int internalFormat = GL_RGBA8;
+    private static final int dataFormat = GL_RGBA;
+    private static final int bytesPerPixel = 4;
     private final int textureId;
-    private final int internalFormat;
-    private final int dataFormat;
 
     public OpenGLTexture(int width, int height) {
         super(null);
@@ -24,8 +25,6 @@ public class OpenGLTexture extends Texture {
         this.width = width;
         this.height = height;
 
-        internalFormat = GL_RGB8;
-        dataFormat = GL_RGB;
         textureId = glCreateTextures(GL_TEXTURE_2D);
         glTextureStorage2D(textureId, 1, internalFormat, width, height);
 
@@ -43,37 +42,18 @@ public class OpenGLTexture extends Texture {
 
         IntBuffer width = BufferUtils.createIntBuffer(1);
         IntBuffer height = BufferUtils.createIntBuffer(1);
-        IntBuffer channels = BufferUtils.createIntBuffer(1);
+        IntBuffer fileChannels = BufferUtils.createIntBuffer(1);
         ByteBuffer encodedImageBuffer = BufferUtils.createByteBuffer(encodedImage.length)
                 .put(encodedImage)
                 .flip();
         stbi_set_flip_vertically_on_load(true);
-        ByteBuffer image = stbi_load_from_memory(encodedImageBuffer, width, height, channels, 0);
+        ByteBuffer image = stbi_load_from_memory(encodedImageBuffer, width, height, fileChannels, STBI_rgb_alpha);
         if (image == null) {
             throw new TextureLoadException("Failed to load the image \"" + path + "\": " + stbi_failure_reason());
         }
 
         this.width = width.get(0);
         this.height = height.get(0);
-
-        int internalFormat = 0, dataFormat = 0;
-        if (channels.get(0) == 3) {
-            internalFormat = GL_RGB8;
-            dataFormat = GL_RGB;
-        } else if (channels.get(0) == 4) {
-            internalFormat = GL_RGBA8;
-            dataFormat = GL_RGBA;
-        }
-
-        boolean isSupportedFormat = internalFormat != 0;
-        if (!isSupportedFormat) {
-            stbi_image_free(image);
-            throw new TextureLoadException("The image \"" + path + "\" has " + channels.get(0)
-                    + " channels, but only RGB and RGBA images are supported");
-        }
-
-        this.internalFormat = internalFormat;
-        this.dataFormat = dataFormat;
 
         textureId = glCreateTextures(GL_TEXTURE_2D);
         glTextureStorage2D(textureId, 1, internalFormat, this.width, this.height);
@@ -96,8 +76,7 @@ public class OpenGLTexture extends Texture {
     }
 
     public void setData(@NotNull ByteBuffer data) {
-        int depth = (dataFormat == GL_RGBA) ? 4 : 3;
-        YH_ASSERT(data.remaining() == width * height * depth, "Data must be entire texture!");
+        YH_ASSERT(data.remaining() == width * height * bytesPerPixel, "Data must be entire texture!");
         glTextureSubImage2D(textureId, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
     }
 
