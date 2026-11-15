@@ -90,3 +90,7 @@ The package only holds the native libraries for the system that built it, so bui
 - `Editor/src/main/resources/Icons/`: editor icons.
 
 On first launch the editor docks its panels into a default layout, and **Window > Reset Layout** restores it. The editor saves its layout per user, to `%APPDATA%\GameEngine\Editor\imgui.ini` on Windows and `~/.config/GameEngine/Editor/imgui.ini` elsewhere. The editor keeps its list of recent projects next to it, in `recent-projects.txt`.
+
+## Credits
+
+The editor's icons in `Editor/src/main/resources/Icons/` come from [TheCherno's Hazel](https://github.com/TheCherno/Hazel), under the [Apache License 2.0](https://github.com/TheCherno/Hazel/blob/master/LICENSE).
