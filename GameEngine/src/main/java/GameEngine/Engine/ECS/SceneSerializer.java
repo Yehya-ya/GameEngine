@@ -5,7 +5,6 @@ import static GameEngine.Engine.Utils.YH_Log.YH_LOG_TRACE;
 
 import GameEngine.Engine.Core.Project;
 import GameEngine.Engine.ECS.Components.TagComponent;
-import GameEngine.Engine.Renderer.TextureLibrary;
 import GameEngine.Engine.Renderer.TextureLoadException;
 import com.artemis.Component;
 import com.artemis.utils.IntBag;
@@ -51,7 +50,7 @@ public class SceneSerializer {
         YH_LOG_TRACE("Successfully serialized the scene.");
     }
 
-    public static @Nullable Scene deserialize(String path, @NotNull Project project, @NotNull TextureLibrary textures) {
+    public static @Nullable Scene deserialize(String path, @NotNull Project project) {
         SceneData sceneData;
         try (InputStream targetStream = new FileInputStream(path)) {
             sceneData = new Yaml(new SceneDataConstructor()).load(targetStream);
@@ -71,7 +70,7 @@ public class SceneSerializer {
         }
 
         Scene scene = new Scene(sceneData.title, path);
-        SceneAssets assets = new SceneAssets(project, textures);
+        SceneAssets assets = new SceneAssets(project, scene.getTextures());
         try {
             for (EntityData entityData : sceneData.entities) {
                 Entity entity = scene.emptyEntity();

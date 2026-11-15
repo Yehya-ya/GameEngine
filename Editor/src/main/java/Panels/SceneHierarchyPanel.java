@@ -12,7 +12,6 @@ import GameEngine.Engine.Renderer.Camera.CameraType;
 import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
 import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
 import GameEngine.Engine.Renderer.Texture;
-import GameEngine.Engine.Renderer.TextureLibrary;
 import GameEngine.Engine.Renderer.TextureLoadException;
 import Utils.FileDialog;
 import com.artemis.utils.IntBag;
@@ -52,13 +51,11 @@ public class SceneHierarchyPanel {
                     SpriteComponent.class,
                     SpriteComponent::new,
                     this::drawSprite));
-    private final TextureLibrary textures;
     private final FileDialog fileDialog;
     private Scene scene;
 
-    public SceneHierarchyPanel(Selection selection, TextureLibrary textures, FileDialog fileDialog) {
+    public SceneHierarchyPanel(Selection selection, FileDialog fileDialog) {
         this.selection = selection;
-        this.textures = textures;
         this.fileDialog = fileDialog;
     }
 
@@ -251,7 +248,7 @@ public class SceneHierarchyPanel {
 
     private void useTexture(@NotNull SpriteComponent spriteComponent, @NotNull Path file) {
         try {
-            spriteComponent.texture = textures.get(file);
+            spriteComponent.texture = scene.getTextures().get(file);
         } catch (TextureLoadException e) {
             YH_LOG_ERROR("{}", e.getMessage());
         }

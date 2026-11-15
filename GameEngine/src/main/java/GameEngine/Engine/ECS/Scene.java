@@ -5,6 +5,7 @@ import GameEngine.Engine.ECS.Systems.CameraSystem;
 import GameEngine.Engine.ECS.Systems.RenderSystem;
 import GameEngine.Engine.Renderer.BatchRenderer2D;
 import GameEngine.Engine.Renderer.Camera.Camera;
+import GameEngine.Engine.Renderer.TextureLibrary;
 import GameEngine.Engine.Utils.TimeStep;
 import com.artemis.*;
 import com.artemis.utils.IntBag;
@@ -14,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
 public class Scene {
     private final World engine;
     private final String title;
+    private final TextureLibrary textures;
+    private final boolean ownsTextures;
     private String uri;
     private Camera editorCamera;
     private Camera primaryCamera;
@@ -25,16 +28,26 @@ public class Scene {
     }
 
     public Scene(String title, String uri) {
+        this(title, uri, new TextureLibrary(), true);
+    }
+
+    private Scene(String title, String uri, TextureLibrary textures, boolean ownsTextures) {
         WorldConfiguration configuration = new WorldConfigurationBuilder()
                 .with(new CameraSystem(this), new RenderSystem(this))
                 .build();
         engine = new World(configuration);
         this.title = title;
         this.uri = uri;
+        this.textures = textures;
+        this.ownsTextures = ownsTextures;
     }
 
     public String getTitle() {
         return title;
+    }
+
+    public TextureLibrary getTextures() {
+        return textures;
     }
 
     public String getUri() {
@@ -95,6 +108,9 @@ public class Scene {
 
     public void delete() {
         engine.dispose();
+        if (ownsTextures) {
+            textures.delete();
+        }
     }
 
     public void deleteEntity(@NotNull Entity entity) {
@@ -142,7 +158,7 @@ public class Scene {
     }
 
     public Scene copy() {
-        Scene copy = new Scene(title, null);
+        Scene copy = new Scene(title, null, textures, false);
 
         IntBag entitiesIds = getEntitiesIds(IdComponent.class);
         for (int i = 0; i < entitiesIds.size(); i++) {

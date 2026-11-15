@@ -14,7 +14,6 @@ import GameEngine.Engine.Events.KeyEvent;
 import GameEngine.Engine.Renderer.BatchRenderer2D;
 import GameEngine.Engine.Renderer.RendererStatistics;
 import GameEngine.Engine.Renderer.Texture;
-import GameEngine.Engine.Renderer.TextureLibrary;
 import GameEngine.Engine.Utils.TimeStep;
 import Panels.ContentBrowserPanel;
 import Panels.SceneHierarchyPanel;
@@ -47,7 +46,6 @@ public class EditorLayer extends Layer {
     private Scene activeScene;
     private List<Scene> scenesToDeleteNextFrame;
     private BatchRenderer2D renderer;
-    private TextureLibrary textures;
     private FileDialog fileDialog;
     private Selection selection;
     private Viewport viewport;
@@ -86,10 +84,9 @@ public class EditorLayer extends Layer {
         viewportSize = new Vector2f(0);
 
         fileDialog = new FileDialog(project.getAssetDirectory());
-        textures = new TextureLibrary();
         selection = new Selection();
         viewport = new Viewport(selection, renderer);
-        sceneHierarchyPanel = new SceneHierarchyPanel(selection, textures, fileDialog);
+        sceneHierarchyPanel = new SceneHierarchyPanel(selection, fileDialog);
         contentBrowserPanel = new ContentBrowserPanel(project.getAssetDirectory());
         sceneState = SceneState.Edit;
     }
@@ -286,7 +283,6 @@ public class EditorLayer extends Layer {
         activeScene = null;
         viewport.delete();
         contentBrowserPanel.delete();
-        textures.delete();
     }
 
     @Override
@@ -362,7 +358,7 @@ public class EditorLayer extends Layer {
     }
 
     public void openActivity(String file) {
-        Scene scene = SceneSerializer.deserialize(file, project, textures);
+        Scene scene = SceneSerializer.deserialize(file, project);
         if (scene != null) {
             setEditorScene(scene);
         }
