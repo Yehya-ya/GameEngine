@@ -61,8 +61,8 @@ public class ExampleLayer2D extends Layer {
     }
 
     @Override
-    public void onImgRender() {
-        super.onImgRender();
+    public void onImGuiRender() {
+        super.onImGuiRender();
         RendererStatistics stats = Renderer2D.getStatistics();
         ImGui.begin("Stats");
         ImGui.text("Renderer2D Stats:");

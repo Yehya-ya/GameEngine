@@ -136,8 +136,8 @@ public class EditorLayer extends Layer {
     }
 
     @Override
-    public void onImgRender() {
-        super.onImgRender();
+    public void onImGuiRender() {
+        super.onImGuiRender();
         deleteScenesFromPreviousFrame();
 
         ImBoolean dockspaceOpen = new ImBoolean(true);

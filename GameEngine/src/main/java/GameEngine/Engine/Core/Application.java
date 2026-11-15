@@ -71,7 +71,7 @@ public class Application {
 
             imGuiLayer.begin();
             for (Layer layer : layersStack) {
-                layer.onImgRender();
+                layer.onImGuiRender();
             }
             imGuiLayer.end();
 

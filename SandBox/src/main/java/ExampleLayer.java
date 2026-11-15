@@ -103,7 +103,7 @@ public class ExampleLayer extends Layer {
     }
 
     @Override
-    public void onImgRender() {
+    public void onImGuiRender() {
         ImGui.colorPicker4("color: ", col);
     }
 }

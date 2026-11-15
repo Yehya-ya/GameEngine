@@ -84,8 +84,8 @@ public class ExampleLayer2DBatchRenderer extends Layer {
     }
 
     @Override
-    public void onImgRender() {
-        super.onImgRender();
+    public void onImGuiRender() {
+        super.onImGuiRender();
         RendererStatistics stats = renderer.getStatistics();
         ImGui.begin("Stats");
         ImGui.text("Renderer2D Stats:");

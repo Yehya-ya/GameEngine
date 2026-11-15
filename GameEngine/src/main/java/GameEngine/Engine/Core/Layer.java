@@ -30,5 +30,5 @@ public abstract class Layer {
 
     public void onEvent(Event event) {}
 
-    public void onImgRender() {}
+    public void onImGuiRender() {}
 }
