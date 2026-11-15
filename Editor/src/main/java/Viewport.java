@@ -60,7 +60,7 @@ public class Viewport {
         specification.attachments.addAttachments(
                 new FrameBuffer.FramebufferTextureSpecification(FrameBuffer.FramebufferTextureFormat.RED_INTEGER));
         specification.attachments.addAttachments(
-                new FrameBuffer.FramebufferTextureSpecification(FrameBuffer.FramebufferTextureFormat.Depth));
+                new FrameBuffer.FramebufferTextureSpecification(FrameBuffer.FramebufferTextureFormat.DEPTH24STENCIL8));
         this.frameBuffer = FrameBuffer.create(specification);
     }
 

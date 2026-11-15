@@ -9,6 +9,7 @@ import GameEngine.Engine.Renderer.Buffer.FrameBuffer;
 import GameEngine.Engine.Renderer.RendererCommandAPI;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -159,7 +160,7 @@ public class OpenGLFrameBuffer extends FrameBuffer {
         if (colorAttachments.length > 1) {
             YH_ASSERT(colorAttachments.length <= 4, "colorAttachments length grater than 4");
             int[] buffers = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
-            glDrawBuffers(buffers);
+            glDrawBuffers(Arrays.copyOf(buffers, colorAttachments.length));
         } else if (colorAttachments.length == 0) {
             // Only depth-pass
             glDrawBuffer(GL_NONE);

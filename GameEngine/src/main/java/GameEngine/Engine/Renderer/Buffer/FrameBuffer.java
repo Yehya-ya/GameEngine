@@ -46,8 +46,7 @@ public abstract class FrameBuffer {
         None(0),
         RGBA8(1),
         RED_INTEGER(2),
-        DEPTH24STENCIL8(3),
-        Depth(DEPTH24STENCIL8.value);
+        DEPTH24STENCIL8(3);
 
         public final int value;
 
