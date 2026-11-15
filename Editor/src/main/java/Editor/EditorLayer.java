@@ -6,6 +6,7 @@ import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Input;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Core.Project;
+import GameEngine.Engine.Core.ProjectSerializer;
 import GameEngine.Engine.ECS.Entity;
 import GameEngine.Engine.ECS.Scene;
 import GameEngine.Engine.ECS.SceneSerializer;
@@ -22,6 +23,7 @@ import Panels.SceneHierarchyPanel;
 import Panels.Selection;
 import Utils.FileDialog;
 import Utils.FileDialog.FileTypes;
+import Utils.MessageBox;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImGuiViewport;
@@ -31,8 +33,10 @@ import imgui.ImVec4;
 import imgui.flag.*;
 import imgui.type.ImBoolean;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 
 public class EditorLayer extends Layer {
@@ -60,11 +64,13 @@ public class EditorLayer extends Layer {
     private final ImGuiWindowClass toolbarWindowClass;
     private SceneState sceneState;
     private boolean isLayoutResetRequested;
+    private final ProjectMenu projectMenu;
 
-    public EditorLayer(Project project) {
+    public EditorLayer(Project project, ProjectSwitcher projects) {
         super("EditorLayer");
 
         this.project = project;
+        projectMenu = new ProjectMenu(project, projects);
         iconPlay = Texture.createFromResource("/Icons/PlayButton.png");
         iconStop = Texture.createFromResource("/Icons/StopButton.png");
         toolbarWindowClass = new ImGuiWindowClass();
@@ -196,18 +202,22 @@ public class EditorLayer extends Layer {
 
         if (ImGui.beginMenuBar()) {
             if (ImGui.beginMenu("File")) {
-                if (ImGui.menuItem("New (Ctrl + N)")) {
+                if (ImGui.menuItem("New Scene", "Ctrl+N")) {
                     newSceneActivity();
                 }
-                if (ImGui.menuItem("Open (Ctrl + O)")) {
+                if (ImGui.menuItem("Open Scene...", "Ctrl+O")) {
                     open();
                 }
-                if (ImGui.menuItem("Save (Ctrl + S)")) {
+                if (ImGui.menuItem("Save Scene", "Ctrl+S")) {
                     save();
                 }
-                if (ImGui.menuItem("Save as (Ctrl + Shift + S)")) {
+                if (ImGui.menuItem("Save Scene As...", "Ctrl+Shift+S")) {
                     saveAs();
                 }
+                drawStartSceneMenuItem();
+                ImGui.separator();
+                projectMenu.drawItems();
+                ImGui.separator();
                 if (ImGui.menuItem("Exit")) {
                     Application.get().close();
                 }
@@ -338,6 +348,31 @@ public class EditorLayer extends Layer {
         }
 
         return true;
+    }
+
+    private void drawStartSceneMenuItem() {
+        String scenePath = savedScenePath();
+        boolean isSaved = scenePath != null;
+        boolean isStartScene = isSaved && scenePath.equals(project.getStartScene());
+        if (ImGui.menuItem("Use as Start Scene", isStartScene, isSaved)) {
+            setStartScene(isStartScene ? null : scenePath);
+        }
+    }
+
+    private @Nullable String savedScenePath() {
+        boolean isSceneSaved = editorScene != null && editorScene.getUri() != null;
+        return isSceneSaved ? project.toProjectPath(Path.of(editorScene.getUri())) : null;
+    }
+
+    private void setStartScene(@Nullable String startScene) {
+        String previousStartScene = project.getStartScene();
+        project.setStartScene(startScene);
+        if (!ProjectSerializer.serialize(project)) {
+            project.setStartScene(previousStartScene);
+            MessageBox.showError(
+                    Editor.applicationName,
+                    "Could not save the start scene to " + project.getFile() + ".\nThe console log says why.");
+        }
     }
 
     public void open() {

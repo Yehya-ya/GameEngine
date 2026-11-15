@@ -7,11 +7,13 @@ import GameEngine.Engine.Core.Application;
 import GameEngine.Engine.Core.Layer;
 import GameEngine.Engine.Core.Project;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Editor extends Application {
+public class Editor extends Application implements ProjectSwitcher {
     public static final String applicationName = "Editor";
     private final RecentProjects recentProjects;
     private @Nullable Layer projectLayer;
@@ -26,6 +28,7 @@ public class Editor extends Application {
         }
     }
 
+    @Override
     public void openProject(@NotNull Project project) {
         YH_LOG_INFO("Opening the project `{}` in `{}`.", project.getName(), project.getDirectory());
         if (!Files.isDirectory(project.getAssetDirectory())) {
@@ -35,12 +38,23 @@ public class Editor extends Application {
         }
         recentProjects.add(project.getFile());
         getWindow().setTitle(project.getName() + " - " + applicationName);
-        replaceProjectLayer(() -> new EditorLayer(project));
+        replaceProjectLayer(() -> new EditorLayer(project, this));
+    }
+
+    @Override
+    public void closeProject() {
+        YH_LOG_INFO("Closing the project.");
+        showProjectPicker();
+    }
+
+    @Override
+    public @NotNull List<Path> recentProjectFiles() {
+        return recentProjects.getProjectFiles();
     }
 
     private void showProjectPicker() {
         getWindow().setTitle(applicationName);
-        replaceProjectLayer(() -> new ProjectPickerLayer(recentProjects, this::openProject));
+        replaceProjectLayer(() -> new ProjectPickerLayer(this));
     }
 
     private void replaceProjectLayer(@NotNull Supplier<Layer> createLayer) {

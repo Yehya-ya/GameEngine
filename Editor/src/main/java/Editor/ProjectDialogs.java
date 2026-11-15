@@ -18,10 +18,7 @@ final class ProjectDialogs {
     private final FileDialog fileDialog = new FileDialog(projectsFolder());
 
     Optional<Project> newProject() {
-        return fileDialog
-                .selectFolder(newProjectFolderTitle)
-                .flatMap(folder ->
-                        orShowError(ProjectSerializer.create(folder), "Could not make a project in " + folder + "."));
+        return fileDialog.selectFolder(newProjectFolderTitle).flatMap(ProjectDialogs::createProjectIn);
     }
 
     Optional<Project> openProject() {
@@ -30,6 +27,19 @@ final class ProjectDialogs {
 
     Optional<Project> openProject(@NotNull Path projectFile) {
         return orShowError(ProjectSerializer.deserialize(projectFile), "Could not open " + projectFile + ".");
+    }
+
+    private static Optional<Project> createProjectIn(@NotNull Path folder) {
+        List<Path> existingProjectFiles = ProjectSerializer.findProjectFiles(folder);
+        if (!existingProjectFiles.isEmpty()) {
+            MessageBox.showError(
+                    Editor.applicationName,
+                    folder + " is already a project.\nOpen "
+                            + existingProjectFiles.getFirst().getFileName()
+                            + " with Open Project instead.");
+            return Optional.empty();
+        }
+        return orShowError(ProjectSerializer.create(folder), "Could not make a project in " + folder + ".");
     }
 
     private static Optional<Project> orShowError(@Nullable Project project, @NotNull String problem) {

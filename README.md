@@ -30,7 +30,7 @@ The screenshots show a demo level; scene files aren't kept in the repo.
 
 | Action | Keys |
 | --- | --- |
-| New, open, save, save as | Ctrl+N, Ctrl+O, Ctrl+S, Ctrl+Shift+S |
+| New, open, save, save as scene | Ctrl+N, Ctrl+O, Ctrl+S, Ctrl+Shift+S |
 | No gizmo, move, rotate, scale | Q, W, E, R (hold Ctrl to snap) |
 | Duplicate the selected entity | Ctrl+D |
 | Orbit, pan, zoom the camera | Alt + left, middle, right mouse; or scroll to zoom |
@@ -62,7 +62,9 @@ A project is a folder with a project file named after the project, such as `MyGa
 startScene: assets/scenes/level1.yaml
 ```
 
-**New Project** in the picker asks for an empty folder and makes the project file, `assets/scenes` and `assets/textures` in it. The project takes the folder's name. In a folder that already has an `assets` folder, it keeps the assets and adds the project file.
+**New Project** asks for an empty folder and makes the project file, `assets/scenes` and `assets/textures` in it. The project takes the folder's name. In a folder that already has an `assets` folder, it keeps the assets and adds the project file.
+
+In the editor, the **File** menu has the scene commands, then **New Project**, **Open Project**, **Recent Projects** and **Close Project**, which goes back to the picker. **Use as Start Scene** makes the open scene, once saved, the one the project starts with; it is ticked when it already is, and choosing it again clears the start scene.
 
 In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Editor/Main.java` with a project file or folder as the program argument. Run `SandBox/src/main/java/Main.java` as it is. The engine's shaders, the editor's icons and the sandbox's textures are packed into each module's jar, so neither app needs a particular working directory.
 

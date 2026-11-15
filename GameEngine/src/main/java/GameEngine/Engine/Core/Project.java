@@ -11,7 +11,7 @@ public final class Project {
     private static final String driveRootProjectName = "Project";
     private final Path directory;
     private final String name;
-    private final @Nullable String startScene;
+    private @Nullable String startScene;
 
     public Project(@NotNull Path directory) {
         this(directory, folderNameOf(directory), null);
@@ -39,6 +39,10 @@ public final class Project {
 
     public @Nullable String getStartScene() {
         return startScene;
+    }
+
+    public void setStartScene(@Nullable String startScene) {
+        this.startScene = startScene;
     }
 
     public @NotNull Path getDirectory() {

@@ -6,11 +6,11 @@ import imgui.ImGui;
 import imgui.ImGuiViewport;
 import imgui.flag.ImGuiSelectableFlags;
 import imgui.flag.ImGuiStyleVar;
+import imgui.flag.ImGuiTableColumnFlags;
 import imgui.flag.ImGuiTableFlags;
 import imgui.flag.ImGuiWindowFlags;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 
 public class ProjectPickerLayer extends Layer {
@@ -23,14 +23,12 @@ public class ProjectPickerLayer extends Layer {
             | ImGuiWindowFlags.NoDocking
             | ImGuiWindowFlags.NoSavedSettings
             | ImGuiWindowFlags.NoBringToFrontOnFocus;
-    private final RecentProjects recentProjects;
-    private final Consumer<Project> openProject;
+    private final ProjectSwitcher projects;
     private final ProjectDialogs projectDialogs;
 
-    public ProjectPickerLayer(@NotNull RecentProjects recentProjects, @NotNull Consumer<Project> openProject) {
+    public ProjectPickerLayer(@NotNull ProjectSwitcher projects) {
         super("ProjectPickerLayer");
-        this.recentProjects = recentProjects;
-        this.openProject = openProject;
+        this.projects = projects;
         projectDialogs = new ProjectDialogs();
     }
 
@@ -55,28 +53,30 @@ public class ProjectPickerLayer extends Layer {
 
     private void drawProjectButtons() {
         if (ImGui.button("New Project...")) {
-            projectDialogs.newProject().ifPresent(openProject);
+            projectDialogs.newProject().ifPresent(projects::openProject);
         }
         ImGui.sameLine();
         if (ImGui.button("Open Project...")) {
-            projectDialogs.openProject().ifPresent(openProject);
+            projectDialogs.openProject().ifPresent(projects::openProject);
         }
     }
 
     private void drawRecentProjects() {
         ImGui.text("Recent projects");
-        List<Path> projectFiles = recentProjects.getProjectFiles();
+        List<Path> projectFiles = projects.recentProjectFiles();
         if (projectFiles.isEmpty()) {
             ImGui.textDisabled("No recent projects yet.");
             return;
         }
         if (ImGui.beginTable("RecentProjects", 2, ImGuiTableFlags.RowBg)) {
+            ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.WidthFixed);
+            ImGui.tableSetupColumn("Folder", ImGuiTableColumnFlags.WidthStretch);
             for (Path projectFile : projectFiles) {
                 ImGui.tableNextRow();
                 ImGui.tableNextColumn();
                 String uniqueLabel = Project.nameFromFile(projectFile) + "##" + projectFile;
                 if (ImGui.selectable(uniqueLabel, false, ImGuiSelectableFlags.SpanAllColumns)) {
-                    projectDialogs.openProject(projectFile).ifPresent(openProject);
+                    projectDialogs.openProject(projectFile).ifPresent(projects::openProject);
                 }
                 ImGui.tableNextColumn();
                 ImGui.textDisabled(projectFile.getParent().toString());

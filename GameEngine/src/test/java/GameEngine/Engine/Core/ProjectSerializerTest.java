@@ -37,6 +37,17 @@ class ProjectSerializerTest {
     }
 
     @Test
+    void changedAndClearedStartSceneIsSaved() {
+        Project project = saveAndLoad(new Project(projectDirectory, "MyGame", "assets/scenes/level1.yaml"));
+
+        project.setStartScene("assets/scenes/level2.yaml");
+        assertEquals("assets/scenes/level2.yaml", saveAndLoad(project).getStartScene());
+
+        project.setStartScene(null);
+        assertNull(saveAndLoad(project).getStartScene());
+    }
+
+    @Test
     void projectFileIsPlainYaml() throws IOException {
         Project project = new Project(projectDirectory, "MyGame", "assets/scenes/level1.yaml");
 
