@@ -15,7 +15,7 @@ public class EditorCamera extends Camera {
     private final Input input;
     private final float fov;
     private final Vector3f focalPoint;
-    private Vector2f initialMousePosition;
+    private Vector2f lastMousePosition;
     private float distance = 10.0f;
     private float pitch = 0.0f;
     private float yaw = 0.0f;
@@ -31,7 +31,7 @@ public class EditorCamera extends Camera {
         this.input = input;
         this.position = new Vector3f();
         this.focalPoint = new Vector3f();
-        this.initialMousePosition = new Vector2f();
+        this.lastMousePosition = mousePosition();
         this.near = nearClip;
         this.far = farClip;
         this.aspectRatio = aspectRatio;
@@ -75,12 +75,11 @@ public class EditorCamera extends Camera {
     }
 
     public void onUpdate(TimeStep ts) {
-        if (input.isKeyPressed(KeyCodes.YH_KEY_LEFT_ALT)) {
-            Vector2d mousePosition = input.getMousePosition();
-            Vector2f mouse = new Vector2f((float) mousePosition.x, (float) mousePosition.y);
-            Vector2f delta = new Vector2f(mouse).sub(initialMousePosition).mul(0.003f);
-            initialMousePosition = mouse;
+        Vector2f mouse = mousePosition();
+        Vector2f delta = new Vector2f(mouse).sub(lastMousePosition).mul(0.003f);
+        lastMousePosition = mouse;
 
+        if (input.isKeyPressed(KeyCodes.YH_KEY_LEFT_ALT)) {
             if (input.isMouseButtonPressed(MouseCodes.GLFW_MOUSE_BUTTON_MIDDLE)) {
                 mousePan(delta);
             } else if (input.isMouseButtonPressed(MouseCodes.GLFW_MOUSE_BUTTON_LEFT)) {
@@ -91,6 +90,11 @@ public class EditorCamera extends Camera {
         }
 
         updateViewMatrix();
+    }
+
+    private Vector2f mousePosition() {
+        Vector2d position = input.getMousePosition();
+        return new Vector2f((float) position.x, (float) position.y);
     }
 
     public void onEvent(Event event) {

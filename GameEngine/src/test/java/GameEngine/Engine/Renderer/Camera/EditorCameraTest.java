@@ -106,6 +106,49 @@ class EditorCameraTest {
         assertEquals(new Vector3f(0.0f, 0.0f, 0.0f), camera.getPosition());
     }
 
+    @Test
+    void pressingAltAfterMovingTheMouseDoesNotJump() {
+        input.moveMouseTo(400, 300);
+        camera.onUpdate(frame);
+
+        input.holdKey(YH_KEY_LEFT_ALT);
+        input.holdMouseButton(GLFW_MOUSE_BUTTON_LEFT);
+        camera.onUpdate(frame);
+
+        assertEquals(0.0f, camera.getYaw());
+        assertEquals(0.0f, camera.getPitch());
+    }
+
+    @Test
+    void pressingAltAgainAfterMovingTheMouseDoesNotJump() {
+        input.holdKey(YH_KEY_LEFT_ALT);
+        drag(GLFW_MOUSE_BUTTON_LEFT, 100, 50);
+        float yaw = camera.getYaw();
+        float pitch = camera.getPitch();
+        input.releaseKey(YH_KEY_LEFT_ALT);
+        input.moveMouseTo(600, 400);
+        camera.onUpdate(frame);
+
+        input.holdKey(YH_KEY_LEFT_ALT);
+        camera.onUpdate(frame);
+
+        assertEquals(yaw, camera.getYaw());
+        assertEquals(pitch, camera.getPitch());
+    }
+
+    @Test
+    void cameraMadeWhileTheMouseIsAwayFromTheCornerDoesNotJump() {
+        input.moveMouseTo(400, 300);
+        EditorCamera cameraMadeLater = new EditorCamera(input);
+
+        input.holdKey(YH_KEY_LEFT_ALT);
+        input.holdMouseButton(GLFW_MOUSE_BUTTON_LEFT);
+        cameraMadeLater.onUpdate(frame);
+
+        assertEquals(0.0f, cameraMadeLater.getYaw());
+        assertEquals(0.0f, cameraMadeLater.getPitch());
+    }
+
     private void drag(int mouseButton, double toX, double toY) {
         input.holdMouseButton(mouseButton);
         camera.onUpdate(frame);
