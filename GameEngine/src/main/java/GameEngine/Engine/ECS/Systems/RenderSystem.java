@@ -34,7 +34,7 @@ public class RenderSystem extends EntityProcessingSystem {
             SpriteComponent spriteComponent = spriteComponentsMapper.get(e);
             BatchRenderer2D renderer = scene.getRenderer();
 
-            if (spriteComponent.texture != null) {
+            if (spriteComponent.showsTexture()) {
                 renderer.drawRotatedQuad(
                         transform.translate,
                         transform.size,
@@ -44,7 +44,11 @@ public class RenderSystem extends EntityProcessingSystem {
                         e.getId());
             } else {
                 renderer.drawRotatedQuad(
-                        transform.translate, transform.size, transform.rotation, spriteComponent.color, e.getId());
+                        transform.translate,
+                        transform.size,
+                        transform.rotation,
+                        spriteComponent.shownColor(),
+                        e.getId());
             }
         }
     }

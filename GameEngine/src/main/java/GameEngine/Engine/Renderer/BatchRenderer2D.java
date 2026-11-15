@@ -80,10 +80,6 @@ public class BatchRenderer2D {
         return statistics;
     }
 
-    public Texture getWhiteTexture() {
-        return storage.whiteTexture;
-    }
-
     public void delete() {
         storage.quadVertexArray.delete();
         storage.circleVertexArray.delete();

@@ -7,15 +7,17 @@ public class SpriteComponent extends com.artemis.Component {
     public Vector4f color;
     public Texture texture;
     public float tilingFactor;
+    public boolean isTextured;
 
     public SpriteComponent() {
-        this(new Vector4f(0.8f, 0.8f, 0.8f, 1.0f));
+        this(defaultColor());
     }
 
     public SpriteComponent(Vector4f color) {
         this.color = color;
         this.texture = null;
         this.tilingFactor = 1.0f;
+        this.isTextured = false;
     }
 
     public SpriteComponent(Texture texture) {
@@ -23,20 +25,40 @@ public class SpriteComponent extends com.artemis.Component {
     }
 
     public SpriteComponent(Texture texture, float tilingFactor) {
+        this.color = defaultColor();
         this.texture = texture;
         this.tilingFactor = tilingFactor;
-        this.color = null;
+        this.isTextured = true;
+    }
+
+    public SpriteComponent(SpriteComponent other) {
+        this.color = new Vector4f(other.color);
+        this.texture = other.texture;
+        this.tilingFactor = other.tilingFactor;
+        this.isTextured = other.isTextured;
+    }
+
+    public boolean showsTexture() {
+        return isTextured && texture != null;
+    }
+
+    public Vector4f shownColor() {
+        return isTextured ? new Vector4f(1.0f) : color;
     }
 
     public void setToColor() {
-        this.color = new Vector4f(0.8f, 0.8f, 0.8f, 1.0f);
+        this.isTextured = false;
         this.texture = null;
         this.tilingFactor = 1.0f;
     }
 
-    public void setToTexture(Texture texture) {
-        this.color = null;
-        this.texture = texture;
+    public void setToTexture() {
+        this.isTextured = true;
+        this.texture = null;
         this.tilingFactor = 1.0f;
+    }
+
+    private static Vector4f defaultColor() {
+        return new Vector4f(0.8f, 0.8f, 0.8f, 1.0f);
     }
 }

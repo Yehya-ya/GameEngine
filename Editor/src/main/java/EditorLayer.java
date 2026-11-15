@@ -80,7 +80,7 @@ public class EditorLayer extends Layer {
         FileDialog.setStartDirectory(project.getAssetDirectory());
         selection = new Selection();
         viewport = new Viewport(selection, renderer);
-        sceneHierarchyPanel = new SceneHierarchyPanel(selection, renderer.getWhiteTexture());
+        sceneHierarchyPanel = new SceneHierarchyPanel(selection);
         contentBrowserPanel = new ContentBrowserPanel(project.getAssetDirectory());
         sceneState = SceneState.Edit;
     }

@@ -9,7 +9,6 @@ import GameEngine.Engine.ECS.Scene;
 import GameEngine.Engine.Renderer.Camera.CameraType;
 import GameEngine.Engine.Renderer.Camera.OrthographicCamera;
 import GameEngine.Engine.Renderer.Camera.PerspectiveCamera;
-import GameEngine.Engine.Renderer.Texture;
 import GameEngine.Engine.Renderer.TextureLibrary;
 import Utils.FileDialog;
 import com.artemis.Component;
@@ -32,11 +31,9 @@ public class SceneHierarchyPanel {
     public static final String HierarchyWindowName = "Scene Hierarchy";
     public static final String PropertiesWindowName = "Properties";
     private final Selection selection;
-    private final Texture blankTexture;
     private Scene scene;
 
-    public SceneHierarchyPanel(Selection selection, Texture blankTexture) {
-        this.blankTexture = blankTexture;
+    public SceneHierarchyPanel(Selection selection) {
         this.selection = selection;
     }
 
@@ -193,18 +190,18 @@ public class SceneHierarchyPanel {
         });
 
         drawEntityComponentProperties("Sprite", e, SpriteComponent.class, spriteComponent -> {
-            int type = spriteComponent.texture == null ? 0 : 1;
+            int type = spriteComponent.isTextured ? 1 : 0;
             ImInt imInt = new ImInt(type);
             ImGui.listBox("Type", imInt, new String[] {"color", "texture"});
             if (type != imInt.get()) {
                 if (imInt.get() == 0) {
                     spriteComponent.setToColor();
                 } else if (imInt.get() == 1) {
-                    spriteComponent.setToTexture(blankTexture);
+                    spriteComponent.setToTexture();
                 }
             }
 
-            if (spriteComponent.texture == null) {
+            if (!spriteComponent.isTextured) {
                 float[] color = new float[] {
                     spriteComponent.color.x, spriteComponent.color.y, spriteComponent.color.z, spriteComponent.color.w
                 };
@@ -220,7 +217,7 @@ public class SceneHierarchyPanel {
                     spriteComponent.tilingFactor = tilingFactor[0];
                 }
 
-                if (ImGui.imageButton(spriteComponent.texture.getRendererId(), 50, 50)) {
+                if (drawTextureButton(spriteComponent)) {
                     FileDialog.openFile(
                             OpenTextureFileDialogId,
                             "JPEG (*.JPG; *.JPEG; *.JPE){.jpg,.jpeg,jpe}PNG (.PNG){.png}",
@@ -237,6 +234,14 @@ public class SceneHierarchyPanel {
             }
             return null;
         });
+    }
+
+    private boolean drawTextureButton(@NotNull SpriteComponent spriteComponent) {
+        boolean isTextureChosen = spriteComponent.texture != null;
+        if (isTextureChosen) {
+            return ImGui.imageButton(spriteComponent.texture.getRendererId(), 50, 50);
+        }
+        return ImGui.button("Choose texture");
     }
 
     private <T extends Component> void drawEntityComponentProperties(

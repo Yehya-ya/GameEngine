@@ -54,7 +54,7 @@ public final class ComponentTypes {
             "!SpriteComponent",
             SpriteComponent.class,
             SpriteComponentData.class,
-            ComponentTypes::copySprite,
+            SpriteComponent::new,
             SpriteComponentData::new,
             ComponentTypes::loadSprite);
 
@@ -138,13 +138,6 @@ public final class ComponentTypes {
         throw new IllegalArgumentException("A camera component has no camera");
     }
 
-    private static SpriteComponent copySprite(SpriteComponent spriteComponent) {
-        if (spriteComponent.texture != null) {
-            return new SpriteComponent(spriteComponent.texture, spriteComponent.tilingFactor);
-        }
-        return new SpriteComponent(new Vector4f(spriteComponent.color));
-    }
-
     private static SpriteComponent loadSprite(SpriteComponentData data, Project project) {
         if (data.texturePath == null) {
             return new SpriteComponent(data.color);
@@ -213,10 +206,8 @@ public final class ComponentTypes {
         public SpriteComponentData() {}
 
         public SpriteComponentData(@NotNull SpriteComponent spriteComponent, @NotNull Project project) {
-            boolean hasTexture = spriteComponent.texture != null;
-            boolean hasTextureFile = hasTexture && spriteComponent.texture.getPath() != null;
-            boolean isBlankTexture = hasTexture && !hasTextureFile;
-            this.color = isBlankTexture ? new Vector4f(1.0f) : spriteComponent.color;
+            boolean hasTextureFile = spriteComponent.showsTexture() && spriteComponent.texture.getPath() != null;
+            this.color = hasTextureFile ? null : spriteComponent.shownColor();
             this.tilingFactor = spriteComponent.tilingFactor;
             this.texturePath =
                     hasTextureFile ? project.toProjectPath(Path.of(spriteComponent.texture.getPath())) : null;
