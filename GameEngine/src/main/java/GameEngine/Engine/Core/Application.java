@@ -12,6 +12,9 @@ import GameEngine.Engine.Renderer.RendererCommandAPI;
 import GameEngine.Engine.Utils.SettingsDirectory;
 import GameEngine.Engine.Utils.TimeStep;
 import GameEngine.Platforms.Windows.WindowsWindow;
+import java.util.ArrayList;
+import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class Application {
     private static Application instance;
@@ -20,6 +23,7 @@ public class Application {
     private final LayerStack layersStack;
     private final ImGuiLayer imGuiLayer;
     private final BatchRenderer2D renderer2D;
+    private final List<Runnable> actionsBeforeNextFrame = new ArrayList<>();
     private boolean isRunning;
     private boolean isMinimized;
     private double lastFrameTime;
@@ -56,9 +60,14 @@ public class Application {
 
     public void shutdown() {}
 
+    public void runBeforeNextFrame(@NotNull Runnable action) {
+        actionsBeforeNextFrame.add(action);
+    }
+
     public void run() {
         YH_LOG_TRACE("The application starts running.");
         while (isRunning) {
+            runActionsBeforeThisFrame();
             double time = glfwGetTime();
             TimeStep timeStep = new TimeStep((float) (time - lastFrameTime));
             lastFrameTime = time;
@@ -79,6 +88,12 @@ public class Application {
         }
         YH_LOG_TRACE("The application stops running.");
         this.delete();
+    }
+
+    private void runActionsBeforeThisFrame() {
+        List<Runnable> actions = List.copyOf(actionsBeforeNextFrame);
+        actionsBeforeNextFrame.clear();
+        actions.forEach(Runnable::run);
     }
 
     public void onEvent(Event event) {

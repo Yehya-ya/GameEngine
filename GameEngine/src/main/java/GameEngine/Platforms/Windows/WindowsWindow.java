@@ -11,6 +11,7 @@ import GameEngine.Engine.Events.MouseEvents;
 import GameEngine.Engine.Events.WindowEvents;
 import GameEngine.Engine.Renderer.GraphicsContext;
 import GameEngine.Platforms.OpenGL.OpenGLContext;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 
@@ -102,6 +103,12 @@ public class WindowsWindow extends Window {
         glfwFreeCallbacks(windowID);
         glfwDestroyWindow(windowID);
         glfwTerminate();
+    }
+
+    @Override
+    public void setTitle(@NotNull String title) {
+        super.setTitle(title);
+        glfwSetWindowTitle(windowID, title);
     }
 
     @Override

@@ -25,6 +25,10 @@ public abstract class Window {
 
     protected abstract void shutdown();
 
+    public void setTitle(@NotNull String title) {
+        prop.title = title;
+    }
+
     public int getHeight() {
         return prop.height;
     }
