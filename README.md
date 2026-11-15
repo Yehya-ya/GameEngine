@@ -39,7 +39,6 @@ The screenshots show a demo level; scene files aren't kept in the repo.
 
 - `GameEngine`: the engine.
 - `Editor`: the level editor.
-- `SandBox`: a test app with one example layer per experiment. By default it draws a 50×50 grid of coloured quads with the batch renderer; pick another layer in `Sandbox.java`, such as the textured cube (`ExampleLayer3D`), the shader art (`ExampleLayerFragmentShader`) or the original batch shader (`ExampleLayerBatchShader`).
 
 ## Running it
 
@@ -51,7 +50,6 @@ From a terminal in the project root:
 
 ```
 .\gradlew.bat :Editor:run
-.\gradlew.bat :SandBox:run
 ```
 
 The editor opens the project you last worked on. The first time, or when that project is gone, it shows a project picker with your recent projects and buttons to open a project or make a new one. To open a particular project, pass its project file, or the folder that holds it, as the first argument, e.g. `.\gradlew.bat :Editor:run --args="C:\path\to\MyGame"`. Projects live outside this repository.
@@ -68,7 +66,7 @@ In the editor, the **File** menu has the scene commands, then **New Project**, *
 
 Before the editor opens another scene or project, or closes, it asks whether to save the scene's changes. **Yes** saves them, asking where for a scene that has never been saved, **No** throws them away and **Cancel** stays.
 
-In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Editor/Main.java` with a project file or folder as the program argument. Run `SandBox/src/main/java/Main.java` as it is. The engine's shaders, the editor's icons and the sandbox's textures are packed into each module's jar, so neither app needs a particular working directory.
+In IntelliJ IDEA, set the project SDK to JDK 21 and run `Editor/src/main/java/Editor/Main.java` with a project file or folder as the program argument. The engine's shaders and the editor's icons are packed into the jars, so the editor does not need a particular working directory.
 
 ## Packaging the editor
 
@@ -90,6 +88,5 @@ The package only holds the native libraries for the system that built it, so bui
 
 - `GameEngine/src/main/resources/engine/`: shaders the renderer needs.
 - `Editor/src/main/resources/Icons/`: editor icons.
-- `SandBox/src/main/resources/`: the sandbox's textures and shaders.
 
-On first launch the editor docks its panels into a default layout, and **Window > Reset Layout** restores it. Each app saves its layout per user in its own folder, to `%APPDATA%\GameEngine\Editor\imgui.ini` on Windows and `~/.config/GameEngine/Editor/imgui.ini` elsewhere (`SandBox` for the sandbox). The editor keeps its list of recent projects next to it, in `recent-projects.txt`.
+On first launch the editor docks its panels into a default layout, and **Window > Reset Layout** restores it. The editor saves its layout per user, to `%APPDATA%\GameEngine\Editor\imgui.ini` on Windows and `~/.config/GameEngine/Editor/imgui.ini` elsewhere. The editor keeps its list of recent projects next to it, in `recent-projects.txt`.

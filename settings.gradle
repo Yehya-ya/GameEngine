@@ -12,4 +12,3 @@ dependencyResolutionManagement {
 rootProject.name = 'GameEngine'
 include 'GameEngine'
 include 'Editor'
-include 'SandBox'
